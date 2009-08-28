@@ -6,6 +6,7 @@ package plugins.floghelper.l10n;
 import freenet.l10n.L10n.LANGUAGE;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import plugins.floghelper.FlogHelper;
 
 /**
  *
@@ -20,13 +21,11 @@ public class L10n {
 			L10n.setLanguage(LANGUAGE.getDefault());
 		}
 		return res.getString(key);
-		// FIXME
 	}
 
 	public static void setLanguage(final LANGUAGE lang) {
 		L10n.lang = lang;
-		// FIXME
 		final String langFile = "/plugins/floghelper/l10n/UI";
-		L10n.res = ResourceBundle.getBundle(langFile, new Locale(L10n.lang.shortCode));
+		L10n.res = ResourceBundle.getBundle(langFile, new Locale(L10n.lang.shortCode), FlogHelper.class.getClassLoader());
 	}
 }
