@@ -40,6 +40,11 @@
 				<pathelement location="${deps}/${freenetjar}"/>
 			</classpath>
 		</javac>
+		<copy todir="${build}">
+			<fileset dir="${src}">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
 	</target>
 
 
@@ -47,7 +52,7 @@
 		<mkdir dir="${dist}"/>
 		<jar jarfile="${dist}/FlogHelper.jar" basedir="${build}">
 			<manifest>
-				<attribute name="Plugin-Main-Class" value="floghelper.FlogHelper"/>
+				<attribute name="Plugin-Main-Class" value="plugins.floghelper.FlogHelper"/>
 				<attribute name="Built-By" value="${user.name}"/>
 				<section name="common">
 					<attribute name="Implementation-Title" value="FlogHelper"/>
