@@ -2,3 +2,8 @@ FlogHelper is a Fred plugin. It allows easy flogging (Freenet blogging)
 using the FProxy interface (which means within a browser).
 
 It's currently under developement.
+
+Planned features :
+* WoT integration (for comments & author identity)
+* Freetalk integration (for comments)
+* XML structure
