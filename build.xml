@@ -14,7 +14,7 @@
 	<property name="freenetjarurl.localpath" value="${deps}/freenet-testing-latest.jar.url"/>
 
 	<!-- If you want to build using a custom freenet.jar, edit this and it won't be
-		 fetched. -->
+	fetched. You can also symlink your custom freenet.jar do deps/freenet-main.jar. -->
 	<property name="freenetjar" value="${deps}/freenet-main.jar"/>
 
 	<target name="freenetjar-check">
