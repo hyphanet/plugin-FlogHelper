@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+
+<!-- This is an adapted build.xml originally from the
+	 Freemail plugin. -->
+
+<project name="FlogHelper" default="dist" basedir=".">
+	<property name="src" location="src"/>
+	<property name="build" location="build"/>
+	<property name="lib" location="lib"/>
+	<property name="dist" location="dist"/>
+	<property name="deps" location="deps"/>
+
+	<property name="freenetjarurl.url" value="http://downloads.freenetproject.org/alpha/freenet-testing-latest.jar.url"/>
+	<property name="freenetjarurl.localpath" value="${deps}/freenet-testing-latest.jar.url"/>
+	<property name="freenetjar" value="freenet-main.jar"/>
+
+	<target name="freenetjar-check">
+		<available file="${deps}/${freenetjar}" property="freenetjar.present" />
+	</target>
+
+	<target name="freenetjar-fetch" depends="freenetjar-check" unless="freenetjar.present">
+		<echo>Fetching latest Freenet JAR from freenetproject.org...</echo>
+		<mkdir dir="${deps}" />
+		<get src="${freenetjarurl.url}"
+			dest="${freenetjarurl.localpath}" />
+		<loadfile property="freenetjar.url"
+			srcFile="${freenetjarurl.localpath}" />
+		<get src="${freenetjar.url}"
+			dest="${deps}/${freenetjar}"
+			verbose="true" />
+	</target>
+
+	<target name="compile" depends="freenetjar-fetch">
+		<mkdir dir="${build}"/>
+
+		<tstamp/>
+
+		<javac srcdir="${src}" destdir="${build}" debug="on" optimize="on" source="1.5">
+			<classpath>
+				<pathelement location="${deps}/${freenetjar}"/>
+			</classpath>
+		</javac>
+	</target>
+
+
+	<target name="dist" depends="compile">
+		<mkdir dir="${dist}"/>
+		<jar jarfile="${dist}/FlogHelper.jar" basedir="${build}">
+			<manifest>
+				<attribute name="Plugin-Main-Class" value="floghelper.FlogHelper"/>
+				<attribute name="Built-By" value="${user.name}"/>
+				<section name="common">
+					<attribute name="Implementation-Title" value="FlogHelper"/>
+					<attribute name="Implementation-Version" value="0.0.1"/> 
+					<attribute name="Implementation-Vendor" value="Romain Dalmaso (aka Artefact2)"/>
+				</section>
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="clean">
+		<delete includeEmptyDirs="true">
+			<fileset dir="${build}" />
+		</delete>
+		<delete dir="${dist}"/>
+		<delete dir="${lib}"/>
+	</target>
+
+	<target name="cleaner">
+		<delete dir="${build}"/>
+		<delete dir="${lib}"/>
+	</target>
+
+	<target name="distclean" description="Delete everything and restore to the original state.">
+		<delete dir="${build}"/>
+		<delete dir="${lib}"/>
+		<delete dir="${deps}"/>
+	</target>
+</project>
