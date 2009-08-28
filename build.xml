@@ -12,10 +12,13 @@
 
 	<property name="freenetjarurl.url" value="http://downloads.freenetproject.org/alpha/freenet-testing-latest.jar.url"/>
 	<property name="freenetjarurl.localpath" value="${deps}/freenet-testing-latest.jar.url"/>
-	<property name="freenetjar" value="freenet-main.jar"/>
+
+	<!-- If you want to build using a custom freenet.jar, edit this and it won't be
+		 fetched. -->
+	<property name="freenetjar" value="${deps}/freenet-main.jar"/>
 
 	<target name="freenetjar-check">
-		<available file="${deps}/${freenetjar}" property="freenetjar.present" />
+		<available file="${freenetjar}" property="freenetjar.present" />
 	</target>
 
 	<target name="freenetjar-fetch" depends="freenetjar-check" unless="freenetjar.present">
@@ -26,7 +29,7 @@
 		<loadfile property="freenetjar.url"
 			srcFile="${freenetjarurl.localpath}" />
 		<get src="${freenetjar.url}"
-			dest="${deps}/${freenetjar}"
+			dest="${freenetjar}"
 			verbose="true" />
 	</target>
 
@@ -37,7 +40,7 @@
 
 		<javac srcdir="${src}" destdir="${build}" debug="on" optimize="on" source="1.5">
 			<classpath>
-				<pathelement location="${deps}/${freenetjar}"/>
+				<pathelement location="${freenetjar}"/>
 			</classpath>
 		</javac>
 		<copy todir="${build}">
