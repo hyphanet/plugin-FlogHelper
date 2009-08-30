@@ -8,26 +8,25 @@ import freenet.clients.http.PageMaker.THEME;
 import freenet.l10n.BaseL10n;
 import freenet.l10n.PluginL10n;
 import freenet.pluginmanager.FredPlugin;
-import freenet.pluginmanager.FredPluginHTTP;
 import freenet.pluginmanager.FredPluginThreadless;
-import freenet.pluginmanager.PluginHTTPException;
 import freenet.pluginmanager.PluginRespirator;
 import freenet.pluginmanager.FredPluginBaseL10n;
+import freenet.pluginmanager.FredPluginL10n;
 import freenet.pluginmanager.FredPluginThemed;
 import freenet.pluginmanager.FredPluginVersioned;
 import freenet.pluginmanager.PluginStore;
 import freenet.support.Logger;
-import freenet.support.api.HTTPRequest;
 import plugins.floghelper.ui.DataFormatter;
-import plugins.floghelper.ui.Page;
+import plugins.floghelper.ui.FlogHelperToadlet;
+import plugins.floghelper.ui.FlogListToadlet;
 
 /**
  *
  * @author Artefact2
  */
-public class FlogHelper implements FredPlugin, FredPluginHTTP, FredPluginThreadless, FredPluginBaseL10n, FredPluginThemed, FredPluginVersioned {
-	public static final short REVISION = 2;
+public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginBaseL10n, FredPluginL10n, FredPluginThemed, FredPluginVersioned {
 
+	public static final short REVISION = 2;
 	private static PluginRespirator pr;
 	private static PluginL10n l10n;
 	private static PluginStore store;
@@ -53,7 +52,7 @@ public class FlogHelper implements FredPlugin, FredPluginHTTP, FredPluginThreadl
 	}
 
 	public void terminate() {
-		
+		FlogHelper.pr.getPageMaker().removeNavigationCategory("FlogHelper");
 	}
 
 	public void runPlugin(final PluginRespirator pr) {
@@ -64,14 +63,13 @@ public class FlogHelper implements FredPlugin, FredPluginHTTP, FredPluginThreadl
 		} catch (DatabaseDisabledException ex) {
 			Logger.error(this.getClass(), "Could not load flogs from db4o - " + ex.getMessage());
 		}
-	}
 
-	public String handleHTTPGet(final HTTPRequest request) throws PluginHTTPException {
-		return Page.handleHTTPGet(request);
-	}
-
-	public String handleHTTPPost(final HTTPRequest request) throws PluginHTTPException {
-		return Page.handleHTTPPost(request);
+		FlogHelper.pr.getPageMaker().addNavigationCategory(FlogHelperToadlet.BASE_URI + "/",
+				"FlogHelper", "FlogHelper", this);
+		FlogHelper.pr.getToadletContainer().register(new FlogListToadlet(
+				FlogHelper.pr.getHLSimpleClient()), "FlogHelper",
+				FlogHelperToadlet.BASE_URI + "/", true, "FlogHelper",
+				"FlogHelper", true, null);
 	}
 
 	public void setTheme(final THEME theme) {
@@ -102,4 +100,7 @@ public class FlogHelper implements FredPlugin, FredPluginHTTP, FredPluginThreadl
 		return "r" + rev;
 	}
 
+	public String getString(String arg0) {
+		return FlogHelper.getBaseL10n().getString(arg0);
+	}
 }

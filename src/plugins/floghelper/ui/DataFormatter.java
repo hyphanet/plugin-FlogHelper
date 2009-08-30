@@ -30,10 +30,10 @@ public class DataFormatter {
 			return "";
 		}
 
-		if(recursionLevel == 1) {
+		if (recursionLevel == 1) {
 			toReturn.append("PluginStore:\n");
 		} else {
-			for(int i = 1; i < recursionLevel; ++i) {
+			for (int i = 1; i < recursionLevel; ++i) {
 				toReturn.append("----");
 			}
 			toReturn.append("SubStore:\n");
@@ -134,8 +134,11 @@ public class DataFormatter {
 		} else if (value instanceof Byte) {
 			valueStr = Byte.toString((Byte) value);
 		} else if (value instanceof String) {
-			if("".equals(value)) valueStr = "(empty)";
-			else valueStr = (String) value;
+			if ("".equals(value)) {
+				valueStr = "(empty)";
+			} else {
+				valueStr = (String) value;
+			}
 		} else if (value instanceof Integer) {
 			valueStr = Integer.toString((Integer) value);
 		} else if (value instanceof Long) {
