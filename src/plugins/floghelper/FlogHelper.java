@@ -16,6 +16,8 @@ import freenet.pluginmanager.FredPluginThemed;
 import freenet.pluginmanager.FredPluginVersioned;
 import freenet.pluginmanager.PluginStore;
 import freenet.support.Logger;
+import plugins.floghelper.ui.ContentListToadlet;
+import plugins.floghelper.ui.CreateOrEditContentToadlet;
 import plugins.floghelper.ui.CreateOrEditFlogToadlet;
 import plugins.floghelper.ui.DataFormatter;
 import plugins.floghelper.ui.FlogHelperToadlet;
@@ -24,13 +26,12 @@ import plugins.floghelper.ui.FlogListToadlet;
 /**
  * TODO: proper GPL headers
  * TODO: proper javadoc
- * TODO: use putStore()
  * TODO: think about the activelink
  * TODO: flog contents, tags
  * TODO: render to xHTML
  * TODO: insert
  * TODO: javascript editbox
- * 
+ * TODO: xHTML ? WikiCode ? BBCode ?
  * @author Artefact2
  */
 public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginBaseL10n, FredPluginL10n, FredPluginThemed, FredPluginVersioned {
@@ -41,6 +42,8 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 	private static PluginStore store;
 	private FlogListToadlet flogListToadlet;
 	private CreateOrEditFlogToadlet createOrEditFlogToadlet;
+	private ContentListToadlet contentListToadlet;
+	private CreateOrEditContentToadlet createOrEditContentToadlet;
 
 	public static BaseL10n getBaseL10n() {
 		return FlogHelper.l10n.getBase();
@@ -79,6 +82,8 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 
 		this.flogListToadlet = new FlogListToadlet(FlogHelper.pr.getHLSimpleClient());
 		this.createOrEditFlogToadlet = new CreateOrEditFlogToadlet(FlogHelper.pr.getHLSimpleClient());
+		this.contentListToadlet = new ContentListToadlet(FlogHelper.pr.getHLSimpleClient());
+		this.createOrEditContentToadlet = new CreateOrEditContentToadlet(FlogHelper.pr.getHLSimpleClient());
 
 		FlogHelper.pr.getPageMaker().addNavigationCategory(FlogHelperToadlet.BASE_URI + "/",
 				"FlogHelper", "FlogHelper", this);
@@ -90,6 +95,10 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 
 		FlogHelper.pr.getToadletContainer().register(this.createOrEditFlogToadlet, "FlogHelper",
 				this.createOrEditFlogToadlet.path(), true, true);
+		FlogHelper.pr.getToadletContainer().register(this.contentListToadlet, "FlogHelper",
+				this.contentListToadlet.path(), true, true);
+		FlogHelper.pr.getToadletContainer().register(this.createOrEditContentToadlet, "FlogHelper",
+				this.createOrEditContentToadlet.path(), true, true);
 	}
 
 	public void setTheme(final THEME theme) {

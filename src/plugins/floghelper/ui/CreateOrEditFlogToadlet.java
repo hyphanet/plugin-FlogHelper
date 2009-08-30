@@ -47,18 +47,18 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 
 			flog.strings.put("ID", flogID);
 			flog.strings.put("Title", request.getPartAsString("Title", 100));
+			flog.strings.put("DefaultAuthor", request.getPartAsString("DefaultAuthor", 1000));
 			flog.strings.put("SmallDescription", request.getPartAsString("SmallDescription", 1000));
 			FlogHelper.putStore();
 
-			HTMLNode infobox = this.getPM().getInfobox("infobox-minor", FlogHelper.getBaseL10n().getString("FlogCreationSuccessful"), pageNode.content);
+			HTMLNode infobox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("FlogCreationSuccessful"), pageNode.content);
 			infobox.addChild("p", FlogHelper.getBaseL10n().getString("FlogCreationSuccessfulLong"));
 			HTMLNode links = infobox.addChild("p");
 			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + FlogListToadlet.MY_URI, FlogHelper.getBaseL10n().getString("ReturnToFlogList"));
 			links.addChild("br");
-			// FIXME do not use hardcoded uri here
-			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + "/Flog/" + flog.strings.get("ID"), FlogHelper.getBaseL10n().getString("ViewFlogDetails"));
+			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + ContentListToadlet.MY_URI + flog.strings.get("ID"), FlogHelper.getBaseL10n().getString("ViewFlogDetails"));
 		} else if (request.isPartSet("No")) {
-			HTMLNode infobox = this.getPM().getInfobox("infobox-minor", FlogHelper.getBaseL10n().getString("FlogCreationCancelled"), pageNode.content);
+			HTMLNode infobox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("FlogCreationCancelled"), pageNode.content);
 			infobox.addChild("p", FlogHelper.getBaseL10n().getString("FlogCreationCancelledLong"));
 			HTMLNode links = infobox.addChild("p");
 			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + FlogListToadlet.MY_URI, FlogHelper.getBaseL10n().getString("ReturnToFlogList"));
@@ -70,7 +70,7 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			PluginStore flog;
 			if (flogID.equals("") || !FlogHelper.getStore().subStores.containsKey(flogID)) {
 				title = "CreateFlog";
-				flogID = DataFormatter.createFlogID();
+				flogID = DataFormatter.createUniqueFlogID();
 				(flog = new PluginStore()).strings.put("ID", flogID);
 			} else {
 				title = "EditFlog";
@@ -85,6 +85,8 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 
 			form.addChild("p").addChild("label", "for", "Title", FlogHelper.getBaseL10n().getString("Title")).addChild("input", new String[]{"type", "size", "name", "value"},
 					new String[]{"text", "50", "Title", DataFormatter.toString(flog.strings.get("Title"))});
+			form.addChild("p").addChild("label", "for", "DefaultAuthor", FlogHelper.getBaseL10n().getString("DefaultAuthor")).addChild("input", new String[]{"type", "size", "name", "value"},
+					new String[]{"text", "50", "DefaultAuthor", DataFormatter.toString(flog.strings.get("DefaultAuthor"))});
 			form.addChild("p").addChild("label", "for", "SmallDescription", FlogHelper.getBaseL10n().getString("SmallDescription")).addChild("br").addChild("textarea", new String[]{"rows", "cols", "name"},
 					new String[]{"12", "80", "SmallDescription"}, DataFormatter.toString(flog.strings.get("SmallDescription")));
 

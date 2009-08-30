@@ -8,6 +8,7 @@ import freenet.clients.http.PageMaker;
 import freenet.clients.http.Toadlet;
 import freenet.clients.http.ToadletContext;
 import freenet.clients.http.ToadletContextClosedException;
+import freenet.pluginmanager.PluginStore;
 import freenet.support.api.HTTPRequest;
 import java.io.IOException;
 import java.net.URI;
@@ -38,6 +39,16 @@ public abstract class FlogHelperToadlet extends Toadlet {
 
 	public PageMaker getPM() {
 		return FlogHelper.getPR().getPageMaker();
+	}
+
+	public PluginStore getFlogID(HTTPRequest request) {
+		if (FlogHelper.getStore().subStores.containsKey(this.getURIArgument(request))) {
+			return FlogHelper.getStore().subStores.get(this.getURIArgument(request));
+		} else if (request.isPartSet("FlogID") && FlogHelper.getStore().subStores.containsKey(request.getPartAsString("FlogID", 7))) {
+			return FlogHelper.getStore().subStores.get(request.getPartAsString("FlogID", 7));
+		} else {
+			return null;
+		}
 	}
 
 	public abstract void handleMethodGET(URI uri,

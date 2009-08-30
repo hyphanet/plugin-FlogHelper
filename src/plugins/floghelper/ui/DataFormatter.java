@@ -30,6 +30,9 @@ public class DataFormatter {
 	private static final String printStore(PluginStore e, int recursionLevel) {
 		assert (recursionLevel >= 1);
 
+		// Avoid StackOverflowException when there are bugs...
+		if(recursionLevel > 30) return "";
+
 		StringBuilder toReturn = new StringBuilder();
 
 		if (e == null) {
@@ -97,7 +100,7 @@ public class DataFormatter {
 		}
 		if (e.strings != null) {
 			for (String s : e.strings.keySet()) {
-				writeStoreLine(s, toString(e.strings.get(s)), recursionLevel, toReturn);
+				writeStoreLine(s, indentString(e.strings.get(s), recursionLevel), recursionLevel, toReturn);
 			}
 		}
 		if (e.stringsArrays != null) {
@@ -134,14 +137,14 @@ public class DataFormatter {
 	public static final String toString(Object value) {
 		String valueStr;
 		if (value == null) {
-			valueStr = "(null)";
+			valueStr = "";
 		} else if (value instanceof Boolean) {
 			valueStr = Boolean.toString((Boolean) value);
 		} else if (value instanceof Byte) {
 			valueStr = Byte.toString((Byte) value);
 		} else if (value instanceof String) {
 			if ("".equals(value)) {
-				valueStr = "(empty)";
+				valueStr = "";
 			} else {
 				valueStr = (String) value;
 			}
@@ -167,6 +170,27 @@ public class DataFormatter {
 		return sb.delete(sb.length() - 3, sb.length() - 1).append(" }").toString();
 	}
 
+	public static final String indentString(String s, int recurseLevel) {
+		StringBuilder sb = new StringBuilder();
+		String[] lines = s.split("\n");
+
+		boolean isFirst = true;
+		for (String line : lines) {
+			if (isFirst) {
+				isFirst = false;
+			} else {
+				for (int i = 0; i < recurseLevel; ++i) {
+					sb.append("----");
+				}
+			}
+
+			sb.append(line);
+			sb.append("\n");
+		}
+
+		return sb.substring(0, sb.length() - 1);
+	}
+
 	public static final String getRandomID() {
 		return getRandomID(7);
 	}
@@ -181,12 +205,16 @@ public class DataFormatter {
 		return sb.toString().toUpperCase();
 	}
 
-	public static final String createFlogID() {
+	public static final String createUniqueFlogID() {
+		return createSubStoreUniqueID(FlogHelper.getStore());
+	}
+
+	public static final String createSubStoreUniqueID(PluginStore store) {
 		while (true) {
 			String id = getRandomID();
 
 			// Make sure we return a ID that isn't already used.
-			if (FlogHelper.getStore().subStores.get(id) == null) {
+			if (store.subStores.get(id) == null) {
 				return id;
 			}
 		}

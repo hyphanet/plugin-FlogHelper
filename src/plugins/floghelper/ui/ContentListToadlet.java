@@ -18,18 +18,24 @@ import plugins.floghelper.FlogHelper;
  *
  * @author romain
  */
-public class FlogListToadlet extends FlogHelperToadlet {
+public class ContentListToadlet extends FlogHelperToadlet {
 
-	public static final String MY_URI = "/";
+	public static final String MY_URI = "/Flog/";
 
-	public FlogListToadlet(HighLevelSimpleClient hlsc) {
+	public ContentListToadlet(HighLevelSimpleClient hlsc) {
 		super(hlsc, MY_URI);
 	}
 
 	public void handleMethodGET(URI uri, final HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException {
+		PluginStore flog = this.getFlogID(request);
+		if (flog == null) {
+			this.sendErrorPage(ctx, 404, "Not found", "Incorrect or missing FlogID.");
+		}
+
 		PageNode pageNode = FlogHelper.getPR().getPageMaker().getPageNode("FlogHelper", ctx);
 
-		HTMLNode table = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("FlogList"), pageNode.content).addChild("table");
+		HTMLNode table = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("ContentListOf").replace("${FlogName}",
+				flog.strings.get("Title")), pageNode.content).addChild("table");
 
 		HTMLNode tHead = table.addChild("thead");
 		HTMLNode tFoot = table.addChild("tfoot");
@@ -38,68 +44,81 @@ public class FlogListToadlet extends FlogHelperToadlet {
 		HTMLNode actionsRow = new HTMLNode("tr");
 
 		HTMLNode formCreateNew = FlogHelper.getPR().addFormChild(actionsRow.addChild("th", "colspan", "8"), FlogHelperToadlet.BASE_URI +
-				CreateOrEditFlogToadlet.MY_URI, "CreateNewFlog");
+				CreateOrEditContentToadlet.MY_URI, "CreateNewContent");
+		formCreateNew.addChild("input", new String[]{"type", "name", "value"},
+				new String[]{"hidden", "FlogID", flog.strings.get("ID")});
 		formCreateNew.addChild("input", new String[]{"type", "value"},
-				new String[]{"submit", FlogHelper.getBaseL10n().getString("CreateFlog")});
+				new String[]{"submit", FlogHelper.getBaseL10n().getString("CreateContent")});
 
 		HTMLNode headersRow = new HTMLNode("tr");
 		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("ID"));
-		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("Activelink"));
+		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("Author"));
 		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("Title"));
-		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("SmallDescription"));
-		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("NumberOfEntries"));
+		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("CreationDate"));
+		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("LastModification"));
 		headersRow.addChild("th", "colspan", "3", FlogHelper.getBaseL10n().getString("Actions"));
 
 		tHead.addChild(actionsRow);
 		tHead.addChild(headersRow);
 		tFoot.addChild(headersRow);
 
-		if (FlogHelper.getStore().subStores.isEmpty()) {
-			tBody.addChild("tr").addChild("td", "colspan", "8", FlogHelper.getBaseL10n().getString("NoFlogsYet"));
+		if (flog.subStores.isEmpty()) {
+			tBody.addChild("tr").addChild("td", "colspan", "8", FlogHelper.getBaseL10n().getString("NoContentsYet"));
 		}
 
-		for (PluginStore flog : FlogHelper.getStore().subStores.values()) {
+		for (PluginStore content : flog.subStores.values()) {
 			HTMLNode row = tBody.addChild("tr");
-			row.addChild("td").addChild("pre", DataFormatter.toString(flog.strings.get("ID")));
-			row.addChild("td", DataFormatter.toString(flog.strings.get("Activelink")));
-			row.addChild("td", DataFormatter.toString(flog.strings.get("Title")));
-			row.addChild("td", DataFormatter.toString(flog.strings.get("SmallDescription")));
-			row.addChild("td", DataFormatter.toString(flog.subStores.size()));
+			row.addChild("td").addChild("pre", DataFormatter.toString(content.strings.get("ID")));
+			row.addChild("td", DataFormatter.toString(content.strings.get("Author")));
+			row.addChild("td", DataFormatter.toString(content.strings.get("Title")));
+			row.addChild("td", DataFormatter.toString(content.longs.get("CreationDate")));
+			row.addChild("td", DataFormatter.toString(content.longs.get("LastModification")));
 
 			HTMLNode formDetails = FlogHelper.getPR().addFormChild(row.addChild("td"), FlogHelperToadlet.BASE_URI +
-					ContentListToadlet.MY_URI + flog.strings.get("ID"), "FlogDetails-" + flog.strings.get("ID"));
+					// FIXME do not use hardcoded URI here
+					"/ViewContent/" + content.strings.get("ID"), "ContentDetails-" + content.strings.get("ID"));
 			formDetails.addChild("input", new String[]{"type", "value"},
-					new String[]{"submit", FlogHelper.getBaseL10n().getString("Details")});
+					new String[]{"submit", FlogHelper.getBaseL10n().getString("Preview")});
+			formDetails.addChild("input", new String[]{"type", "name", "value"},
+					new String[]{"hidden", "ContentID", DataFormatter.toString(content.strings.get("ID"))});
 			formDetails.addChild("input", new String[]{"type", "name", "value"},
 					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.strings.get("ID"))});
 
 			HTMLNode formDelete = FlogHelper.getPR().addFormChild(row.addChild("td"), this.path(),
-					"DeleteFlog-" + flog.strings.get("ID"));
+					"DeleteContent-" + content.strings.get("ID"));
 			formDelete.addChild("input", new String[]{"type", "value"},
 					new String[]{"submit", FlogHelper.getBaseL10n().getString("Delete")});
 			formDelete.addChild("input", new String[]{"type", "name", "value"},
-					new String[]{"hidden", "FlogToDelete", DataFormatter.toString(flog.strings.get("ID"))});
+					new String[]{"hidden", "ContentToDelete", DataFormatter.toString(content.strings.get("ID"))});
+			formDelete.addChild("input", new String[]{"type", "name", "value"},
+					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.strings.get("ID"))});
 
 			HTMLNode formEdit = FlogHelper.getPR().addFormChild(row.addChild("td"), FlogHelperToadlet.BASE_URI +
-					CreateOrEditFlogToadlet.MY_URI, "EditFlog-" + flog.strings.get("ID"));
+					CreateOrEditContentToadlet.MY_URI, "EditContent-" + content.strings.get("ID"));
 			formEdit.addChild("input", new String[]{"type", "value"},
 					new String[]{"submit", FlogHelper.getBaseL10n().getString("Edit")});
 			formEdit.addChild("input", new String[]{"type", "name", "value"},
+					new String[]{"hidden", "ContentID", DataFormatter.toString(content.strings.get("ID"))});
+			formEdit.addChild("input", new String[]{"type", "name", "value"},
 					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.strings.get("ID"))});
 		}
-
-		this.getPM().getInfobox("infobox-minor", "PluginStore Dump", pageNode.content).addChild("pre", DataFormatter.printStore(FlogHelper.getStore()));
 
 		writeHTMLReply(ctx, 200, "OK", null, pageNode.outer.generate());
 	}
 
 	public void handleMethodPOST(URI uri, HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		String idToDelete = request.getPartAsString("FlogToDelete", 7);
-		String idToReallyDelete = request.getPartAsString("FlogToReallyDelete", 7);
+		PluginStore flog = this.getFlogID(request);
+		if (flog == null) {
+			this.sendErrorPage(ctx, 404, "Not found", "Incorrect or missing FlogID.");
+		}
+
+		String idToDelete = request.getPartAsString("ContentToDelete", 7);
+		String idToReallyDelete = request.getPartAsString("ContentToReallyDelete", 7);
 
 		if (idToReallyDelete != null && !idToReallyDelete.equals("")) {
 			if (request.getPartAsString("Yes", 3).equals("Yes")) {
-				FlogHelper.getStore().subStores.remove(idToReallyDelete);
+
+				flog.subStores.remove(idToReallyDelete);
 				FlogHelper.putStore();
 				this.handleMethodGET(uri, request, ctx);
 				return;
@@ -109,21 +128,26 @@ public class FlogListToadlet extends FlogHelperToadlet {
 			}
 		}
 
-		PageNode pageNode = FlogHelper.getPR().getPageMaker().getPageNode("FlogHelper", ctx);
-
 		if (idToDelete != null && !idToDelete.equals("")) {
+			PageNode pageNode = FlogHelper.getPR().getPageMaker().getPageNode("FlogHelper", ctx);
+
 			HTMLNode confirm = this.getPM().getInfobox("infobox-alert", FlogHelper.getBaseL10n().getString("ReallyDelete"), pageNode.content);
 			HTMLNode form = FlogHelper.getPR().addFormChild(confirm, this.path(), "ReallyDelete-" + idToDelete);
-			form.addChild("p", FlogHelper.getBaseL10n().getString("ReallyDeleteFlogLong").replace("${FlogID}", idToDelete));
+			form.addChild("p", FlogHelper.getBaseL10n().getString("ReallyDeleteContentLong").replace("${ContentID}", idToDelete));
 			HTMLNode buttons = form.addChild("p");
 			buttons.addChild("input", new String[]{"type", "name", "value"},
-					new String[]{"hidden", "FlogToReallyDelete", idToDelete});
+					new String[]{"hidden", "ContentToReallyDelete", idToDelete});
+			buttons.addChild("input", new String[]{"type", "name", "value"},
+					new String[]{"hidden", "FlogID", flog.strings.get("ID")});
 			buttons.addChild("input", new String[]{"type", "name", "value"},
 					new String[]{"submit", "Yes", FlogHelper.getBaseL10n().getString("Yes")});
 			buttons.addChild("input", new String[]{"type", "name", "value"},
 					new String[]{"submit", "No", FlogHelper.getBaseL10n().getString("No")});
+
+			writeHTMLReply(ctx, 200, "OK", null, pageNode.outer.generate());
+			return;
 		}
 
-		writeHTMLReply(ctx, 200, "OK", null, pageNode.outer.generate());
+		this.handleMethodGET(uri, request, ctx);
 	}
 }
