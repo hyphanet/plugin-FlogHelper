@@ -16,6 +16,7 @@ import freenet.pluginmanager.FredPluginThemed;
 import freenet.pluginmanager.FredPluginVersioned;
 import freenet.pluginmanager.PluginStore;
 import freenet.support.Logger;
+import plugins.floghelper.ui.CreateOrEditFlogToadlet;
 import plugins.floghelper.ui.DataFormatter;
 import plugins.floghelper.ui.FlogHelperToadlet;
 import plugins.floghelper.ui.FlogListToadlet;
@@ -30,6 +31,8 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 	private static PluginRespirator pr;
 	private static PluginL10n l10n;
 	private static PluginStore store;
+	private FlogListToadlet flogListToadlet;
+	private CreateOrEditFlogToadlet createOrEditFlogToadlet;
 
 	public static BaseL10n getBaseL10n() {
 		return FlogHelper.l10n.getBase();
@@ -53,6 +56,8 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 
 	public void terminate() {
 		FlogHelper.pr.getPageMaker().removeNavigationCategory("FlogHelper");
+		FlogHelper.pr.getToadletContainer().unregister(this.flogListToadlet);
+		FlogHelper.pr.getToadletContainer().unregister(this.createOrEditFlogToadlet);
 	}
 
 	public void runPlugin(final PluginRespirator pr) {
@@ -64,12 +69,19 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 			Logger.error(this.getClass(), "Could not load flogs from db4o - " + ex.getMessage());
 		}
 
+		this.flogListToadlet = new FlogListToadlet(FlogHelper.pr.getHLSimpleClient());
+		this.createOrEditFlogToadlet = new CreateOrEditFlogToadlet(FlogHelper.pr.getHLSimpleClient());
+
 		FlogHelper.pr.getPageMaker().addNavigationCategory(FlogHelperToadlet.BASE_URI + "/",
 				"FlogHelper", "FlogHelper", this);
-		FlogHelper.pr.getToadletContainer().register(new FlogListToadlet(
-				FlogHelper.pr.getHLSimpleClient()), "FlogHelper",
-				FlogHelperToadlet.BASE_URI + "/", true, "FlogHelper",
-				"FlogHelper", true, null);
+
+		// The index page comes first, because everything will begin by "/",
+		// and this will be parsed after every other toadlet.
+		FlogHelper.pr.getToadletContainer().register(this.flogListToadlet, "FlogHelper",
+				this.flogListToadlet.path(), true, "FlogHelper", "FlogHelper", true, null);
+
+		FlogHelper.pr.getToadletContainer().register(this.createOrEditFlogToadlet, "FlogHelper",
+				this.createOrEditFlogToadlet.path(), true, true);
 	}
 
 	public void setTheme(final THEME theme) {

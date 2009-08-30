@@ -4,12 +4,14 @@
 package plugins.floghelper.ui;
 
 import freenet.client.HighLevelSimpleClient;
+import freenet.clients.http.PageMaker;
 import freenet.clients.http.Toadlet;
 import freenet.clients.http.ToadletContext;
 import freenet.clients.http.ToadletContextClosedException;
 import freenet.support.api.HTTPRequest;
 import java.io.IOException;
 import java.net.URI;
+import plugins.floghelper.FlogHelper;
 
 /**
  *
@@ -28,6 +30,14 @@ public abstract class FlogHelperToadlet extends Toadlet {
 	@Override
 	public String path() {
 		return BASE_URI + this.path;
+	}
+
+	public String getURIArgument(HTTPRequest request) {
+		return request.getPath().substring(this.path().length()).split("\\?")[0];
+	}
+
+	public PageMaker getPM() {
+		return FlogHelper.getPR().getPageMaker();
 	}
 
 	public abstract void handleMethodGET(URI uri,

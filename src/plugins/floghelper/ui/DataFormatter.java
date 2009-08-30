@@ -4,12 +4,16 @@
 package plugins.floghelper.ui;
 
 import freenet.pluginmanager.PluginStore;
+import java.util.Random;
+import plugins.floghelper.FlogHelper;
 
 /**
  *
  * @author romain
  */
 public class DataFormatter {
+
+	public static final Random r = new Random();
 
 	public static final String formatIntLength(int toFormat, int size, boolean isHex) {
 		String str = isHex ? Integer.toHexString(toFormat) : Integer.toString(toFormat);
@@ -159,5 +163,30 @@ public class DataFormatter {
 		}
 
 		return sb.delete(sb.length() - 3, sb.length() - 1).append(" }").toString();
+	}
+
+	public static final String getRandomID() {
+		return getRandomID(7);
+	}
+
+	public static final String getRandomID(int length) {
+		StringBuilder sb = new StringBuilder();
+
+		for (int i = 0; i < length; ++i) {
+			sb.append(Integer.toHexString(r.nextInt(16)));
+		}
+
+		return sb.toString();
+	}
+
+	public static final String createFlogID() {
+		while (true) {
+			String id = getRandomID();
+
+			// Make sure we return a ID that isn't already used.
+			if (FlogHelper.getStore().subStores.get(id) == null) {
+				return id;
+			}
+		}
 	}
 }
