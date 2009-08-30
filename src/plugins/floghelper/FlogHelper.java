@@ -22,12 +22,20 @@ import plugins.floghelper.ui.FlogHelperToadlet;
 import plugins.floghelper.ui.FlogListToadlet;
 
 /**
- *
+ * TODO: proper GPL headers
+ * TODO: proper javadoc
+ * TODO: use putStore()
+ * TODO: think about the activelink
+ * TODO: flog contents, tags
+ * TODO: render to xHTML
+ * TODO: insert
+ * TODO: javascript editbox
+ * 
  * @author Artefact2
  */
 public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginBaseL10n, FredPluginL10n, FredPluginThemed, FredPluginVersioned {
 
-	public static final short REVISION = 2;
+	public static final short REVISION = 5;
 	private static PluginRespirator pr;
 	private static PluginL10n l10n;
 	private static PluginStore store;

@@ -1,2 +1,26 @@
-
+Actions=Actions
+Activelink=Activelink
+Cancel=Cancel
+CreateFlog=Create a new flog
+CreateNewFlog=Create a new flog.
+Delete=Delete
+Details=Details
+EditFlog=Modify a flog
+FlogCreationCancelled=Flog operation cancelled
+FlogCreationCancelledLong=You cancelled your new flog creation or your flog changes.
+FlogCreationSuccessful=Flog operation successful
+FlogCreationSuccessfulLong=Your new flog was successfully created or updated.
+FlogList=Your flogs
+ID=ID
+NoFlogsYet=There aren't any flogs yet.
+No=No
+NumberOfEntries=Number of entries
+Proceed=Proceed
+ReallyDeleteFlogLong=Do you really want to delete flog ${FlogID} ? All its contents will be deleted too.
+ReallyDelete=Really delete ?
+ReturnToFlogList=Return to the list of flogs.
+SmallDescription=Short description
+Title=Title
+ViewFlogDetails=View the flog's details.
+Yes=Yes
 End

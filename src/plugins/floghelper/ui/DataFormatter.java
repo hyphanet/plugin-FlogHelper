@@ -28,6 +28,8 @@ public class DataFormatter {
 	}
 
 	private static final String printStore(PluginStore e, int recursionLevel) {
+		assert (recursionLevel >= 1);
+
 		StringBuilder toReturn = new StringBuilder();
 
 		if (e == null) {
@@ -176,7 +178,7 @@ public class DataFormatter {
 			sb.append(Integer.toHexString(r.nextInt(16)));
 		}
 
-		return sb.toString();
+		return sb.toString().toUpperCase();
 	}
 
 	public static final String createFlogID() {
