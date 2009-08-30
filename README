@@ -6,4 +6,4 @@ It's currently under developement.
 Planned features :
 * WoT integration (for comments & author identity)
 * Freetalk integration (for comments)
-* XML structure
+* Store flog data in node.db4o 
