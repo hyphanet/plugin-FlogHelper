@@ -93,7 +93,7 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 			form.addChild("input", new String[]{"type", "name", "value"},
 					new String[]{"hidden", "ContentID", contentID});
 
-			form.addChild("p").addChild("label", "for", "Title", FlogHelper.getBaseL10n().getString("Title")).addChild("input", new String[]{"type", "size", "name", "value"},
+			form.addChild("p").addChild("label", "for", "Title", FlogHelper.getBaseL10n().getString("TitleFieldDesc")).addChild("br").addChild("input", new String[]{"type", "size", "name", "value"},
 					new String[]{"text", "50", "Title", DataFormatter.toString(content.strings.get("Title"))});
 
 			final HTMLNode authorsBox = new HTMLNode("select", new String[]{"id", "name"}, new String[]{"Author", "Author"});
@@ -104,9 +104,9 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 				}
 			}
 
-			form.addChild("p").addChild("label", "for", "Author", FlogHelper.getBaseL10n().getString("AuthorOrEmptyIfAnonymous")).addChild(authorsBox);
+			form.addChild("p").addChild("label", "for", "Author", FlogHelper.getBaseL10n().getString("AuthorFieldDesc")).addChild("br").addChild(authorsBox);
 
-			form.addChild("p").addChild("label", "for", "Content", FlogHelper.getBaseL10n().getString("Content")).addChild("br").addChild("textarea", new String[]{"rows", "cols", "name"},
+			form.addChild("p").addChild("label", "for", "Content", FlogHelper.getBaseL10n().getString("ContentFieldDesc")).addChild("br").addChild("textarea", new String[]{"rows", "cols", "name"},
 					new String[]{"12", "80", "Content"}, DataFormatter.toString(content.strings.get("Content")));
 
 			final HTMLNode buttons = form.addChild("p");

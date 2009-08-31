@@ -80,10 +80,10 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			form.addChild("input", new String[]{"type", "name", "value"},
 					new String[]{"hidden", "FlogID", flogID});
 
-			form.addChild("p").addChild("label", "for", "Title", FlogHelper.getBaseL10n().getString("Title")).addChild("input", new String[]{"type", "size", "name", "value"},
+			form.addChild("p").addChild("label", "for", "Title", FlogHelper.getBaseL10n().getString("TitleFieldDesc")).addChild("br").addChild("input", new String[]{"type", "size", "name", "value"},
 					new String[]{"text", "50", "Title", DataFormatter.toString(flog.strings.get("Title"))});
 
-			final HTMLNode authorsBox = new HTMLNode("select", new String[]{"id", "name"}, new String[]{"DefaultAuthor", "DefaultAuthor"});
+			final HTMLNode authorsBox = new HTMLNode("select", new String[]{"id", "name"}, new String[]{"DefaultAuthorFieldDesc", "DefaultAuthor"});
 			for (final String identityID : this.getWoTIdentities().keySet()) {
 				final HTMLNode option = authorsBox.addChild("option", "value", identityID, this.getWoTIdentities().get(identityID));
 				if (flog.strings.get("DefaultAuthor") != null && flog.strings.get("DefaultAuthor").equals(identityID)) {
@@ -91,9 +91,14 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 				}
 			}
 
-			form.addChild("p").addChild("label", "for", "DefaultAuthor", FlogHelper.getBaseL10n().getString("DefaultAuthor")).addChild(authorsBox);
+			form.addChild("p").addChild("label", "for", "DefaultAuthor", FlogHelper.getBaseL10n().getString("DefaultAuthorFieldDesc")).addChild("br").addChild(authorsBox);
 
-			form.addChild("p").addChild("label", "for", "SmallDescription", FlogHelper.getBaseL10n().getString("SmallDescription")).addChild("br").addChild("textarea", new String[]{"rows", "cols", "name"},
+			// Most browsers probably won't care about the accept="image/png" attribute
+			// But we put it anyway...
+			form.addChild("p").addChild("label", "for", "Activelink", FlogHelper.getBaseL10n().getString("ActivelinkFieldDesc")).addChild("br").addChild("input", new String[]{"type", "accept", "name"},
+					new String[]{"file", "image/png", "Activelink"});
+
+			form.addChild("p").addChild("label", "for", "SmallDescription", FlogHelper.getBaseL10n().getString("SmallDescriptionFieldDesc")).addChild("br").addChild("textarea", new String[]{"rows", "cols", "name"},
 					new String[]{"12", "80", "SmallDescription"}, DataFormatter.toString(flog.strings.get("SmallDescription")));
 
 			final HTMLNode buttons = form.addChild("p");
