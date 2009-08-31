@@ -24,6 +24,6 @@ do
 	fi	
 done
 
-cat .temp2 | uniq | sort
+cat .temp2 | sort | uniq 
 
 rm -f .temp .temp2
