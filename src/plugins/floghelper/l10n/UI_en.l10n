@@ -10,6 +10,7 @@ FlogCreationCancelled=Flog operation cancelled
 FlogCreationCancelledLong=You cancelled your new flog creation or your flog changes.
 FlogCreationSuccessful=Flog operation successful
 FlogCreationSuccessfulLong=Your new flog was successfully created or updated.
+FlogHelper=FlogHelper
 FlogList=Your flogs
 ID=ID
 NoFlogsYet=There aren't any flogs yet.

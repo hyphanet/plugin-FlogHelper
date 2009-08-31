@@ -12,10 +12,14 @@ import freenet.pluginmanager.FredPluginThreadless;
 import freenet.pluginmanager.PluginRespirator;
 import freenet.pluginmanager.FredPluginBaseL10n;
 import freenet.pluginmanager.FredPluginL10n;
+import freenet.pluginmanager.FredPluginRealVersioned;
+import freenet.pluginmanager.FredPluginTalker;
 import freenet.pluginmanager.FredPluginThemed;
 import freenet.pluginmanager.FredPluginVersioned;
 import freenet.pluginmanager.PluginStore;
 import freenet.support.Logger;
+import freenet.support.SimpleFieldSet;
+import freenet.support.api.Bucket;
 import plugins.floghelper.ui.ContentListToadlet;
 import plugins.floghelper.ui.CreateOrEditContentToadlet;
 import plugins.floghelper.ui.CreateOrEditFlogToadlet;
@@ -31,13 +35,13 @@ import plugins.floghelper.ui.FlogListToadlet;
  * TODO: render to xHTML
  * TODO: insert
  * TODO: javascript editbox
- * TODO: xHTML ? WikiCode ? BBCode ?
- * TODO: WOT (URGENT)
+ * TODO: WikiCode first
  * @author Artefact2
  */
-public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginBaseL10n, FredPluginL10n, FredPluginThemed, FredPluginVersioned {
+public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginBaseL10n, FredPluginL10n, FredPluginThemed, FredPluginVersioned, FredPluginRealVersioned, FredPluginTalker {
 
-	public static final short REVISION = 5;
+	public static final String PLUGIN_NAME = "FlogHelper";
+	public static final int REVISION = 5;
 	private static PluginRespirator pr;
 	private static PluginL10n l10n;
 	private static PluginStore store;
@@ -67,7 +71,7 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 	}
 
 	public void terminate() {
-		FlogHelper.pr.getPageMaker().removeNavigationCategory("FlogHelper");
+		FlogHelper.pr.getPageMaker().removeNavigationCategory(FlogHelper.PLUGIN_NAME);
 		FlogHelper.pr.getToadletContainer().unregister(this.flogListToadlet);
 		FlogHelper.pr.getToadletContainer().unregister(this.createOrEditFlogToadlet);
 	}
@@ -87,25 +91,25 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 		this.createOrEditContentToadlet = new CreateOrEditContentToadlet(FlogHelper.pr.getHLSimpleClient());
 
 		FlogHelper.pr.getPageMaker().addNavigationCategory(FlogHelperToadlet.BASE_URI + "/",
-				"FlogHelper", "FlogHelper", this);
+				FlogHelper.PLUGIN_NAME, FlogHelper.PLUGIN_NAME, this);
 
 		// The index page comes first, because everything will begin by "/",
 		// and this will be parsed after every other toadlet.
-		FlogHelper.pr.getToadletContainer().register(this.flogListToadlet, "FlogHelper",
-				this.flogListToadlet.path(), true, "FlogHelper", "FlogHelper", true, null);
+		FlogHelper.pr.getToadletContainer().register(this.flogListToadlet, FlogHelper.PLUGIN_NAME,
+				this.flogListToadlet.path(), true, FlogHelper.PLUGIN_NAME, FlogHelper.PLUGIN_NAME, true, null);
 
-		FlogHelper.pr.getToadletContainer().register(this.createOrEditFlogToadlet, "FlogHelper",
+		FlogHelper.pr.getToadletContainer().register(this.createOrEditFlogToadlet, FlogHelper.PLUGIN_NAME,
 				this.createOrEditFlogToadlet.path(), true, true);
-		FlogHelper.pr.getToadletContainer().register(this.contentListToadlet, "FlogHelper",
+		FlogHelper.pr.getToadletContainer().register(this.contentListToadlet, FlogHelper.PLUGIN_NAME,
 				this.contentListToadlet.path(), true, true);
-		FlogHelper.pr.getToadletContainer().register(this.createOrEditContentToadlet, "FlogHelper",
+		FlogHelper.pr.getToadletContainer().register(this.createOrEditContentToadlet, FlogHelper.PLUGIN_NAME,
 				this.createOrEditContentToadlet.path(), true, true);
 	}
 
 	public void setTheme(final THEME theme) {
 	}
 
-	public void setLanguage(BaseL10n.LANGUAGE arg0) {
+	public void setLanguage(final BaseL10n.LANGUAGE arg0) {
 		FlogHelper.l10n = new PluginL10n(this, arg0);
 	}
 
@@ -130,7 +134,15 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 		return "r" + rev;
 	}
 
-	public String getString(String arg0) {
+	public String getString(final String arg0) {
 		return FlogHelper.getBaseL10n().getString(arg0);
+	}
+
+	public long getRealVersion() {
+		return FlogHelper.REVISION;
+	}
+
+	public void onReply(String arg0, String arg1, SimpleFieldSet arg2, Bucket arg3) {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 }

@@ -9,13 +9,13 @@ import plugins.floghelper.FlogHelper;
 
 /**
  *
- * @author romain
+ * @author Artefact2
  */
 public class DataFormatter {
 
 	public static final Random r = new Random();
 
-	public static final String formatIntLength(int toFormat, int size, boolean isHex) {
+	public static final String formatIntLength(final int toFormat, final int size, final boolean isHex) {
 		String str = isHex ? Integer.toHexString(toFormat) : Integer.toString(toFormat);
 		while (str.length() < size) {
 			str = "0" + str;
@@ -23,17 +23,17 @@ public class DataFormatter {
 		return str;
 	}
 
-	public static final String printStore(PluginStore e) {
+	public static final String printStore(final PluginStore e) {
 		return printStore(e, 1);
 	}
 
-	private static final String printStore(PluginStore e, int recursionLevel) {
+	private static final String printStore(final PluginStore e, final int recursionLevel) {
 		assert (recursionLevel >= 1);
 
 		// Avoid StackOverflowException when there are bugs...
 		if(recursionLevel > 30) return "";
 
-		StringBuilder toReturn = new StringBuilder();
+		final StringBuilder toReturn = new StringBuilder();
 
 		if (e == null) {
 			return "";
@@ -118,7 +118,7 @@ public class DataFormatter {
 		return toReturn.toString();
 	}
 
-	private static final void writeStoreLine(String key, Object value, int recursionLevel, StringBuilder sb) {
+	private static final void writeStoreLine(final String key, final Object value, final int recursionLevel, final StringBuilder sb) {
 		for (int i = 0; i < recursionLevel; ++i) {
 			sb.append("----");
 		}
@@ -126,7 +126,7 @@ public class DataFormatter {
 		sb.append(key).append(": ").append(toString(value)).append("\n");
 	}
 
-	private static final void writeStoreLine(String key, Object[] value, int recursionLevel, StringBuilder sb) {
+	private static final void writeStoreLine(final String key, final Object[] value, final int recursionLevel, final StringBuilder sb) {
 		for (int i = 0; i < recursionLevel; ++i) {
 			sb.append("----");
 		}
@@ -134,8 +134,8 @@ public class DataFormatter {
 		sb.append(key).append(": ").append(toString(value)).append("\n");
 	}
 
-	public static final String toString(Object value) {
-		String valueStr;
+	public static final String toString(final Object value) {
+		final String valueStr;
 		if (value == null) {
 			valueStr = "";
 		} else if (value instanceof Boolean) {
@@ -161,8 +161,8 @@ public class DataFormatter {
 		return valueStr;
 	}
 
-	public static final String toString(Object[] values) {
-		StringBuilder sb = new StringBuilder("{ ");
+	public static final String toString(final Object[] values) {
+		final StringBuilder sb = new StringBuilder("{ ");
 		for (Object val : values) {
 			sb.append(toString(val)).append(", ");
 		}
@@ -170,9 +170,9 @@ public class DataFormatter {
 		return sb.delete(sb.length() - 3, sb.length() - 1).append(" }").toString();
 	}
 
-	public static final String indentString(String s, int recurseLevel) {
-		StringBuilder sb = new StringBuilder();
-		String[] lines = s.split("\n");
+	public static final String indentString(final String s, final int recurseLevel) {
+		final StringBuilder sb = new StringBuilder();
+		final String[] lines = s.split("\n");
 
 		boolean isFirst = true;
 		for (String line : lines) {
@@ -195,8 +195,8 @@ public class DataFormatter {
 		return getRandomID(7);
 	}
 
-	public static final String getRandomID(int length) {
-		StringBuilder sb = new StringBuilder();
+	public static final String getRandomID(final int length) {
+		final StringBuilder sb = new StringBuilder();
 
 		for (int i = 0; i < length; ++i) {
 			sb.append(Integer.toHexString(r.nextInt(16)));
@@ -209,9 +209,9 @@ public class DataFormatter {
 		return createSubStoreUniqueID(FlogHelper.getStore());
 	}
 
-	public static final String createSubStoreUniqueID(PluginStore store) {
+	public static final String createSubStoreUniqueID(final PluginStore store) {
 		while (true) {
-			String id = getRandomID();
+			final String id = getRandomID();
 
 			// Make sure we return a ID that isn't already used.
 			if (store.subStores.get(id) == null) {
