@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Sort the keys of all the .l10n files in the current directory.
+
 for x in *.l10n
 do
 	cat $x | grep -v "^End$" | sort | uniq > $x.sorted
