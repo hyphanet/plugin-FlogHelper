@@ -26,12 +26,13 @@ import plugins.floghelper.ui.FlogListToadlet;
 /**
  * TODO: proper GPL headers
  * TODO: proper javadoc
- * TODO: think about the activelink
+ * TODO: think about the activelink (maybe store it in a byte[])
  * TODO: flog contents, tags
  * TODO: render to xHTML
  * TODO: insert
  * TODO: javascript editbox
  * TODO: xHTML ? WikiCode ? BBCode ?
+ * TODO: WOT (URGENT)
  * @author Artefact2
  */
 public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginBaseL10n, FredPluginL10n, FredPluginThemed, FredPluginVersioned {
