@@ -24,8 +24,8 @@ for x in `cat .temp`
 do
 	# Let's see if all the entries in the temp files are contained in the l10n file specified as first argument
 	# If an entry isn't contained, it's stored in another temporary file.
-	CONTAINS=`cat $1 | sed -s "s/=.*//" | grep $x`
-	if [ "$CONTAINS" = "`echo`" ]
+	CONTAINS=`cat $1 | sed -s "s/=.*//" | grep "^$x$"`
+	if [ "`echo $CONTAINS`" = "`echo`" ]
 	then
 		echo $x >> .temp2
 	fi	
