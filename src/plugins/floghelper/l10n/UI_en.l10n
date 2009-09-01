@@ -1,6 +1,7 @@
 Actions=Actions
 Activelink=Activelink
-ActivelinkFieldDesc=Activelink or your flog, should be a 108x36 pixels PNG image :
+ActivelinkDeleteFieldDesc=Delete current activelink ? Note : you shouldn't check this if you just update your activelink using the field above.
+ActivelinkFieldDesc=Activelink or your flog, should be a ${Width}x${Height} pixels PNG image (if you leave this field empty, your current activelink will be kept) :
 Author=Author
 AuthorFieldDesc=WoT identity of the author :
 BackToFlogList=Return to the flog list

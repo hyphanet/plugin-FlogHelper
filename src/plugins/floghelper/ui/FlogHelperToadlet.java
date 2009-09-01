@@ -10,7 +10,6 @@ import freenet.clients.http.Toadlet;
 import freenet.clients.http.ToadletContext;
 import freenet.clients.http.ToadletContextClosedException;
 import freenet.pluginmanager.PluginNotFoundException;
-import freenet.pluginmanager.PluginStore;
 import freenet.support.api.HTTPRequest;
 import java.io.IOException;
 import java.net.URI;
@@ -50,14 +49,16 @@ public abstract class FlogHelperToadlet extends Toadlet {
 		return this.wotIdentities;
 	}
 
-	public PluginStore getFlogID(final HTTPRequest request) {
-		if (FlogHelper.getStore().subStores.containsKey(this.getURIArgument(request))) {
-			return FlogHelper.getStore().subStores.get(this.getURIArgument(request));
-		} else if (request.isPartSet("FlogID") && FlogHelper.getStore().subStores.containsKey(request.getPartAsString("FlogID", 7))) {
-			return FlogHelper.getStore().subStores.get(request.getPartAsString("FlogID", 7));
-		} else {
-			return null;
+	public String getParameterWhetherItIsPostOrGet(HTTPRequest request, String param, int length) {
+		if (request.isPartSet(param)) {
+			return request.getPartAsString(param, length);
 		}
+
+		if (request.isParameterSet(param)) {
+			return request.getParam(param);
+		}
+
+		return null;
 	}
 
 	public boolean makeGlobalChecks(final PageNode pageNode, final URI uri, final HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException {

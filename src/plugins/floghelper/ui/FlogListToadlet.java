@@ -3,16 +3,20 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package plugins.floghelper.ui;
 
+import plugins.floghelper.data.DataFormatter;
 import freenet.client.HighLevelSimpleClient;
 import freenet.clients.http.PageNode;
 import freenet.clients.http.ToadletContext;
 import freenet.clients.http.ToadletContextClosedException;
 import freenet.pluginmanager.PluginStore;
+import freenet.support.Base64;
 import freenet.support.HTMLNode;
+import freenet.support.Logger;
 import freenet.support.api.HTTPRequest;
 import java.io.IOException;
 import java.net.URI;
 import plugins.floghelper.FlogHelper;
+import plugins.floghelper.data.Activelink;
 
 /**
  *
@@ -37,6 +41,7 @@ public class FlogListToadlet extends FlogHelperToadlet {
 
 		final HTMLNode formCreateNew = FlogHelper.getPR().addFormChild(actionsRow.addChild("th", "colspan", "8"), FlogHelperToadlet.BASE_URI +
 				CreateOrEditFlogToadlet.MY_URI, "CreateNewFlog");
+		formCreateNew.addAttribute("method", "get");
 		formCreateNew.addChild("input", new String[]{"type", "value"},
 				new String[]{"submit", FlogHelper.getBaseL10n().getString("CreateFlog")});
 
@@ -57,15 +62,28 @@ public class FlogListToadlet extends FlogHelperToadlet {
 		}
 
 		for (final PluginStore flog : FlogHelper.getStore().subStores.values()) {
+			final HTMLNode activelinkP = new HTMLNode("td");
+			if(flog.bytesArrays.get("Activelink") != null) {
+				HTMLNode activelinkImg = new HTMLNode("img");
+				final String base64str = Base64.encodeStandard(flog.bytesArrays.get("Activelink"));
+				activelinkImg.addAttribute("src", "data:" + Activelink.MIMETYPE + ";base64," + base64str);
+				activelinkImg.addAttribute("width", Integer.toString(Activelink.WIDTH));
+				activelinkImg.addAttribute("height", Integer.toString(Activelink.HEIGHT));
+				activelinkImg.addAttribute("alt", FlogHelper.getBaseL10n().getString("ActivelinkAlt"));
+				activelinkImg.addAttribute("style", "vertical-align: middle;");
+				activelinkP.addChild(activelinkImg);
+			}
+
 			final HTMLNode row = tBody.addChild("tr");
 			row.addChild("td").addChild("pre", DataFormatter.toString(flog.strings.get("ID")));
-			row.addChild("td", DataFormatter.toString(flog.strings.get("Activelink")));
+			row.addChild(activelinkP);
 			row.addChild("td", DataFormatter.toString(flog.strings.get("Title")));
 			row.addChild("td", DataFormatter.toString(flog.strings.get("SmallDescription")));
 			row.addChild("td", DataFormatter.toString(flog.subStores.size()));
 
 			final HTMLNode formDetails = FlogHelper.getPR().addFormChild(row.addChild("td"), FlogHelperToadlet.BASE_URI +
-					ContentListToadlet.MY_URI + flog.strings.get("ID"), "FlogDetails-" + flog.strings.get("ID"));
+					ContentListToadlet.MY_URI, "FlogDetails-" + flog.strings.get("ID"));
+			formDetails.addAttribute("method", "get");
 			formDetails.addChild("input", new String[]{"type", "value"},
 					new String[]{"submit", FlogHelper.getBaseL10n().getString("Details")});
 			formDetails.addChild("input", new String[]{"type", "name", "value"},
@@ -80,6 +98,7 @@ public class FlogListToadlet extends FlogHelperToadlet {
 
 			final HTMLNode formEdit = FlogHelper.getPR().addFormChild(row.addChild("td"), FlogHelperToadlet.BASE_URI +
 					CreateOrEditFlogToadlet.MY_URI, "EditFlog-" + flog.strings.get("ID"));
+			formEdit.addAttribute("method", "get");
 			formEdit.addChild("input", new String[]{"type", "value"},
 					new String[]{"submit", FlogHelper.getBaseL10n().getString("Edit")});
 			formEdit.addChild("input", new String[]{"type", "name", "value"},

@@ -3,6 +3,7 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package plugins.floghelper.ui;
 
+import plugins.floghelper.data.DataFormatter;
 import freenet.client.HighLevelSimpleClient;
 import freenet.clients.http.PageNode;
 import freenet.clients.http.ToadletContext;
@@ -28,7 +29,7 @@ public class ContentListToadlet extends FlogHelperToadlet {
 	}
 
 	public void getPageGet(final PageNode pageNode, final URI uri, final HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		final PluginStore flog = this.getFlogID(request);
+		final PluginStore flog = FlogHelper.getStore().subStores.get(this.getParameterWhetherItIsPostOrGet(request, "FlogID", 7));
 		if (flog == null) {
 			this.sendErrorPage(ctx, 404, "Not found", "Incorrect or missing FlogID.");
 			return;
@@ -51,10 +52,11 @@ public class ContentListToadlet extends FlogHelperToadlet {
 
 		final HTMLNode formCreateNew = FlogHelper.getPR().addFormChild(actionsRow.addChild("th", "colspan", "6"), FlogHelperToadlet.BASE_URI +
 				CreateOrEditContentToadlet.MY_URI, "CreateNewContent");
-		formCreateNew.addChild("input", new String[]{"type", "name", "value"},
-				new String[]{"hidden", "FlogID", flog.strings.get("ID")});
+		formCreateNew.addAttribute("method", "get");
 		formCreateNew.addChild("input", new String[]{"type", "value"},
 				new String[]{"submit", FlogHelper.getBaseL10n().getString("CreateContent")});
+		formCreateNew.addChild("input", new String[]{"type", "name", "value"},
+				new String[]{"hidden", "FlogID", DataFormatter.toString(flog.strings.get("ID"))});
 
 		final HTMLNode headersRow = new HTMLNode("tr");
 		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("ID"));
@@ -89,13 +91,14 @@ public class ContentListToadlet extends FlogHelperToadlet {
 
 			final HTMLNode formDetails = FlogHelper.getPR().addFormChild(row.addChild("td"), FlogHelperToadlet.BASE_URI +
 					// FIXME do not use hardcoded URI here
-					"/ViewContent/" + content.strings.get("ID"), "ContentDetails-" + content.strings.get("ID"));
+					"/ViewContent/", "ContentDetails-" + content.strings.get("ID"));
+			formDetails.addAttribute("method", "get");
 			formDetails.addChild("input", new String[]{"type", "value"},
 					new String[]{"submit", FlogHelper.getBaseL10n().getString("Preview")});
 			formDetails.addChild("input", new String[]{"type", "name", "value"},
-					new String[]{"hidden", "ContentID", DataFormatter.toString(content.strings.get("ID"))});
-			formDetails.addChild("input", new String[]{"type", "name", "value"},
 					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.strings.get("ID"))});
+			formDetails.addChild("input", new String[]{"type", "name", "value"},
+					new String[]{"hidden", "ContentID", DataFormatter.toString(content.strings.get("ID"))});
 
 			final HTMLNode formDelete = FlogHelper.getPR().addFormChild(row.addChild("td"), this.path(),
 					"DeleteContent-" + content.strings.get("ID"));
@@ -108,19 +111,20 @@ public class ContentListToadlet extends FlogHelperToadlet {
 
 			final HTMLNode formEdit = FlogHelper.getPR().addFormChild(row.addChild("td"), FlogHelperToadlet.BASE_URI +
 					CreateOrEditContentToadlet.MY_URI, "EditContent-" + content.strings.get("ID"));
+			formEdit.addAttribute("method", "get");
 			formEdit.addChild("input", new String[]{"type", "value"},
 					new String[]{"submit", FlogHelper.getBaseL10n().getString("Edit")});
 			formEdit.addChild("input", new String[]{"type", "name", "value"},
-					new String[]{"hidden", "ContentID", DataFormatter.toString(content.strings.get("ID"))});
-			formEdit.addChild("input", new String[]{"type", "name", "value"},
 					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.strings.get("ID"))});
+			formEdit.addChild("input", new String[]{"type", "name", "value"},
+					new String[]{"hidden", "ContentID", DataFormatter.toString(content.strings.get("ID"))});
 		}
 
 		writeHTMLReply(ctx, 200, "OK", null, pageNode.outer.generate());
 	}
 
 	public void getPagePost(final PageNode pageNode, final URI uri, final HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		final PluginStore flog = this.getFlogID(request);
+		final PluginStore flog = FlogHelper.getStore().subStores.get(this.getParameterWhetherItIsPostOrGet(request, "FlogID", 7));
 		if (flog == null) {
 			this.sendErrorPage(ctx, 404, "Not found", "Incorrect or missing FlogID.");
 		}

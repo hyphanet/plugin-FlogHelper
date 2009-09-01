@@ -3,6 +3,7 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package plugins.floghelper.ui;
 
+import plugins.floghelper.data.DataFormatter;
 import freenet.client.HighLevelSimpleClient;
 import freenet.clients.http.PageNode;
 import freenet.clients.http.ToadletContext;
@@ -27,16 +28,16 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 	}
 
 	public void getPageGet(final PageNode pageNode, final URI uri, final HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		this.handleMethodPOST(uri, request, ctx);
+		this.getPagePost(pageNode, uri, request, ctx);
 	}
 
 	public void getPagePost(final PageNode pageNode, final URI uri, final HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		final PluginStore flog = this.getFlogID(request);
+		final PluginStore flog = FlogHelper.getStore().subStores.get(this.getParameterWhetherItIsPostOrGet(request, "FlogID", 7));
 		if (flog == null) {
 			this.sendErrorPage(ctx, 404, "Not found", "Incorrect or missing FlogID.");
 		}
 
-		String contentID = request.getPartAsString("ContentID", 7);
+		String contentID = this.getParameterWhetherItIsPostOrGet(request, "ContentID", 7);
 
 		if (request.isPartSet("Yes")) {
 			final PluginStore content;
@@ -61,21 +62,21 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 			final HTMLNode infobox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("ContentCreationSuccessful"), pageNode.content);
 			infobox.addChild("p", FlogHelper.getBaseL10n().getString("ContentCreationSuccessfulLong"));
 			final HTMLNode links = infobox.addChild("p");
-			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + ContentListToadlet.MY_URI + flog.strings.get("ID"), FlogHelper.getBaseL10n().getString("ReturnToContentList"));
+			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + ContentListToadlet.MY_URI + "?FlogID=" + flog.strings.get("ID"), FlogHelper.getBaseL10n().getString("ReturnToContentList"));
 			links.addChild("br");
 			// FIXME do not use hardcoded uri here
-			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + "/ViewContent/" + content.strings.get("ID"), FlogHelper.getBaseL10n().getString("PreviewContent"));
+			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + "/ViewContent/" + "?ContentID=" + content.strings.get("ID") + "&FlogID=" + flog.strings.get("ID"), FlogHelper.getBaseL10n().getString("PreviewContent"));
 		} else if (request.isPartSet("No")) {
 			final HTMLNode infobox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("ContentCreationCancelled"), pageNode.content);
 			infobox.addChild("p", FlogHelper.getBaseL10n().getString("ContentCreationCancelledLong"));
 			final HTMLNode links = infobox.addChild("p");
-			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + ContentListToadlet.MY_URI + flog.strings.get("ID"), FlogHelper.getBaseL10n().getString("ReturnToContentList"));
+			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + ContentListToadlet.MY_URI + "?FlogID=" + flog.strings.get("ID"), FlogHelper.getBaseL10n().getString("ReturnToContentList"));
 			links.addChild("br");
-			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + CreateOrEditContentToadlet.MY_URI + flog.strings.get("ID"), FlogHelper.getBaseL10n().getString("CreateNewContent"));
+			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + CreateOrEditContentToadlet.MY_URI + "?FlogID=" + flog.strings.get("ID"), FlogHelper.getBaseL10n().getString("CreateNewContent"));
 		} else {
 			final String title;
 			final PluginStore content;
-			if (contentID.equals("") || !flog.subStores.containsKey(contentID)) {
+			if (contentID == null || contentID.equals("") || !flog.subStores.containsKey(contentID)) {
 				title = "CreateContent";
 				contentID = DataFormatter.createSubStoreUniqueID(flog);
 				(content = new PluginStore()).strings.put("ID", contentID);

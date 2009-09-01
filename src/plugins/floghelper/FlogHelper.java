@@ -23,7 +23,7 @@ import freenet.support.api.Bucket;
 import plugins.floghelper.ui.ContentListToadlet;
 import plugins.floghelper.ui.CreateOrEditContentToadlet;
 import plugins.floghelper.ui.CreateOrEditFlogToadlet;
-import plugins.floghelper.ui.DataFormatter;
+import plugins.floghelper.data.DataFormatter;
 import plugins.floghelper.ui.FlogHelperToadlet;
 import plugins.floghelper.ui.FlogListToadlet;
 
