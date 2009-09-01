@@ -30,18 +30,19 @@ import plugins.floghelper.ui.FlogListToadlet;
 /**
  * TODO: proper GPL headers
  * TODO: proper javadoc
- * TODO: think about the activelink (maybe store it in a byte[])
- * TODO: flog contents, tags
- * TODO: render to xHTML
- * TODO: insert
+ * TODO: tags (store them as a String[] would do the trick)
+ * TODO: render to xHTML (in a Map<String (filename), String (file contents)> in order not to leave any tracks on the HDD)
+ * TODO: insert (maybe use the same SSK as the main WoT identity?)
  * TODO: javascript editbox
  * TODO: WikiCode first
+ * TODO: WoT register context!
+ * TODO: maybe make the flog only have one author ? this would make identifying the author MUCH more easier (insert in the same identity's subspace)
  * @author Artefact2
  */
 public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginBaseL10n, FredPluginL10n, FredPluginThemed, FredPluginVersioned, FredPluginRealVersioned, FredPluginTalker {
 
 	public static final String PLUGIN_NAME = "FlogHelper";
-	public static final int REVISION = 5;
+	public static final int REVISION = 6;
 	private static PluginRespirator pr;
 	private static PluginL10n l10n;
 	private static PluginStore store;
