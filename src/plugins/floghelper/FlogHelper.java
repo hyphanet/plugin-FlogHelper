@@ -24,8 +24,10 @@ import plugins.floghelper.ui.ContentListToadlet;
 import plugins.floghelper.ui.CreateOrEditContentToadlet;
 import plugins.floghelper.ui.CreateOrEditFlogToadlet;
 import plugins.floghelper.data.DataFormatter;
+import plugins.floghelper.ui.ExportFlogToadlet;
 import plugins.floghelper.ui.FlogHelperToadlet;
 import plugins.floghelper.ui.FlogListToadlet;
+import plugins.floghelper.ui.ImportFlogToadlet;
 
 /**
  * TODO: proper GPL headers
@@ -36,7 +38,6 @@ import plugins.floghelper.ui.FlogListToadlet;
  * TODO: javascript editbox
  * TODO: WikiCode first
  * TODO: WoT register context!
- * TODO: maybe make the flog only have one author ? this would make identifying the author MUCH more easier (insert in the same identity's subspace)
  * @author Artefact2
  */
 public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginBaseL10n, FredPluginL10n, FredPluginThemed, FredPluginVersioned, FredPluginRealVersioned, FredPluginTalker {
@@ -50,6 +51,8 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 	private CreateOrEditFlogToadlet createOrEditFlogToadlet;
 	private ContentListToadlet contentListToadlet;
 	private CreateOrEditContentToadlet createOrEditContentToadlet;
+	private ExportFlogToadlet exportFlogToadlet;
+	private ImportFlogToadlet importFlogToadlet;
 
 	public static BaseL10n getBaseL10n() {
 		return FlogHelper.l10n.getBase();
@@ -75,6 +78,8 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 		FlogHelper.pr.getPageMaker().removeNavigationCategory(FlogHelper.PLUGIN_NAME);
 		FlogHelper.pr.getToadletContainer().unregister(this.flogListToadlet);
 		FlogHelper.pr.getToadletContainer().unregister(this.createOrEditFlogToadlet);
+		FlogHelper.pr.getToadletContainer().unregister(this.exportFlogToadlet);
+		FlogHelper.pr.getToadletContainer().unregister(this.importFlogToadlet);
 	}
 
 	public void runPlugin(final PluginRespirator pr) {
@@ -90,6 +95,8 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 		this.createOrEditFlogToadlet = new CreateOrEditFlogToadlet(FlogHelper.pr.getHLSimpleClient());
 		this.contentListToadlet = new ContentListToadlet(FlogHelper.pr.getHLSimpleClient());
 		this.createOrEditContentToadlet = new CreateOrEditContentToadlet(FlogHelper.pr.getHLSimpleClient());
+		this.exportFlogToadlet = new ExportFlogToadlet(FlogHelper.pr.getHLSimpleClient());
+		this.importFlogToadlet = new ImportFlogToadlet(FlogHelper.pr.getHLSimpleClient());
 
 		FlogHelper.pr.getPageMaker().addNavigationCategory(FlogHelperToadlet.BASE_URI + "/",
 				FlogHelper.PLUGIN_NAME, FlogHelper.PLUGIN_NAME, this);
@@ -105,6 +112,10 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 				this.contentListToadlet.path(), true, true);
 		FlogHelper.pr.getToadletContainer().register(this.createOrEditContentToadlet, FlogHelper.PLUGIN_NAME,
 				this.createOrEditContentToadlet.path(), true, true);
+		FlogHelper.pr.getToadletContainer().register(this.exportFlogToadlet, FlogHelper.PLUGIN_NAME,
+				this.exportFlogToadlet.path(), true, true);
+		FlogHelper.pr.getToadletContainer().register(this.importFlogToadlet, FlogHelper.PLUGIN_NAME,
+				this.importFlogToadlet.path(), true, true);
 	}
 
 	public void setTheme(final THEME theme) {
