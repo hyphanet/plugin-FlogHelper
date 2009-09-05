@@ -39,7 +39,7 @@ public class FlogListToadlet extends FlogHelperToadlet {
 
 		final HTMLNode actionsRow = new HTMLNode("tr");
 
-		final HTMLNode formCreateNew = FlogHelper.getPR().addFormChild(actionsRow.addChild("th", "colspan", "8"), FlogHelperToadlet.BASE_URI +
+		final HTMLNode formCreateNew = FlogHelper.getPR().addFormChild(actionsRow.addChild("th", "colspan", "9"), FlogHelperToadlet.BASE_URI +
 				CreateOrEditFlogToadlet.MY_URI, "CreateNewFlog");
 		formCreateNew.addAttribute("method", "get");
 		formCreateNew.addChild("input", new String[]{"type", "value"},
@@ -49,6 +49,7 @@ public class FlogListToadlet extends FlogHelperToadlet {
 		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("ID"));
 		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("Activelink"));
 		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("Title"));
+		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("Author"));
 		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("SmallDescription"));
 		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("NumberOfEntries"));
 		headersRow.addChild("th", "colspan", "3", FlogHelper.getBaseL10n().getString("Actions"));
@@ -58,10 +59,17 @@ public class FlogListToadlet extends FlogHelperToadlet {
 		tFoot.addChild(headersRow);
 
 		if (FlogHelper.getStore().subStores.isEmpty()) {
-			tBody.addChild("tr").addChild("td", "colspan", "8", FlogHelper.getBaseL10n().getString("NoFlogsYet"));
+			tBody.addChild("tr").addChild("td", "colspan", "9", FlogHelper.getBaseL10n().getString("NoFlogsYet"));
 		}
 
 		for (final PluginStore flog : FlogHelper.getStore().subStores.values()) {
+			final String author;
+			if (this.getWoTIdentities().containsKey(flog.strings.get("Author"))) {
+				author = this.getWoTIdentities().get(flog.strings.get("Author"));
+			} else {
+				author = FlogHelper.getBaseL10n().getString("BadAuthorDeletedIdentity");
+			}
+
 			final HTMLNode activelinkP = new HTMLNode("td");
 			if(flog.bytesArrays.get("Activelink") != null) {
 				HTMLNode activelinkImg = new HTMLNode("img");
@@ -78,6 +86,7 @@ public class FlogListToadlet extends FlogHelperToadlet {
 			row.addChild("td").addChild("pre", DataFormatter.toString(flog.strings.get("ID")));
 			row.addChild(activelinkP);
 			row.addChild("td", DataFormatter.toString(flog.strings.get("Title")));
+			row.addChild("td", DataFormatter.toString(author));
 			row.addChild("td", DataFormatter.toString(flog.strings.get("SmallDescription")));
 			row.addChild("td", DataFormatter.toString(flog.subStores.size()));
 

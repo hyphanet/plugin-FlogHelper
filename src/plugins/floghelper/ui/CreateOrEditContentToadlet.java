@@ -51,7 +51,6 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 
 			content.strings.put("ID", contentID);
 			content.strings.put("Title", request.getPartAsString("Title", 100));
-			content.strings.put("Author", request.getPartAsString("Author", 1000));
 			content.strings.put("Content", request.getPartAsString("Content", Integer.MAX_VALUE));
 			if (content.longs.get("CreationDate") == null) {
 				content.longs.put("CreationDate", System.currentTimeMillis());
@@ -80,7 +79,6 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 				title = "CreateContent";
 				contentID = DataFormatter.createSubStoreUniqueID(flog);
 				(content = new PluginStore()).strings.put("ID", contentID);
-				content.strings.put("Author", flog.strings.get("DefaultAuthor"));
 			} else {
 				title = "EditContent";
 				content = flog.subStores.get(contentID);
@@ -100,10 +98,11 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 			final HTMLNode authorsBox = new HTMLNode("select", new String[]{"id", "name"}, new String[]{"Author", "Author"});
 			for (final String identityID : this.getWoTIdentities().keySet()) {
 				final HTMLNode option = authorsBox.addChild("option", "value", identityID, this.getWoTIdentities().get(identityID));
-				if (content.strings.get("Author").equals(identityID)) {
+				if (flog.strings.get("Author").equals(identityID)) {
 					option.addAttribute("selected", "selected");
 				}
 			}
+			authorsBox.addAttribute("disabled", "disabled");
 
 			form.addChild("p").addChild("label", "for", "Author", FlogHelper.getBaseL10n().getString("AuthorFieldDesc")).addChild("br").addChild(authorsBox);
 

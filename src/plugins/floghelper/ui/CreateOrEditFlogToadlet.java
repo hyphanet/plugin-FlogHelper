@@ -51,7 +51,7 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 
 			flog.strings.put("ID", flogID);
 			flog.strings.put("Title", request.getPartAsString("Title", 100));
-			flog.strings.put("DefaultAuthor", request.getPartAsString("DefaultAuthor", 1000));
+			flog.strings.put("Author", request.getPartAsString("Author", 1000));
 			flog.strings.put("SmallDescription", request.getPartAsString("SmallDescription", 1000));
 
 			if (request.isPartSet("ActivelinkDelete")) {
@@ -115,15 +115,15 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			form.addChild("p").addChild("label", "for", "Title", FlogHelper.getBaseL10n().getString("TitleFieldDesc")).addChild("br").addChild("input", new String[]{"type", "size", "name", "value"},
 					new String[]{"text", "50", "Title", DataFormatter.toString(flog.strings.get("Title"))});
 
-			final HTMLNode authorsBox = new HTMLNode("select", new String[]{"id", "name"}, new String[]{"DefaultAuthorFieldDesc", "DefaultAuthor"});
+			final HTMLNode authorsBox = new HTMLNode("select", new String[]{"id", "name"}, new String[]{"AuthorFieldDesc", "Author"});
 			for (final String identityID : this.getWoTIdentities().keySet()) {
 				final HTMLNode option = authorsBox.addChild("option", "value", identityID, this.getWoTIdentities().get(identityID));
-				if (flog.strings.get("DefaultAuthor") != null && flog.strings.get("DefaultAuthor").equals(identityID)) {
+				if (flog.strings.get("Author") != null && flog.strings.get("Author").equals(identityID)) {
 					option.addAttribute("selected", "selected");
 				}
 			}
 
-			form.addChild("p").addChild("label", "for", "DefaultAuthor", FlogHelper.getBaseL10n().getString("DefaultAuthorFieldDesc")).addChild("br").addChild(authorsBox);
+			form.addChild("p").addChild("label", "for", "Author", FlogHelper.getBaseL10n().getString("AuthorFieldDesc")).addChild("br").addChild(authorsBox);
 
 			// Most browsers probably won't care about the accept="image/png" attribute
 			// But we put it anyway... because it's semantic

@@ -50,7 +50,7 @@ public class ContentListToadlet extends FlogHelperToadlet {
 		formBack.addChild("input", new String[]{"type", "value"},
 				new String[]{"submit", FlogHelper.getBaseL10n().getString("BackToFlogList")});
 
-		final HTMLNode formCreateNew = FlogHelper.getPR().addFormChild(actionsRow.addChild("th", "colspan", "6"), FlogHelperToadlet.BASE_URI +
+		final HTMLNode formCreateNew = FlogHelper.getPR().addFormChild(actionsRow.addChild("th", "colspan", "5"), FlogHelperToadlet.BASE_URI +
 				CreateOrEditContentToadlet.MY_URI, "CreateNewContent");
 		formCreateNew.addAttribute("method", "get");
 		formCreateNew.addChild("input", new String[]{"type", "value"},
@@ -60,7 +60,6 @@ public class ContentListToadlet extends FlogHelperToadlet {
 
 		final HTMLNode headersRow = new HTMLNode("tr");
 		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("ID"));
-		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("Author"));
 		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("Title"));
 		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("CreationDate"));
 		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("LastModification"));
@@ -71,20 +70,12 @@ public class ContentListToadlet extends FlogHelperToadlet {
 		tFoot.addChild(headersRow);
 
 		if (flog.subStores.isEmpty()) {
-			tBody.addChild("tr").addChild("td", "colspan", "8", FlogHelper.getBaseL10n().getString("NoContentsYet"));
+			tBody.addChild("tr").addChild("td", "colspan", "7", FlogHelper.getBaseL10n().getString("NoContentsYet"));
 		}
 
 		for (final PluginStore content : flog.subStores.values()) {
-			final String author;
-			if (this.getWoTIdentities().containsKey(content.strings.get("Author"))) {
-				author = this.getWoTIdentities().get(content.strings.get("Author"));
-			} else {
-				author = FlogHelper.getBaseL10n().getString("BadAuthorDeletedIdentity");
-			}
-
 			final HTMLNode row = tBody.addChild("tr");
 			row.addChild("td").addChild("pre", DataFormatter.toString(content.strings.get("ID")));
-			row.addChild("td", DataFormatter.toString(author));
 			row.addChild("td", DataFormatter.toString(content.strings.get("Title")));
 			row.addChild("td", DataFormatter.toString(new Date(content.longs.get("CreationDate")).toString()));
 			row.addChild("td", DataFormatter.toString(new Date(content.longs.get("LastModification")).toString()));
