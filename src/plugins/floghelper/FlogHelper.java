@@ -38,6 +38,10 @@ import plugins.floghelper.ui.ImportFlogToadlet;
  * TODO: javascript editbox
  * TODO: WikiCode first
  * TODO: WoT register context!
+ * TODO: filters
+ * TODO: sorting (by creation date first)
+ * TODO: option to publish date or not
+ * TODO: option to insert pluginStore dump too
  * @author Artefact2
  */
 public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginBaseL10n, FredPluginL10n, FredPluginThemed, FredPluginVersioned, FredPluginRealVersioned, FredPluginTalker {
