@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.URI;
 import javax.imageio.ImageIO;
 import plugins.floghelper.FlogHelper;
+import plugins.floghelper.contentsyntax.ContentSyntax;
 import plugins.floghelper.data.Activelink;
 
 /**
@@ -52,7 +53,8 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			flog.strings.put("ID", flogID);
 			flog.strings.put("Title", request.getPartAsString("Title", 100));
 			flog.strings.put("Author", request.getPartAsString("Author", 1000));
-			flog.strings.put("SmallDescription", request.getPartAsString("SmallDescription", 1000));
+			flog.strings.put("SmallDescription", request.getPartAsString("SmallDescription", 100000));
+			flog.strings.put("SmallDescriptionContentSyntax", request.getPartAsString("SmallDescription_syntaxes", 1000));
 
 			if (request.isPartSet("ActivelinkDelete")) {
 				flog.bytesArrays.put("Activelink", null);
@@ -115,7 +117,7 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			form.addChild("p").addChild("label", "for", "Title", FlogHelper.getBaseL10n().getString("TitleFieldDesc")).addChild("br").addChild("input", new String[]{"type", "size", "name", "value"},
 					new String[]{"text", "50", "Title", DataFormatter.toString(flog.strings.get("Title"))});
 
-			final HTMLNode authorsBox = new HTMLNode("select", new String[]{"id", "name"}, new String[]{"AuthorFieldDesc", "Author"});
+			final HTMLNode authorsBox = new HTMLNode("select", new String[]{"id", "name"}, new String[]{"Author", "Author"});
 			for (final String identityID : this.getWoTIdentities().keySet()) {
 				final HTMLNode option = authorsBox.addChild("option", "value", identityID, this.getWoTIdentities().get(identityID));
 				if (flog.strings.get("Author") != null && flog.strings.get("Author").equals(identityID)) {
@@ -134,8 +136,9 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			form.addChild("p").addChild("label", "for", "ActivelinkDelete", FlogHelper.getBaseL10n().getString("ActivelinkDeleteFieldDesc")).addChild("input", new String[]{"type", "name"},
 					new String[]{"checkbox", "ActivelinkDelete"});
 
-			form.addChild("p").addChild("label", "for", "SmallDescription", FlogHelper.getBaseL10n().getString("SmallDescriptionFieldDesc")).addChild("br").addChild("textarea", new String[]{"rows", "cols", "name"},
-					new String[]{"12", "80", "SmallDescription"}, DataFormatter.toString(flog.strings.get("SmallDescription")));
+			ContentSyntax.addJavascriptEditbox(form, "SmallDescription",
+					flog.strings.get("SmallDescriptionContentSyntax"), DataFormatter.toString(flog.strings.get("SmallDescription")),
+					FlogHelper.getBaseL10n().getString("SmallDescriptionFieldDesc"));
 
 			final HTMLNode buttons = form.addChild("p");
 			buttons.addChild("input", new String[]{"type", "name", "value"},

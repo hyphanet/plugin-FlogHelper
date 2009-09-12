@@ -20,6 +20,8 @@ import freenet.pluginmanager.PluginStore;
 import freenet.support.Logger;
 import freenet.support.SimpleFieldSet;
 import freenet.support.api.Bucket;
+import java.util.Vector;
+import plugins.floghelper.contentsyntax.js.JavascriptFactoryToadlet;
 import plugins.floghelper.ui.ContentListToadlet;
 import plugins.floghelper.ui.CreateOrEditContentToadlet;
 import plugins.floghelper.ui.CreateOrEditFlogToadlet;
@@ -28,6 +30,7 @@ import plugins.floghelper.ui.ExportFlogToadlet;
 import plugins.floghelper.ui.FlogHelperToadlet;
 import plugins.floghelper.ui.FlogListToadlet;
 import plugins.floghelper.ui.ImportFlogToadlet;
+import plugins.floghelper.ui.PreviewToadlet;
 
 /**
  * TODO: proper GPL headers
@@ -51,12 +54,7 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 	private static PluginRespirator pr;
 	private static PluginL10n l10n;
 	private static PluginStore store;
-	private FlogListToadlet flogListToadlet;
-	private CreateOrEditFlogToadlet createOrEditFlogToadlet;
-	private ContentListToadlet contentListToadlet;
-	private CreateOrEditContentToadlet createOrEditContentToadlet;
-	private ExportFlogToadlet exportFlogToadlet;
-	private ImportFlogToadlet importFlogToadlet;
+	private final Vector<FlogHelperToadlet> myToadlets = new Vector<FlogHelperToadlet>();
 
 	public static BaseL10n getBaseL10n() {
 		return FlogHelper.l10n.getBase();
@@ -80,10 +78,9 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 
 	public void terminate() {
 		FlogHelper.pr.getPageMaker().removeNavigationCategory(FlogHelper.PLUGIN_NAME);
-		FlogHelper.pr.getToadletContainer().unregister(this.flogListToadlet);
-		FlogHelper.pr.getToadletContainer().unregister(this.createOrEditFlogToadlet);
-		FlogHelper.pr.getToadletContainer().unregister(this.exportFlogToadlet);
-		FlogHelper.pr.getToadletContainer().unregister(this.importFlogToadlet);
+		for(FlogHelperToadlet e : this.myToadlets) {
+			FlogHelper.pr.getToadletContainer().unregister(e);
+		}
 	}
 
 	public void runPlugin(final PluginRespirator pr) {
@@ -95,31 +92,28 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 			Logger.error(this.getClass(), "Could not load flogs from db4o - " + ex.getMessage());
 		}
 
-		this.flogListToadlet = new FlogListToadlet(FlogHelper.pr.getHLSimpleClient());
-		this.createOrEditFlogToadlet = new CreateOrEditFlogToadlet(FlogHelper.pr.getHLSimpleClient());
-		this.contentListToadlet = new ContentListToadlet(FlogHelper.pr.getHLSimpleClient());
-		this.createOrEditContentToadlet = new CreateOrEditContentToadlet(FlogHelper.pr.getHLSimpleClient());
-		this.exportFlogToadlet = new ExportFlogToadlet(FlogHelper.pr.getHLSimpleClient());
-		this.importFlogToadlet = new ImportFlogToadlet(FlogHelper.pr.getHLSimpleClient());
+		this.myToadlets.add(new FlogListToadlet(FlogHelper.pr.getHLSimpleClient()));
+		this.myToadlets.add(new CreateOrEditFlogToadlet(FlogHelper.pr.getHLSimpleClient()));
+		this.myToadlets.add(new ContentListToadlet(FlogHelper.pr.getHLSimpleClient()));
+		this.myToadlets.add(new CreateOrEditContentToadlet(FlogHelper.pr.getHLSimpleClient()));
+		this.myToadlets.add(new ExportFlogToadlet(FlogHelper.pr.getHLSimpleClient()));
+		this.myToadlets.add(new ImportFlogToadlet(FlogHelper.pr.getHLSimpleClient()));
+		this.myToadlets.add(new PreviewToadlet(FlogHelper.pr.getHLSimpleClient()));
+		this.myToadlets.add(new JavascriptFactoryToadlet(FlogHelper.pr.getHLSimpleClient()));
 
 		FlogHelper.pr.getPageMaker().addNavigationCategory(FlogHelperToadlet.BASE_URI + "/",
 				FlogHelper.PLUGIN_NAME, FlogHelper.PLUGIN_NAME, this);
 
 		// The index page comes first, because everything will begin by "/",
 		// and this will be parsed after every other toadlet.
-		FlogHelper.pr.getToadletContainer().register(this.flogListToadlet, FlogHelper.PLUGIN_NAME,
-				this.flogListToadlet.path(), true, FlogHelper.PLUGIN_NAME, FlogHelper.PLUGIN_NAME, true, null);
+		FlogHelper.pr.getToadletContainer().register(this.myToadlets.elementAt(0), FlogHelper.PLUGIN_NAME,
+				this.myToadlets.elementAt(0).path(), true, FlogHelper.PLUGIN_NAME, FlogHelper.PLUGIN_NAME, true, null);
 
-		FlogHelper.pr.getToadletContainer().register(this.createOrEditFlogToadlet, FlogHelper.PLUGIN_NAME,
-				this.createOrEditFlogToadlet.path(), true, true);
-		FlogHelper.pr.getToadletContainer().register(this.contentListToadlet, FlogHelper.PLUGIN_NAME,
-				this.contentListToadlet.path(), true, true);
-		FlogHelper.pr.getToadletContainer().register(this.createOrEditContentToadlet, FlogHelper.PLUGIN_NAME,
-				this.createOrEditContentToadlet.path(), true, true);
-		FlogHelper.pr.getToadletContainer().register(this.exportFlogToadlet, FlogHelper.PLUGIN_NAME,
-				this.exportFlogToadlet.path(), true, true);
-		FlogHelper.pr.getToadletContainer().register(this.importFlogToadlet, FlogHelper.PLUGIN_NAME,
-				this.importFlogToadlet.path(), true, true);
+		for(int i = 1; i < this.myToadlets.size(); ++i) {
+			FlogHelperToadlet e = this.myToadlets.elementAt(i);
+			FlogHelper.pr.getToadletContainer().register(e, FlogHelper.PLUGIN_NAME,
+				e.path(), true, true);
+		}
 	}
 
 	public void setTheme(final THEME theme) {

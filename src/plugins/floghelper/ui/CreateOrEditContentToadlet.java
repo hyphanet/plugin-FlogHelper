@@ -14,6 +14,7 @@ import freenet.support.api.HTTPRequest;
 import java.io.IOException;
 import java.net.URI;
 import plugins.floghelper.FlogHelper;
+import plugins.floghelper.contentsyntax.ContentSyntax;
 
 /**
  *
@@ -52,6 +53,7 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 			content.strings.put("ID", contentID);
 			content.strings.put("Title", request.getPartAsString("Title", 100));
 			content.strings.put("Content", request.getPartAsString("Content", Integer.MAX_VALUE));
+			content.strings.put("ContentSyntax", request.getPartAsString("Content_syntaxes", 1000));
 			if (content.longs.get("CreationDate") == null) {
 				content.longs.put("CreationDate", System.currentTimeMillis());
 			}
@@ -106,8 +108,9 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 
 			form.addChild("p").addChild("label", "for", "Author", FlogHelper.getBaseL10n().getString("AuthorFieldDesc")).addChild("br").addChild(authorsBox);
 
-			form.addChild("p").addChild("label", "for", "Content", FlogHelper.getBaseL10n().getString("ContentFieldDesc")).addChild("br").addChild("textarea", new String[]{"rows", "cols", "name"},
-					new String[]{"12", "80", "Content"}, DataFormatter.toString(content.strings.get("Content")));
+			ContentSyntax.addJavascriptEditbox(form, "Content",
+					content.strings.get("ContentSyntax"), DataFormatter.toString(content.strings.get("Content")),
+					FlogHelper.getBaseL10n().getString("ContentFieldDesc"));
 
 			final HTMLNode buttons = form.addChild("p");
 			buttons.addChild("input", new String[]{"type", "name", "value"},
