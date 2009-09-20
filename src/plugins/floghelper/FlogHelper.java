@@ -33,18 +33,17 @@ import plugins.floghelper.ui.ImportFlogToadlet;
 import plugins.floghelper.ui.PreviewToadlet;
 
 /**
+ * FlogHelper goals : lightweight, integrated in the node, SECURE,
+ * don't recreate the wheel every time.
+ *
  * TODO: proper GPL headers
  * TODO: proper javadoc
- * TODO: tags (store them as a String[] would do the trick)
  * TODO: render to xHTML (in a Map<String (filename), String (file contents)> in order not to leave any tracks on the HDD)
  * TODO: insert (maybe use the same SSK as the main WoT identity?)
- * TODO: javascript editbox
- * TODO: WikiCode first
  * TODO: WoT register context!
  * TODO: filters
  * TODO: sorting (by creation date first)
- * TODO: option to publish date or not
- * TODO: option to insert pluginStore dump too
+ * TODO: theme mgmt stuff
  * @author Artefact2
  */
 public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginBaseL10n, FredPluginL10n, FredPluginThemed, FredPluginVersioned, FredPluginRealVersioned, FredPluginTalker {

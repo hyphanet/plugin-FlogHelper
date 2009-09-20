@@ -55,6 +55,8 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			flog.strings.put("Author", request.getPartAsString("Author", 1000));
 			flog.strings.put("SmallDescription", request.getPartAsString("SmallDescription", 100000));
 			flog.strings.put("SmallDescriptionContentSyntax", request.getPartAsString("SmallDescription_syntaxes", 1000));
+			flog.booleans.put("InsertPluginStoreDump", request.isPartSet("InsertPluginStoreDump"));
+			flog.booleans.put("PublishContentModificationDate", request.isPartSet("PublishContentModificationDate"));
 
 			if (request.isPartSet("ActivelinkDelete")) {
 				flog.bytesArrays.put("Activelink", null);
@@ -129,16 +131,21 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 
 			// Most browsers probably won't care about the accept="image/png" attribute
 			// But we put it anyway... because it's semantic
-			form.addChild("p").addChild("label", "for", "Activelink", FlogHelper.getBaseL10n().getString("ActivelinkFieldDesc")
-					.replace("${Width}", Integer.toString(Activelink.WIDTH)).replace("${Height}", Integer.toString(Activelink.HEIGHT)))
-					.addChild("br").addChild("input", new String[]{"type", "accept", "name"},
+			form.addChild("p").addChild("label", "for", "Activelink", FlogHelper.getBaseL10n().getString("ActivelinkFieldDesc").replace("${Width}", Integer.toString(Activelink.WIDTH)).replace("${Height}", Integer.toString(Activelink.HEIGHT))).addChild("br").addChild("input", new String[]{"type", "accept", "name"},
 					new String[]{"file", Activelink.MIMETYPE, "Activelink"});
-			form.addChild("p").addChild("label", "for", "ActivelinkDelete", FlogHelper.getBaseL10n().getString("ActivelinkDeleteFieldDesc")).addChild("input", new String[]{"type", "name"},
-					new String[]{"checkbox", "ActivelinkDelete"});
+			form.addChild("p").addChild("label", "for", "ActivelinkDelete", FlogHelper.getBaseL10n().getString("ActivelinkDeleteFieldDesc")).addChild("input", new String[]{"type", "name", "id"},
+					new String[]{"checkbox", "ActivelinkDelete", "ActivelinkDelete"});
 
 			ContentSyntax.addJavascriptEditbox(form, "SmallDescription",
 					flog.strings.get("SmallDescriptionContentSyntax"), DataFormatter.toString(flog.strings.get("SmallDescription")),
 					FlogHelper.getBaseL10n().getString("SmallDescriptionFieldDesc"));
+
+			final boolean insertPluginStoreDump = flog.booleans.get("InsertPluginStoreDump");
+			form.addChild("p").addChild("label", "for", "InsertPluginStoreDump", FlogHelper.getBaseL10n().getString("InsertPluginStoreDumpDesc")).addChild("input", new String[]{"type", "name", "id", insertPluginStoreDump ? "checked" : "class"},
+					new String[]{"checkbox", "InsertPluginStoreDump", "InsertPluginStoreDump", insertPluginStoreDump ? "checked" : ""});
+			final boolean publishContentModificationDate = flog.booleans.get("PublishContentModificationDate");
+			form.addChild("p").addChild("label", "for", "PublishContentModificationDate", FlogHelper.getBaseL10n().getString("PublishContentModificationDateDesc")).addChild("input", new String[]{"type", "name", "id", publishContentModificationDate ? "checked" : "class"},
+					new String[]{"checkbox", "PublishContentModificationDate", "PublishContentModificationDate", publishContentModificationDate ? "checked" : ""});
 
 			final HTMLNode buttons = form.addChild("p");
 			buttons.addChild("input", new String[]{"type", "name", "value"},

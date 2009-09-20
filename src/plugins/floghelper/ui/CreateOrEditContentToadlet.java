@@ -13,6 +13,7 @@ import freenet.support.HTMLNode;
 import freenet.support.api.HTTPRequest;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Vector;
 import plugins.floghelper.FlogHelper;
 import plugins.floghelper.contentsyntax.ContentSyntax;
 
@@ -58,6 +59,18 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 				content.longs.put("CreationDate", System.currentTimeMillis());
 			}
 			content.longs.put("LastModification", System.currentTimeMillis());
+
+			final Vector<String> tags = new Vector<String>();
+			for(String tag : request.getPartAsString("Tags", 1000).split(",")) {
+				tags.add(tag.trim());
+			}
+
+			final String[] sTags = new String[tags.size()];
+			for(int i = 0; i < sTags.length; ++i) {
+				sTags[i] = tags.elementAt(i);
+			}
+			content.stringsArrays.put("Tags", sTags);
+
 			FlogHelper.putStore();
 
 			final HTMLNode infobox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("ContentCreationSuccessful"), pageNode.content);
@@ -111,6 +124,20 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 			ContentSyntax.addJavascriptEditbox(form, "Content",
 					content.strings.get("ContentSyntax"), DataFormatter.toString(content.strings.get("Content")),
 					FlogHelper.getBaseL10n().getString("ContentFieldDesc"));
+
+			final StringBuilder tagz = new StringBuilder();
+			final String[] tags = content.stringsArrays.get("Tags");
+			if(tags != null) {
+			for (String tag : tags) {
+				if (tagz.length() == 0) {
+					tagz.append(tag);
+				} else {
+					tagz.append(", ").append(tag);
+				}
+			}
+			}
+			form.addChild("p").addChild("label", "for", "Tags", FlogHelper.getBaseL10n().getString("TagsFieldDesc")).addChild("br").addChild("input", new String[]{"type", "size", "name", "value"},
+					new String[]{"text", "50", "Tags", tagz.toString()});
 
 			final HTMLNode buttons = form.addChild("p");
 			buttons.addChild("input", new String[]{"type", "name", "value"},
