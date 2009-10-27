@@ -156,6 +156,8 @@ public class DataFormatter {
 	}
 
 	public static final String toString(final byte[] values) {
+		if(values == null)
+			return "";
 		final StringBuilder sb = new StringBuilder("{ ");
 		int i = 0;
 		for (byte val : values) {

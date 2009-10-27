@@ -140,10 +140,10 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 					flog.strings.get("SmallDescriptionContentSyntax"), DataFormatter.toString(flog.strings.get("SmallDescription")),
 					FlogHelper.getBaseL10n().getString("SmallDescriptionFieldDesc"));
 
-			final boolean insertPluginStoreDump = flog.booleans.get("InsertPluginStoreDump");
+			final boolean insertPluginStoreDump = flog.booleans.get("InsertPluginStoreDump") == null ? false : flog.booleans.get("InsertPluginStoreDump");
 			form.addChild("p").addChild("label", "for", "InsertPluginStoreDump", FlogHelper.getBaseL10n().getString("InsertPluginStoreDumpDesc")).addChild("input", new String[]{"type", "name", "id", insertPluginStoreDump ? "checked" : "class"},
 					new String[]{"checkbox", "InsertPluginStoreDump", "InsertPluginStoreDump", insertPluginStoreDump ? "checked" : ""});
-			final boolean publishContentModificationDate = flog.booleans.get("PublishContentModificationDate");
+			final boolean publishContentModificationDate = flog.booleans.get("PublishContentModificationDate") == null ? false : flog.booleans.get("PublishContentModificationDate");
 			form.addChild("p").addChild("label", "for", "PublishContentModificationDate", FlogHelper.getBaseL10n().getString("PublishContentModificationDateDesc")).addChild("input", new String[]{"type", "name", "id", publishContentModificationDate ? "checked" : "class"},
 					new String[]{"checkbox", "PublishContentModificationDate", "PublishContentModificationDate", publishContentModificationDate ? "checked" : ""});
 
