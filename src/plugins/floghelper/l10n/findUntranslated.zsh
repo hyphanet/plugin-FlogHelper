@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/sh
 
 # The first argument is the l10n file to use.
 # We assume l10n files are SimpleFieldSets.
@@ -11,7 +11,7 @@ fi
 
 echo -n > .temp
 
-for x in ../**/*.java
+for x in `find .. -iname "*.java"`
 do
 	# Let's identify all the calls to getBaseL10n().getString("") and put them in a temp file
 	# You might want to change this if you use another localization system.
