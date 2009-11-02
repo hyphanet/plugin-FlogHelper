@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<title>{PageTitle} - {FlogName}</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="author" content="{FlogAuthor}" />
+		<meta name="description" content="{FlogDesc}" />
+		<link rel="start" title="Index" href="index.html" />
+		<link rel="stylesheet" media="screen" type="text/css" title="Default theme" href="{StyleURI}" />
+		<link rel="alternate" type="application/atom+xml" title="Latest contents" href="{AtomFeedURI}" />
+	</head>
+	<body>
+		<div id="header">
+			<h1>{FlogName}</h1>
+			<h2>{PageTitle}</h2>
+		</div>
+		<div id="globmenu">
+			<div class="submenu">
+				<h4>Navigation</h4>
+				<ul>
+					{PrimaryNavigationLinks}
+				</ul>
+			</div>
+			<div class="submenu">
+				<h4>Tags</h4>
+				<ul>
+					{TagsLinks}
+				</ul>
+			</div>
+			{AdditionnalMenuContent}
+		</div>
+		<div id="maincontent">
+			{MainContent}
+		</div>
+		<div id="footer">
+			{FooterContent}
+		</div>
+	</body>
+</html>

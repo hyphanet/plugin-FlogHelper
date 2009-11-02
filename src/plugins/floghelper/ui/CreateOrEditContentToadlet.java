@@ -78,8 +78,7 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 			final HTMLNode links = infobox.addChild("p");
 			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + ContentListToadlet.MY_URI + "?FlogID=" + flog.strings.get("ID"), FlogHelper.getBaseL10n().getString("ReturnToContentList"));
 			links.addChild("br");
-			// FIXME do not use hardcoded uri here
-			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + "/ViewContent/" + "?ContentID=" + content.strings.get("ID") + "&FlogID=" + flog.strings.get("ID"), FlogHelper.getBaseL10n().getString("PreviewContent"));
+			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + PreviewToadlet.MY_URI + "?ContentID=" + content.strings.get("ID") + "&FlogID=" + flog.strings.get("ID"), FlogHelper.getBaseL10n().getString("PreviewContent"));
 		} else if (request.isPartSet("No")) {
 			final HTMLNode infobox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("ContentCreationCancelled"), pageNode.content);
 			infobox.addChild("p", FlogHelper.getBaseL10n().getString("ContentCreationCancelledLong"));
@@ -99,15 +98,18 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 				content = flog.subStores.get(contentID);
 			}
 
-			final HTMLNode form = FlogHelper.getPR().addFormChild(this.getPM().getInfobox(null,
-					FlogHelper.getBaseL10n().getString(title), pageNode.content), this.path(), "CreateOrEdit-" + contentID);
+			final HTMLNode form = FlogHelper.getPR().addFormChild(pageNode.content, this.path(), "CreateOrEdit-" + contentID);
+
+			final HTMLNode generalBox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("GeneralContentData"), form, "GeneralContentData", true);
+			final HTMLNode tagsBox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("Tags"), form, "TagsContentData", true);
+			final HTMLNode submitBox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("SaveChanges"), form, "SubmitContentData", true);
 
 			form.addChild("input", new String[]{"type", "name", "value"},
 					new String[]{"hidden", "FlogID", flog.strings.get("ID")});
 			form.addChild("input", new String[]{"type", "name", "value"},
 					new String[]{"hidden", "ContentID", contentID});
 
-			form.addChild("p").addChild("label", "for", "Title", FlogHelper.getBaseL10n().getString("TitleFieldDesc")).addChild("br").addChild("input", new String[]{"type", "size", "name", "value"},
+			generalBox.addChild("p").addChild("label", "for", "Title", FlogHelper.getBaseL10n().getString("TitleFieldDesc")).addChild("br").addChild("input", new String[]{"type", "size", "name", "value"},
 					new String[]{"text", "50", "Title", DataFormatter.toString(content.strings.get("Title"))});
 
 			final HTMLNode authorsBox = new HTMLNode("select", new String[]{"id", "name"}, new String[]{"Author", "Author"});
@@ -119,9 +121,9 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 			}
 			authorsBox.addAttribute("disabled", "disabled");
 
-			form.addChild("p").addChild("label", "for", "Author", FlogHelper.getBaseL10n().getString("AuthorFieldDesc")).addChild("br").addChild(authorsBox);
+			generalBox.addChild("p").addChild("label", "for", "Author", FlogHelper.getBaseL10n().getString("AuthorFieldDesc")).addChild("br").addChild(authorsBox);
 
-			ContentSyntax.addJavascriptEditbox(form, "Content",
+			ContentSyntax.addJavascriptEditbox(generalBox, "Content",
 					content.strings.get("ContentSyntax"), DataFormatter.toString(content.strings.get("Content")),
 					FlogHelper.getBaseL10n().getString("ContentFieldDesc"));
 
@@ -136,10 +138,10 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 				}
 			}
 			}
-			form.addChild("p").addChild("label", "for", "Tags", FlogHelper.getBaseL10n().getString("TagsFieldDesc")).addChild("br").addChild("input", new String[]{"type", "size", "name", "value"},
+			tagsBox.addChild("p").addChild("label", "for", "Tags", FlogHelper.getBaseL10n().getString("TagsFieldDesc")).addChild("br").addChild("input", new String[]{"type", "size", "name", "value"},
 					new String[]{"text", "50", "Tags", tagz.toString()});
 
-			final HTMLNode buttons = form.addChild("p");
+			final HTMLNode buttons = submitBox.addChild("p");
 			buttons.addChild("input", new String[]{"type", "name", "value"},
 					new String[]{"submit", "Yes", FlogHelper.getBaseL10n().getString("Proceed")});
 			buttons.addChild("input", new String[]{"type", "name", "value"},

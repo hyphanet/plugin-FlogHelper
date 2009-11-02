@@ -13,7 +13,7 @@ import freenet.support.api.HTTPRequest;
 import java.io.IOException;
 import java.net.URI;
 import plugins.floghelper.FlogHelper;
-import plugins.floghelper.contentsyntax.ContentSyntax;
+import plugins.floghelper.ui.flog.FlogFactory;
 
 /**
  *
@@ -40,28 +40,7 @@ public class PreviewToadlet extends FlogHelperToadlet {
 		}
 
 		String contentID = this.getParameterWhetherItIsPostOrGet(request, "ContentID", 7);
-		PluginStore content = flog.subStores.get(contentID);
-		assert (content != null);
-
-		StringBuilder generatedPreview = new StringBuilder();
-
-		generatedPreview.append("<html><head><title>Preview</title></head><body>");
-		String syntax = content.strings.get("ContentSyntax");
-		if (syntax == null) {
-			syntax = "RawXHTML";
-		}
-
-		try {
-			generatedPreview.append(((ContentSyntax) Class.forName("plugins.floghelper.contentsyntax." + syntax).newInstance()).parseSomeString(content.strings.get("Content")));
-		} catch (InstantiationException ex) {
-			Logger.error(this, "Cannot instanciate Content syntax " + content.strings.get("ContentSyntax"));
-		} catch (IllegalAccessException ex) {
-			Logger.error(this, "Cannot instanciate Content syntax " + content.strings.get("ContentSyntax"));
-		} catch (ClassNotFoundException ex) {
-			Logger.error(this, "Cannot instanciate Content syntax " + content.strings.get("ContentSyntax"));
-		}
-
-		generatedPreview.append("</body></html>");
-		writeHTMLReply(ctx, 200, "OK", null, generatedPreview.toString());
+		
+		writeHTMLReply(ctx, 200, "OK", null, new FlogFactory(flog).getContentPage(contentID));
 	}
 }

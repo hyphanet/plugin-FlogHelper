@@ -24,10 +24,10 @@ public class DataFormatter {
 	}
 
 	public static final String printStore(final PluginStore e) {
-		return printStore(e, 1);
+		return printStore(e, null, 1);
 	}
 
-	private static final String printStore(final PluginStore e, final int recursionLevel) {
+	private static final String printStore(final PluginStore e, final String name, final int recursionLevel) {
 		assert (recursionLevel >= 1);
 
 		// Avoid StackOverflowException when there are bugs...
@@ -45,7 +45,7 @@ public class DataFormatter {
 			for (int i = 1; i < recursionLevel; ++i) {
 				toReturn.append("----");
 			}
-			toReturn.append("SubStore:\n");
+			toReturn.append("SubStore<" +  name + ">:\n");
 		}
 
 		if (e.booleans != null) {
@@ -111,7 +111,7 @@ public class DataFormatter {
 
 		if (e.subStores != null) {
 			for (String s : e.subStores.keySet()) {
-				toReturn.append(printStore(e.subStores.get(s), recursionLevel + 1));
+				toReturn.append(printStore(e.subStores.get(s), s, recursionLevel + 1));
 			}
 		}
 
@@ -148,6 +148,8 @@ public class DataFormatter {
 			valueStr = Short.toString((Short) value);
 		} else if(value instanceof byte[]) {
 			valueStr = toString((byte[]) value);
+		} else if(value instanceof String[]) {
+			valueStr = toString((String[]) value);
 		} else {
 			valueStr = value.toString();
 		}
@@ -170,6 +172,19 @@ public class DataFormatter {
 		}
 
 		return sb.delete(sb.length() - 3, sb.length() - 2).append("}").toString();
+	}
+
+	public static final String toString(final String[] values) {
+		if(values == null)
+			return "";
+		final StringBuilder sb = new StringBuilder("{ ");
+		int i = 0;
+		for (String val : values) {
+			++i;
+			sb.append(val).append(", ");
+		}
+
+		return sb.delete(sb.length() - 2, sb.length() - 1).append("}").toString();
 	}
 
 	public static final String indentString(final String s, final int recurseLevel) {

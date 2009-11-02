@@ -75,10 +75,10 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 							links.addChild("a", "href", FlogHelperToadlet.BASE_URI + CreateOrEditFlogToadlet.MY_URI + "?FlogID=" + flogID, FlogHelper.getBaseL10n().getString("ReturnToFlogEdit"));
 						}
 					} else {
-						final HTMLNode infobox = this.getPM().getInfobox("infobox-error", FlogHelper.getBaseL10n().getString("ActivelinkError"), pageNode.content);
-						infobox.addChild("p", FlogHelper.getBaseL10n().getString("ActivelinkMustBeAPNGPicture"));
-						final HTMLNode links = infobox.addChild("p");
-						links.addChild("a", "href", FlogHelperToadlet.BASE_URI + CreateOrEditFlogToadlet.MY_URI + "?FlogID=" + flogID, FlogHelper.getBaseL10n().getString("ReturnToFlogEdit"));
+						//final HTMLNode infobox = this.getPM().getInfobox("infobox-error", FlogHelper.getBaseL10n().getString("ActivelinkError"), pageNode.content);
+						//infobox.addChild("p", FlogHelper.getBaseL10n().getString("ActivelinkMustBeAPNGPicture"));
+						//final HTMLNode links = infobox.addChild("p");
+						//links.addChild("a", "href", FlogHelperToadlet.BASE_URI + CreateOrEditFlogToadlet.MY_URI + "?FlogID=" + flogID, FlogHelper.getBaseL10n().getString("ReturnToFlogEdit"));
 					}
 				}
 			}
@@ -99,24 +99,26 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			links.addChild("br");
 			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + CreateOrEditFlogToadlet.MY_URI, FlogHelper.getBaseL10n().getString("CreateNewFlog"));
 		} else {
-			final String title;
 			final PluginStore flog;
 			if (flogID == null || flogID.equals("") || !FlogHelper.getStore().subStores.containsKey(flogID)) {
-				title = "CreateFlog";
 				flogID = DataFormatter.createUniqueFlogID();
 				(flog = new PluginStore()).strings.put("ID", flogID);
 			} else {
-				title = "EditFlog";
 				flog = FlogHelper.getStore().subStores.get(flogID);
 			}
 
-			final HTMLNode form = FlogHelper.getPR().addFormChild(this.getPM().getInfobox(null,
-					FlogHelper.getBaseL10n().getString(title), pageNode.content), this.path(), "CreateOrEdit-" + flogID);
+			final HTMLNode form = FlogHelper.getPR().addFormChild(pageNode.content, this.path(), "CreateOrEdit-" + flogID);
+
+			final HTMLNode generalBox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("GeneralFlogData"), form, "GeneralFlogData", true);
+			final HTMLNode activelinkBox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("Activelink"), form, "ActivelinkFlogData", true);
+			final HTMLNode settingsBox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("FlogSettings"), form, "SettingsFlogData", true);
+			final HTMLNode templatesBox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("Templates"), form, "TemplatesFlogData", true);
+			final HTMLNode submitBox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("SaveChanges"), form, "SubmitFlogData", true);
 
 			form.addChild("input", new String[]{"type", "name", "value"},
 					new String[]{"hidden", "FlogID", flogID});
 
-			form.addChild("p").addChild("label", "for", "Title", FlogHelper.getBaseL10n().getString("TitleFieldDesc")).addChild("br").addChild("input", new String[]{"type", "size", "name", "value"},
+			generalBox.addChild("p").addChild("label", "for", "Title", FlogHelper.getBaseL10n().getString("TitleFieldDesc")).addChild("br").addChild("input", new String[]{"type", "size", "name", "value"},
 					new String[]{"text", "50", "Title", DataFormatter.toString(flog.strings.get("Title"))});
 
 			final HTMLNode authorsBox = new HTMLNode("select", new String[]{"id", "name"}, new String[]{"Author", "Author"});
@@ -127,27 +129,27 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 				}
 			}
 
-			form.addChild("p").addChild("label", "for", "Author", FlogHelper.getBaseL10n().getString("AuthorFieldDesc")).addChild("br").addChild(authorsBox);
+			generalBox.addChild("p").addChild("label", "for", "Author", FlogHelper.getBaseL10n().getString("AuthorFieldDesc")).addChild("br").addChild(authorsBox);
 
 			// Most browsers probably won't care about the accept="image/png" attribute
 			// But we put it anyway... because it's semantic
-			form.addChild("p").addChild("label", "for", "Activelink", FlogHelper.getBaseL10n().getString("ActivelinkFieldDesc").replace("${Width}", Integer.toString(Activelink.WIDTH)).replace("${Height}", Integer.toString(Activelink.HEIGHT))).addChild("br").addChild("input", new String[]{"type", "accept", "name"},
+			activelinkBox.addChild("p").addChild("label", "for", "Activelink", FlogHelper.getBaseL10n().getString("ActivelinkFieldDesc").replace("${Width}", Integer.toString(Activelink.WIDTH)).replace("${Height}", Integer.toString(Activelink.HEIGHT))).addChild("br").addChild("input", new String[]{"type", "accept", "name"},
 					new String[]{"file", Activelink.MIMETYPE, "Activelink"});
-			form.addChild("p").addChild("label", "for", "ActivelinkDelete", FlogHelper.getBaseL10n().getString("ActivelinkDeleteFieldDesc")).addChild("input", new String[]{"type", "name", "id"},
+			activelinkBox.addChild("p").addChild("label", "for", "ActivelinkDelete", FlogHelper.getBaseL10n().getString("ActivelinkDeleteFieldDesc")).addChild("input", new String[]{"type", "name", "id"},
 					new String[]{"checkbox", "ActivelinkDelete", "ActivelinkDelete"});
 
-			ContentSyntax.addJavascriptEditbox(form, "SmallDescription",
+			ContentSyntax.addJavascriptEditbox(generalBox, "SmallDescription",
 					flog.strings.get("SmallDescriptionContentSyntax"), DataFormatter.toString(flog.strings.get("SmallDescription")),
 					FlogHelper.getBaseL10n().getString("SmallDescriptionFieldDesc"));
 
 			final boolean insertPluginStoreDump = flog.booleans.get("InsertPluginStoreDump") == null ? false : flog.booleans.get("InsertPluginStoreDump");
-			form.addChild("p").addChild("label", "for", "InsertPluginStoreDump", FlogHelper.getBaseL10n().getString("InsertPluginStoreDumpDesc")).addChild("input", new String[]{"type", "name", "id", insertPluginStoreDump ? "checked" : "class"},
+			settingsBox.addChild("p").addChild("label", "for", "InsertPluginStoreDump", FlogHelper.getBaseL10n().getString("InsertPluginStoreDumpDesc")).addChild("input", new String[]{"type", "name", "id", insertPluginStoreDump ? "checked" : "class"},
 					new String[]{"checkbox", "InsertPluginStoreDump", "InsertPluginStoreDump", insertPluginStoreDump ? "checked" : ""});
 			final boolean publishContentModificationDate = flog.booleans.get("PublishContentModificationDate") == null ? false : flog.booleans.get("PublishContentModificationDate");
-			form.addChild("p").addChild("label", "for", "PublishContentModificationDate", FlogHelper.getBaseL10n().getString("PublishContentModificationDateDesc")).addChild("input", new String[]{"type", "name", "id", publishContentModificationDate ? "checked" : "class"},
+			settingsBox.addChild("p").addChild("label", "for", "PublishContentModificationDate", FlogHelper.getBaseL10n().getString("PublishContentModificationDateDesc")).addChild("input", new String[]{"type", "name", "id", publishContentModificationDate ? "checked" : "class"},
 					new String[]{"checkbox", "PublishContentModificationDate", "PublishContentModificationDate", publishContentModificationDate ? "checked" : ""});
 
-			final HTMLNode buttons = form.addChild("p");
+			final HTMLNode buttons = submitBox.addChild("p");
 			buttons.addChild("input", new String[]{"type", "name", "value"},
 					new String[]{"submit", "Yes", FlogHelper.getBaseL10n().getString("Proceed")});
 			buttons.addChild("input", new String[]{"type", "name", "value"},

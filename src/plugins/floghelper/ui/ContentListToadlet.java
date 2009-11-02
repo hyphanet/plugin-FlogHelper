@@ -81,8 +81,7 @@ public class ContentListToadlet extends FlogHelperToadlet {
 			row.addChild("td", DataFormatter.toString(new Date(content.longs.get("LastModification")).toString()));
 
 			final HTMLNode formDetails = FlogHelper.getPR().addFormChild(row.addChild("td"), FlogHelperToadlet.BASE_URI +
-					// FIXME do not use hardcoded URI here
-					"/ViewContent/", "ContentDetails-" + content.strings.get("ID"));
+					PreviewToadlet.MY_URI, "ContentDetails-" + content.strings.get("ID"));
 			formDetails.addAttribute("method", "get");
 			formDetails.addChild("input", new String[]{"type", "value"},
 					new String[]{"submit", FlogHelper.getBaseL10n().getString("Preview")});
