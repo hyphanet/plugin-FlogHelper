@@ -13,13 +13,9 @@
 	<property name="freenetjarurl.url" value="http://downloads.freenetproject.org/alpha/freenet-testing-latest.jar.url"/>
 	<property name="freenetjarurl.localpath" value="${deps}/freenet-testing-latest.jar.url"/>
 
-	<!-- FIXME, those URLs have to be manually updated every time... -->
-	<property name="freenetextjarurl.url" value="http://downloads.freenetproject.org/alpha/freenet-ext.27pre6.jar"/>
-
-	<!-- If you want to build using a custom jars, edit this and they won't be
-	fetched. You can also symlink your custom jars do deps/ -->
-	<property name="freenetjar" value="${deps}/freenet-main.jar"/>
-	<property name="freenetextjar" value="${deps}/freenet-ext-main.jar"/>
+	<!-- If you want to build using a custom jar, edit this and it won't be
+	fetched. You can also symlink your custom jars to deps/ -->
+	<property name="freenetjar" value="deps/freenet-cvs-snapshot.jar"/>
 
 	<target name="freenetjar-check">
 		<available file="${freenetjar}" property="freenetjar.present" />
@@ -37,19 +33,7 @@
 			verbose="true" />
 	</target>
 
-	<target name="freenetextjar-check">
-		<available file="${freenetextjar}" property="freenetextjar.present" />
-	</target>
-
-	<target name="freenetextjar-fetch" depends="freenetextjar-check" unless="freenetextjar.present">
-		<echo>Fetching latest Freenet-ext JAR from freenetproject.org...</echo>
-		<mkdir dir="${deps}" />
-		<get src="${freenetextjarurl.url}"
-			dest="${freenetextjar}"
-			verbose="true" />
-	</target>
-
-	<target name="compile" depends="freenetjar-fetch,freenetextjar-fetch">
+	<target name="compile" depends="freenetjar-fetch">
 		<mkdir dir="${build}"/>
 
 		<tstamp/>
@@ -57,7 +41,6 @@
 		<javac srcdir="${src}" destdir="${build}" debug="on" optimize="on" source="1.5">
 			<classpath>
 				<pathelement location="${freenetjar}"/>
-				<pathelement location="${freenetextjar}"/>
 			</classpath>
 		</javac>
 		<copy todir="${build}">
@@ -73,11 +56,8 @@
 		<jar jarfile="${dist}/FlogHelper.jar" basedir="${build}">
 			<manifest>
 				<attribute name="Plugin-Main-Class" value="plugins.floghelper.FlogHelper"/>
-				<attribute name="Built-By" value="${user.name}"/>
 				<section name="common">
 					<attribute name="Implementation-Title" value="FlogHelper"/>
-					<attribute name="Implementation-Version" value="0.0.1"/> 
-					<attribute name="Implementation-Vendor" value="Romain Dalmaso (aka Artefact2)"/>
 				</section>
 			</manifest>
 		</jar>
@@ -100,5 +80,6 @@
 		<delete dir="${build}"/>
 		<delete dir="${lib}"/>
 		<delete dir="${deps}"/>
+		<delete dir="dist/"/>
 	</target>
 </project>
