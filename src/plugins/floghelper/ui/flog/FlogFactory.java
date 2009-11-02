@@ -26,23 +26,31 @@ import plugins.floghelper.contentsyntax.ContentSyntax;
 public class FlogFactory {
 	private final PluginStore flog;
 
-	public static String getTemplate() {
-		// TODO maybe make this user-editable
+	private static String getResourceAsString(String resource) {
 		StringBuffer sb = new StringBuffer();
-		InputStream res = FlogHelper.class.getClassLoader().getResourceAsStream("plugins/floghelper/ui/flog/GlobalTemplate.html");
+		InputStream res = FlogHelper.class.getClassLoader().getResourceAsStream(resource);
 
 		BufferedReader br = new BufferedReader(new InputStreamReader(res));
 		String buffer = "";
-		
+
 		try {
 			while ((buffer = br.readLine()) != null) {
 				sb.append(buffer).append("\n");
 			}
 		} catch (IOException ex) {
-			Logger.error(FlogFactory.class, "IOException while reading the template !");
+			Logger.error(FlogFactory.class, "IOException while reading resource " + resource + " !");
 		}
 
 		return sb.toString();
+	}
+
+	public static String getTemplate() {
+		return getResourceAsString("plugins/floghelper/ui/flog/GlobalTemplate.html");
+	}
+
+	public static String getCSS() {
+		return getResourceAsString("plugins/floghelper/ui/flog/GlobalStyle.css");
+
 	}
 
 	public FlogFactory(PluginStore flog) {

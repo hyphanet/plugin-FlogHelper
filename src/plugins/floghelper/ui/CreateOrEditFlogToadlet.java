@@ -57,6 +57,10 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			flog.strings.put("SmallDescriptionContentSyntax", request.getPartAsString("SmallDescription_syntaxes", 1000));
 			flog.booleans.put("InsertPluginStoreDump", request.isPartSet("InsertPluginStoreDump"));
 			flog.booleans.put("PublishContentModificationDate", request.isPartSet("PublishContentModificationDate"));
+			flog.booleans.put("OverrideTemplate", request.isPartSet("OverrideTemplate"));
+			flog.strings.put("OverrideTemplateValue", request.getPartAsString("OverrideTemplateValue", 100000));
+			flog.booleans.put("OverrideCSS", request.isPartSet("OverrideCSS"));
+			flog.strings.put("OverrideCSSValue", request.getPartAsString("OverrideCSSValue", 100000));
 
 			if (request.isPartSet("ActivelinkDelete")) {
 				flog.bytesArrays.put("Activelink", null);
@@ -135,19 +139,50 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			// But we put it anyway... because it's semantic
 			activelinkBox.addChild("p").addChild("label", "for", "Activelink", FlogHelper.getBaseL10n().getString("ActivelinkFieldDesc").replace("${Width}", Integer.toString(Activelink.WIDTH)).replace("${Height}", Integer.toString(Activelink.HEIGHT))).addChild("br").addChild("input", new String[]{"type", "accept", "name"},
 					new String[]{"file", Activelink.MIMETYPE, "Activelink"});
-			activelinkBox.addChild("p").addChild("label", "for", "ActivelinkDelete", FlogHelper.getBaseL10n().getString("ActivelinkDeleteFieldDesc")).addChild("input", new String[]{"type", "name", "id"},
+			HTMLNode checkBlock = activelinkBox.addChild("p");
+			checkBlock.addChild("input", new String[]{"type", "name", "id"},
 					new String[]{"checkbox", "ActivelinkDelete", "ActivelinkDelete"});
+			checkBlock.addChild("label", "for", "ActivelinkDelete", FlogHelper.getBaseL10n().getString("ActivelinkDeleteFieldDesc"));
 
 			ContentSyntax.addJavascriptEditbox(generalBox, "SmallDescription",
 					flog.strings.get("SmallDescriptionContentSyntax"), DataFormatter.toString(flog.strings.get("SmallDescription")),
 					FlogHelper.getBaseL10n().getString("SmallDescriptionFieldDesc"));
 
 			final boolean insertPluginStoreDump = flog.booleans.get("InsertPluginStoreDump") == null ? false : flog.booleans.get("InsertPluginStoreDump");
-			settingsBox.addChild("p").addChild("label", "for", "InsertPluginStoreDump", FlogHelper.getBaseL10n().getString("InsertPluginStoreDumpDesc")).addChild("input", new String[]{"type", "name", "id", insertPluginStoreDump ? "checked" : "class"},
+			checkBlock = settingsBox.addChild("p");
+			checkBlock.addChild("input", new String[]{"type", "name", "id", insertPluginStoreDump ? "checked" : "class"},
 					new String[]{"checkbox", "InsertPluginStoreDump", "InsertPluginStoreDump", insertPluginStoreDump ? "checked" : ""});
+
 			final boolean publishContentModificationDate = flog.booleans.get("PublishContentModificationDate") == null ? false : flog.booleans.get("PublishContentModificationDate");
-			settingsBox.addChild("p").addChild("label", "for", "PublishContentModificationDate", FlogHelper.getBaseL10n().getString("PublishContentModificationDateDesc")).addChild("input", new String[]{"type", "name", "id", publishContentModificationDate ? "checked" : "class"},
+			checkBlock.addChild("label", "for", "InsertPluginStoreDump", FlogHelper.getBaseL10n().getString("InsertPluginStoreDumpDesc"));
+			checkBlock = settingsBox.addChild("p");
+			checkBlock.addChild("input", new String[]{"type", "name", "id", publishContentModificationDate ? "checked" : "class"},
 					new String[]{"checkbox", "PublishContentModificationDate", "PublishContentModificationDate", publishContentModificationDate ? "checked" : ""});
+			checkBlock.addChild("label", "for", "PublishContentModificationDate", FlogHelper.getBaseL10n().getString("PublishContentModificationDateDesc"));
+
+			final boolean overrideTemplate = flog.booleans.get("OverrideTemplate") == null ? false : flog.booleans.get("OverrideTemplate");
+			checkBlock = templatesBox.addChild("p");
+			checkBlock.addChild("input", new String[]{"type", "name", "id", overrideTemplate ? "checked" : "class"},
+					new String[]{"checkbox", "OverrideTemplate", "OverrideTemplate", overrideTemplate ? "checked" : ""});
+			checkBlock.addChild("label", "for", "OverrideTemplate", FlogHelper.getBaseL10n().getString("OverrideTemplateLong"));
+			checkBlock.addChild("br");
+			checkBlock.addChild("textarea", new String[]{"rows", "cols", "name", "id"},
+					new String[]{"12", "80", "OverrideTemplateValue", "OverrideTemplateValue"}, flog.strings.get("OverrideTemplateValue"));
+			checkBlock.addChild("br");
+			checkBlock.addChild("a", "href", FlogHelperToadlet.BASE_URI + PreviewToadlet.MY_URI + PreviewToadlet.VIEW_RAW_DEFAULT_TEMPLATE_URI,
+					FlogHelper.getBaseL10n().getString("SeeTheRawDefaultTemplate"));
+
+			final boolean overrideCSS = flog.booleans.get("OverrideCSS") == null ? false : flog.booleans.get("OverrideCSS");
+			checkBlock = templatesBox.addChild("p");
+			checkBlock.addChild("input", new String[]{"type", "name", "id", overrideCSS ? "checked" : "class"},
+					new String[]{"checkbox", "OverrideCSS", "OverrideCSS", overrideCSS ? "checked" : ""});
+			checkBlock.addChild("label", "for", "OverrideCSS", FlogHelper.getBaseL10n().getString("OverrideCSSLong"));
+			checkBlock.addChild("br");
+			checkBlock.addChild("textarea", new String[]{"rows", "cols", "name", "id"},
+					new String[]{"12", "80", "OverrideCSSValue", "OverrideCSSValue"}, flog.strings.get("OverrideCSSValue"));
+			checkBlock.addChild("br");
+			checkBlock.addChild("a", "href", FlogHelperToadlet.BASE_URI + PreviewToadlet.MY_URI + PreviewToadlet.VIEW_DEFAULT_CSS_URI,
+					FlogHelper.getBaseL10n().getString("SeeTheDefaultCSS"));
 
 			final HTMLNode buttons = submitBox.addChild("p");
 			buttons.addChild("input", new String[]{"type", "name", "value"},
