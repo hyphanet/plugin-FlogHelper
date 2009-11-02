@@ -61,6 +61,10 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			flog.strings.put("OverrideTemplateValue", request.getPartAsString("OverrideTemplateValue", 100000));
 			flog.booleans.put("OverrideCSS", request.isPartSet("OverrideCSS"));
 			flog.strings.put("OverrideCSSValue", request.getPartAsString("OverrideCSSValue", 100000));
+			flog.longs.put("NumberOfContentsOnIndex", DataFormatter.tryParseLong(request.getPartAsString("NumberOfContentsOnIndex", 10),
+					flog.longs.containsKey("NumberOfContentsOnIndex") ? flog.longs.get("NumberOfContentsOnIndex") : 7L));
+			flog.longs.put("NumberOfContentsOnArchives", DataFormatter.tryParseLong(request.getPartAsString("NumberOfContentsOnArchives", 10),
+					flog.longs.containsKey("NumberOfContentsOnArchives") ? flog.longs.get("NumberOfContentsOnArchives") : 25L));
 
 			if (request.isPartSet("ActivelinkDelete")) {
 				flog.bytesArrays.put("Activelink", null);
@@ -79,6 +83,7 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 							links.addChild("a", "href", FlogHelperToadlet.BASE_URI + CreateOrEditFlogToadlet.MY_URI + "?FlogID=" + flogID, FlogHelper.getBaseL10n().getString("ReturnToFlogEdit"));
 						}
 					} else {
+						// FIXME this code is triggered when we DON'T upload a picture too
 						//final HTMLNode infobox = this.getPM().getInfobox("infobox-error", FlogHelper.getBaseL10n().getString("ActivelinkError"), pageNode.content);
 						//infobox.addChild("p", FlogHelper.getBaseL10n().getString("ActivelinkMustBeAPNGPicture"));
 						//final HTMLNode links = infobox.addChild("p");
@@ -159,6 +164,15 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			checkBlock.addChild("input", new String[]{"type", "name", "id", publishContentModificationDate ? "checked" : "class"},
 					new String[]{"checkbox", "PublishContentModificationDate", "PublishContentModificationDate", publishContentModificationDate ? "checked" : ""});
 			checkBlock.addChild("label", "for", "PublishContentModificationDate", FlogHelper.getBaseL10n().getString("PublishContentModificationDateDesc"));
+
+			settingsBox.addChild("p").addChild("label", "for", "NumberOfContentsOnIndex", FlogHelper.getBaseL10n().getString("NumberOfContentsOnIndexFieldDesc")).addChild("br")
+					.addChild("input", new String[]{"type", "size", "name", "value"},
+					new String[]{"text", "4", "NumberOfContentsOnIndex", flog.longs.containsKey("NumberOfContentsOnIndex") ? 
+						DataFormatter.toString(flog.longs.get("NumberOfContentsOnIndex")) : "7"});
+			settingsBox.addChild("p").addChild("label", "for", "NumberOfContentsOnArchives", FlogHelper.getBaseL10n().getString("NumberOfContentsOnArchivesFieldDesc")).addChild("br")
+					.addChild("input", new String[]{"type", "size", "name", "value"},
+					new String[]{"text", "4", "NumberOfContentsOnArchives", flog.longs.containsKey("NumberOfContentsOnArchives") ?
+						DataFormatter.toString(flog.longs.get("NumberOfContentsOnArchives")) : "25"});
 
 			final boolean overrideTemplate = flog.booleans.get("OverrideTemplate") == null ? false : flog.booleans.get("OverrideTemplate");
 			checkBlock = templatesBox.addChild("p");

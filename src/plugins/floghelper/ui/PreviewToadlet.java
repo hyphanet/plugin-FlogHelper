@@ -41,25 +41,47 @@ public class PreviewToadlet extends FlogHelperToadlet {
 		} else if (uri.getPath().equals(FlogHelperToadlet.BASE_URI + PreviewToadlet.MY_URI + VIEW_DEFAULT_CSS_URI)) {
 			previewCSS(pageNode, uri, request, ctx);
 		} else {
-			final PluginStore flog = FlogHelper.getStore().subStores.get(this.getParameterWhetherItIsPostOrGet(request, "FlogID", 7));
+			final String flogID = uri.getPath().replace(FlogHelperToadlet.BASE_URI + PreviewToadlet.MY_URI, "").split("/")[0];
+			final PluginStore flog = FlogHelper.getStore().subStores.get(flogID);
+			final FlogFactory factory = new FlogFactory(flog);
 			if (flog == null) {
 				this.sendErrorPage(ctx, 404, "Not found", "Incorrect or missing FlogID.");
+			} else {
+				final String file = uri.getPath().replace(FlogHelperToadlet.BASE_URI + PreviewToadlet.MY_URI, "").replace(flogID, "");
+				if(file.equals("/") || file.equals("/index.html")) {
+					writeHTMLReply(ctx, 200, "OK", null, factory.getIndex());
+				} else if(file.startsWith("/Content-") && file.endsWith(".html")) {
+					final String contentID = file.replace("/Content-", "").replace(".html", "");
+					if(flog.subStores.containsKey(contentID)) {
+						writeHTMLReply(ctx, 200, "OK", null, factory.getContentPage(contentID));
+					} else {
+						this.sendErrorPage(ctx, 404, "Not found", "Incorrect or missing ContentID.");
+					}
+				} else if(file.startsWith("/Archives-p") && file.endsWith(".html")) {
+					writeHTMLReply(ctx, 200, "OK", null, factory.getArchives(Long.parseLong(file.replace("/Archives-p", "").replace(".html", ""))));
+				} else if(file.startsWith("/Tag-") && file.endsWith(".html")) {
+					final long page = Long.parseLong(file.replaceAll("^/Tag-(.+?)-p([0-9]+)\\.html$", "$2"));
+					final String tag = file.replaceAll("^/Tag-(.+?)-p([0-9]+)\\.html$", "$1");
+					writeHTMLReply(ctx, 200, "OK", null, factory.getTagsPage(tag, page));
+				} else if(file.equals("/GlobalStyle.css")) {
+					byte[] data = new FlogFactory(flog).getCSS().getBytes();
+					ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "text/css", data.length);
+					ctx.writeData(data);
+				} else {
+					this.sendErrorPage(ctx, 404, "Not found", "Unintelligible URI.");
+				}
 			}
-
-			String contentID = this.getParameterWhetherItIsPostOrGet(request, "ContentID", 7);
-
-			writeHTMLReply(ctx, 200, "OK", null, new FlogFactory(flog).getContentPage(contentID));
 		}
 	}
 
 	public static void previewTemplate(PageNode pageNode, URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		byte[] data = FlogFactory.getTemplate().getBytes();
+		byte[] data = new FlogFactory(new PluginStore()).getTemplate().getBytes();
 		ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "text/plain", data.length);
 		ctx.writeData(data);
 	}
 
 	public static void previewCSS(PageNode pageNode, URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		byte[] data = FlogFactory.getCSS().getBytes();
+		byte[] data = new FlogFactory(new PluginStore()).getCSS().getBytes();
 		ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "text/plain", data.length);
 		ctx.writeData(data);
 	}

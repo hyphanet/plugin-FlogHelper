@@ -81,14 +81,10 @@ public class ContentListToadlet extends FlogHelperToadlet {
 			row.addChild("td", DataFormatter.toString(new Date(content.longs.get("LastModification")).toString()));
 
 			final HTMLNode formDetails = FlogHelper.getPR().addFormChild(row.addChild("td"), FlogHelperToadlet.BASE_URI +
-					PreviewToadlet.MY_URI, "ContentDetails-" + content.strings.get("ID"));
+					PreviewToadlet.MY_URI + flog.strings.get("ID") + "/Content-" + content.strings.get("ID") + ".html", "ContentDetails-" + content.strings.get("ID"));
 			formDetails.addAttribute("method", "get");
 			formDetails.addChild("input", new String[]{"type", "value"},
 					new String[]{"submit", FlogHelper.getBaseL10n().getString("Preview")});
-			formDetails.addChild("input", new String[]{"type", "name", "value"},
-					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.strings.get("ID"))});
-			formDetails.addChild("input", new String[]{"type", "name", "value"},
-					new String[]{"hidden", "ContentID", DataFormatter.toString(content.strings.get("ID"))});
 
 			final HTMLNode formDelete = FlogHelper.getPR().addFormChild(row.addChild("td"), this.path(),
 					"DeleteContent-" + content.strings.get("ID"));

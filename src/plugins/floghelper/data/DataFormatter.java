@@ -8,7 +8,8 @@ import java.util.Random;
 import plugins.floghelper.FlogHelper;
 
 /**
- *
+ * This is mostly debugging code : printing PluginStores in a human-readable way, ...
+ * 
  * @author Artefact2
  */
 public class DataFormatter {
@@ -234,6 +235,14 @@ public class DataFormatter {
 			if (store.subStores.get(id) == null) {
 				return id;
 			}
+		}
+	}
+
+	public static final long tryParseLong(String value, long defaultValue) {
+		try {
+			return Long.parseLong(value);
+		} catch (NumberFormatException e) {
+			return defaultValue;
 		}
 	}
 }

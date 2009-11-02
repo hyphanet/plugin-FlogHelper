@@ -78,7 +78,7 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 			final HTMLNode links = infobox.addChild("p");
 			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + ContentListToadlet.MY_URI + "?FlogID=" + flog.strings.get("ID"), FlogHelper.getBaseL10n().getString("ReturnToContentList"));
 			links.addChild("br");
-			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + PreviewToadlet.MY_URI + "?ContentID=" + content.strings.get("ID") + "&FlogID=" + flog.strings.get("ID"), FlogHelper.getBaseL10n().getString("PreviewContent"));
+			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + PreviewToadlet.MY_URI + flog.strings.get("ID") + "/Content-" + content.strings.get("ID") + ".html", FlogHelper.getBaseL10n().getString("PreviewContent"));
 		} else if (request.isPartSet("No")) {
 			final HTMLNode infobox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("ContentCreationCancelled"), pageNode.content);
 			infobox.addChild("p", FlogHelper.getBaseL10n().getString("ContentCreationCancelledLong"));
