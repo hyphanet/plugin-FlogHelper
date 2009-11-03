@@ -38,12 +38,10 @@ import plugins.floghelper.ui.PreviewToadlet;
  *
  * TODO: proper GPL headers
  * TODO: proper javadoc
- * TODO: render to xHTML (in a Map<String (filename), String (file contents)> in order not to leave any tracks on the HDD)
  * TODO: insert (maybe use the same SSK as the main WoT identity?)
  * TODO: WoT register context!
  * TODO: filters
  * TODO: sorting (by creation date first)
- * TODO: theme mgmt stuff
  * @author Artefact2
  */
 public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginBaseL10n, FredPluginL10n, FredPluginThemed, FredPluginVersioned, FredPluginRealVersioned, FredPluginTalker {

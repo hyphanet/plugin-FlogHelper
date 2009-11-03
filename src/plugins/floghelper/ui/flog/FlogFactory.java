@@ -165,7 +165,30 @@ public class FlogFactory {
 		return mainContent.toString();
 	}
 
-	public String parseInvariantData(String template, String uri) {
+	private String getDescription(PluginStore flog) {
+		String syntax = flog.strings.get("SmallDescriptionContentSyntax");
+		if (syntax == null) {
+			syntax = "RawXHTML";
+		}
+
+		String fDesc = "";
+
+		try {
+			String rawDescr = flog.strings.get("SmallDescription");
+			if(rawDescr.trim().equals("")) return fDesc;
+			else fDesc = ((ContentSyntax) Class.forName("plugins.floghelper.contentsyntax." + syntax).newInstance()).parseSomeString(rawDescr);
+		} catch (InstantiationException ex) {
+			Logger.error(this, "Cannot instanciate Content syntax " + flog.strings.get("SmallDescriptionContentSyntax"));
+		} catch (IllegalAccessException ex) {
+			Logger.error(this, "Cannot instanciate Content syntax " + flog.strings.get("SmallDescriptionContentSyntax"));
+		} catch (ClassNotFoundException ex) {
+			Logger.error(this, "Cannot instanciate Content syntax " + flog.strings.get("SmallDescriptionContentSyntax"));
+		}
+
+		return fDesc;
+	}
+
+	private String parseInvariantData(String template, String uri) {
 		template = template.replace("{FlogAuthor}", this.flog.strings.get("Author"));
 		template = template.replace("{FlogName}", this.flog.strings.get("Title"));
 		template = template.replace("{StyleURI}", "./GlobalStyle.css");
@@ -211,7 +234,7 @@ public class FlogFactory {
 			mainContent.append(this.getParsedContentBlock(content));
 		}
 
-		return genPage.replace("{MainContent}", mainContent.toString());
+		return genPage.replace("{MainContent}", this.getDescription(flog) + mainContent.toString());
 	}
 
 	public String getArchives(long page) {
