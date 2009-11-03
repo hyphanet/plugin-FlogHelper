@@ -10,17 +10,34 @@ import plugins.floghelper.contentsyntax.js.JavascriptFactoryToadlet;
 import plugins.floghelper.ui.FlogHelperToadlet;
 
 /**
+ * This abstract class represent a content syntax, such as xHTML, BBCode, ...
  *
  * @author Artefact2
  */
 public abstract class ContentSyntax {
 
+	/**
+	 * List of currently implemented syntaxes, the names should be equal to
+	 * their respective classnames.
+	 */
 	public enum Syntaxes {
-
 		YAWKL, RawXHTML
 	}
+
+	/**
+	 * List of SyntaxElements. Basically : elements ([bold], [/bold]), its
+	 * associated regex for parsing and more informations for javascript buttons.
+	 */
 	protected final Vector<SyntaxElement> syntaxElements = new Vector<SyntaxElement>();
 
+	/**
+	 * Parse a string into xHTML. You can override this if you want, but
+	 * remember to call super.parseSomeString() too to avoid code
+	 * duplication.
+	 *
+	 * @param s String to parse.
+	 * @return Formatted string (aka xHTML code)
+	 */
 	public String parseSomeString(String s) {
 		for (SyntaxElement e : this.syntaxElements) {
 			s = e.regex.matcher(s).replaceAll(e.xHTMLReplacement);
@@ -28,6 +45,13 @@ public abstract class ContentSyntax {
 		return s;
 	}
 
+	/**
+	 * Get the javascript code used to provide the buttons to automatically add
+	 * the elements in the textarea.
+	 *
+	 * @param textAreaName Name of the textarea used.
+	 * @return Javascript code.
+	 */
 	public static String getJavascriptCode(String textAreaName) {
 		StringBuilder s = new StringBuilder();
 
@@ -71,6 +95,16 @@ public abstract class ContentSyntax {
 		return s.append("}\n").toString();
 	}
 
+	/**
+	 * Add a textarea and its associated javascript stuff.
+	 *
+	 * @param parentForm Parent form to use.
+	 * @param textAreaName Name/id of the textarea.
+	 * @param defaultSelectedValue Default ContentSyntax to select.
+	 * @param defaultContent Initial value of the textarea.
+	 * @param textAreaLabel Label above the textarea.
+	 * @return HTMLNode of the parentForm.
+	 */
 	public static HTMLNode addJavascriptEditbox(HTMLNode parentForm, String textAreaName, String defaultSelectedValue, String defaultContent, String textAreaLabel) {
 		parentForm.addChild("script", new String[]{"type", "src"}, new String[]{"text/javascript",
 					FlogHelperToadlet.BASE_URI + JavascriptFactoryToadlet.MY_URI + "EditBox.js"}, " ");

@@ -16,6 +16,15 @@ public class DataFormatter {
 
 	public static final Random r = new Random();
 
+	/**
+	 * Format an int, adding zeroes until the result has a certain length.
+	 * Example : formatIntLength(12, 4, false) -> "0012"
+	 *
+	 * @param toFormat integer to format/
+	 * @param size Size of the string to return, eg. 3 with a size of 5 will return 00003.
+	 * @param isHex If true, the string should be returned in hexadecimal format.
+	 * @return Formatted integer.
+	 */
 	public static final String formatIntLength(final int toFormat, final int size, final boolean isHex) {
 		String str = isHex ? Integer.toHexString(toFormat) : Integer.toString(toFormat);
 		while (str.length() < size) {
@@ -24,10 +33,24 @@ public class DataFormatter {
 		return str;
 	}
 
+	/**
+	 * Print a PluginStore in a human readable format.
+	 *
+	 * @param e PluginStore to print.
+	 * @return Textual representation of the store readable by a human.
+	 */
 	public static final String printStore(final PluginStore e) {
 		return printStore(e, null, 1);
 	}
 
+	/**
+	 * Print a PluginStore in a human readable format.
+	 *
+	 * @param e PluginStore to print.
+	 * @param name Name of the PluginStore, will be shown as SubStore&lt;Name&gt;
+	 * @param recursionLevel Value of deeness of this SubStore.
+	 * @return Textual representation of the store readable by a human.
+	 */
 	private static final String printStore(final PluginStore e, final String name, final int recursionLevel) {
 		assert (recursionLevel >= 1);
 
@@ -119,6 +142,14 @@ public class DataFormatter {
 		return toReturn.toString();
 	}
 
+	/**
+	 * Write a line in a store print output.
+	 *
+	 * @param key Key of the mapped element.
+	 * @param value Value of the element.
+	 * @param recursionLevel Level of deepness of the element.
+	 * @param sb StringBuilder to use.
+	 */
 	private static final void writeStoreLine(final String key, final Object value, final int recursionLevel, final StringBuilder sb) {
 		for (int i = 0; i < recursionLevel; ++i) {
 			sb.append("----");
@@ -127,6 +158,11 @@ public class DataFormatter {
 		sb.append(key).append(": ").append(toString(value)).append("\n");
 	}
 
+	/**
+	 * Return a textual representation of an object.
+	 * @param value Object to use.
+	 * @return Textual representation.
+	 */
 	public static final String toString(final Object value) {
 		final String valueStr;
 		if (value == null) {
@@ -158,6 +194,13 @@ public class DataFormatter {
 		return valueStr;
 	}
 
+	/**
+	 * Identical as toString(Object), except that it returns something like
+	 * { Value1, Value2, Value3, ... }
+	 *
+	 * @param values Array of objects to print.
+	 * @return Textual representation.
+	 */
 	public static final String toString(final byte[] values) {
 		if(values == null)
 			return "";
@@ -188,7 +231,14 @@ public class DataFormatter {
 		return sb.delete(sb.length() - 2, sb.length() - 1).append("}").toString();
 	}
 
-	public static final String indentString(final String s, final int recurseLevel) {
+	/**
+	 * Indent a String, should be called by PrintStore for multiline string values.
+	 *
+	 * @param s String to test
+	 * @param recurseLevel Level of deepness of the containing SubStore.
+	 * @return Indented string
+	 */
+	private static final String indentString(final String s, final int recurseLevel) {
 		final StringBuilder sb = new StringBuilder();
 		final String[] lines = s.split("\n");
 
@@ -209,6 +259,11 @@ public class DataFormatter {
 		return sb.substring(0, sb.length() - 1);
 	}
 
+	/**
+	 * Get a random ID, like AAB07C9.
+	 *
+	 * @return Random ID
+	 */
 	public static final String getRandomID() {
 		return getRandomID(7);
 	}
@@ -223,10 +278,21 @@ public class DataFormatter {
 		return sb.toString().toUpperCase();
 	}
 
+	/**
+	 * Get a random ID with a given length.
+	 *
+	 * @return Random ID
+	 */
 	public static final String createUniqueFlogID() {
 		return createSubStoreUniqueID(FlogHelper.getStore());
 	}
 
+	/**
+	 * Get a random ID that is not currently mapped to anything in a store.
+	 *
+	 * @param store Store to use.
+	 * @return Random, unused ID.
+	 */
 	public static final String createSubStoreUniqueID(final PluginStore store) {
 		while (true) {
 			final String id = getRandomID();
@@ -238,6 +304,13 @@ public class DataFormatter {
 		}
 	}
 
+	/**
+	 * Try to parse a long value in a string.
+	 *
+	 * @param value String to parse.
+	 * @param defaultValue Value to return if it fails.
+	 * @return Parsed long or defaultValue if the parsing failed.
+	 */
 	public static final long tryParseLong(String value, long defaultValue) {
 		try {
 			return Long.parseLong(value);

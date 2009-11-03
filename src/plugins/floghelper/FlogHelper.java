@@ -36,6 +36,8 @@ import plugins.floghelper.ui.PreviewToadlet;
  * FlogHelper goals : lightweight, integrated in the node, SECURE,
  * don't recreate the wheel every time.
  *
+ * This is the entry point of the plugin.
+ *
  * TODO: proper GPL headers
  * TODO: proper javadoc
  * TODO: insert (maybe use the same SSK as the main WoT identity?)
@@ -47,10 +49,16 @@ import plugins.floghelper.ui.PreviewToadlet;
 public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginBaseL10n, FredPluginL10n, FredPluginThemed, FredPluginVersioned, FredPluginRealVersioned, FredPluginTalker {
 
 	public static final String PLUGIN_NAME = "FlogHelper";
+	/**
+	 * Don't forget to bump this when a new release is up.
+	 */
 	public static final int REVISION = 6;
 	private static PluginRespirator pr;
 	private static PluginL10n l10n;
 	private static PluginStore store;
+	/**
+	 * Every toadlet should be in this vector, a loop registers them with the node.
+	 */
 	private final Vector<FlogHelperToadlet> myToadlets = new Vector<FlogHelperToadlet>();
 
 	public static BaseL10n getBaseL10n() {
@@ -73,6 +81,11 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 		}
 	}
 
+	/**
+	 * This code is executed when the user unloads the plugin.
+	 * We unregister the toadlets.
+	 * FIXME maybe we need to clean other stuff...
+	 */
 	public void terminate() {
 		FlogHelper.pr.getPageMaker().removeNavigationCategory(FlogHelper.PLUGIN_NAME);
 		for(FlogHelperToadlet e : this.myToadlets) {
@@ -80,12 +93,17 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 		}
 	}
 
+	/**
+	 * This code is run when the user loads the plugin.
+	 * @param pr PluginRespirator to use.
+	 */
 	public void runPlugin(final PluginRespirator pr) {
 		FlogHelper.pr = pr;
 		FlogHelper.l10n = new PluginL10n(this);
 		try {
 			FlogHelper.store = FlogHelper.pr.getStore();
 		} catch (DatabaseDisabledException ex) {
+			// FIXME we need to handle this error gracefully !
 			Logger.error(this.getClass(), "Could not load flogs from db4o - " + ex.getMessage());
 		}
 

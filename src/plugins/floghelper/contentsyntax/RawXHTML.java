@@ -7,6 +7,7 @@ import plugins.floghelper.FlogHelper;
 
 /**
  * RawXHTML is raw xHTML code. It does nothing.
+ *
  * @author Artefact2
  */
 public class RawXHTML extends ContentSyntax {

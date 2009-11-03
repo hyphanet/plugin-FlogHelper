@@ -7,8 +7,9 @@ import java.util.regex.Pattern;
 import plugins.floghelper.FlogHelper;
 
 /**
- * YAWKL stands for "Yet Another Wikicode like"...
- * The K just makes it looks cool.
+ * YAWKL stands for "Yet Another WiKicode Like language"...
+ * Goals : easy to type, easy to remember, easy to parse.
+ *
  * @author Artefact2
  */
 public class YAWKL extends ContentSyntax {
@@ -157,7 +158,7 @@ public class YAWKL extends ContentSyntax {
 		// <p><br /> is ugly, fix it
 		s = s.replaceAll("<p>\\s*<br />", "<p>");
 
-		// Remove <br /> that aren't in a paragraph element
+		// Remove "<br />"s that aren't in a paragraph element
 		s = s.replaceAll("</p>\\s*<br />", "</p>");
 
 		// <br /></p> is ugly, fix it

@@ -1,8 +1,6 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
+/* This code is part of Freenet. It is distributed under the GNU General
+ * Public License, version 2 (or at your option any later version). See
+ * http://www.gnu.org/ for further details of the GPL. */
 package plugins.floghelper.contentsyntax.js;
 
 import freenet.client.HighLevelSimpleClient;
@@ -17,8 +15,10 @@ import plugins.floghelper.contentsyntax.ContentSyntax;
 import plugins.floghelper.ui.FlogHelperToadlet;
 
 /**
+ * This toadlet sends raw Javascript code with the appropriate MIME type to the
+ * browser.
  *
- * @author romain
+ * @author Artefact2
  */
 public class JavascriptFactoryToadlet extends FlogHelperToadlet {
 

@@ -10,11 +10,16 @@ import freenet.support.api.Bucket;
 import plugins.floghelper.FlogHelper;
 
 /**
+ * This class handles FCP messages in a synchronous way. It simplifies the code
+ * for toadlets.
  *
  * @author Artefact2
  */
 public class SyncPluginTalker {
 
+	/**
+	 * Full classname of the WoT plugin.
+	 */
 	public final static String WOT_NAME = "plugins.WoT.WoT";
 	private final PluginReceptor receptor;
 	private final String to;

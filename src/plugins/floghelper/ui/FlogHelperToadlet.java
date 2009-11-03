@@ -18,6 +18,7 @@ import plugins.floghelper.FlogHelper;
 import plugins.floghelper.fcp.wot.WoTOwnIdentities;
 
 /**
+ * Base Toadlet for FlogHelper pages.
  *
  * @author Artefact2
  */

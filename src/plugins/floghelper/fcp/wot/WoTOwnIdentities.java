@@ -15,6 +15,7 @@ import plugins.floghelper.fcp.ReceptorCore;
 import plugins.floghelper.fcp.SyncPluginTalker;
 
 /**
+ * Used to get WoT identities.
  *
  * @author Artefact2
  */

@@ -8,7 +8,8 @@ import freenet.support.SimpleFieldSet;
 import freenet.support.api.Bucket;
 
 /**
- *
+ * This receptor can read FCP replies back.
+ * 
  * @author Artefact2
  */
 public class PluginReceptor implements FredPluginTalker {
