@@ -44,6 +44,7 @@ import plugins.floghelper.ui.PreviewToadlet;
  * TODO: WoT register context!
  * TODO: filters
  * TODO: sorting (by creation date first)
+ * XXX: idea, maybe bundle the flog's index when inserting to allow searching using Librarian
  * @author Artefact2
  */
 public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginBaseL10n, FredPluginL10n, FredPluginThemed, FredPluginVersioned, FredPluginRealVersioned, FredPluginTalker {

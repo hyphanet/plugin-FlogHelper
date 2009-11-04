@@ -135,4 +135,18 @@ public abstract class ContentSyntax {
 
 		return parentForm;
 	}
+
+	public static String parseSomeString(String content, String syntaxName) {
+		try {
+			return ((ContentSyntax) Class.forName("plugins.floghelper.contentsyntax." + syntaxName).newInstance()).parseSomeString(content);
+		} catch (ClassNotFoundException ex) {
+			Logger.error(ContentSyntax.class, "Cannot parse using content syntax: " + syntaxName);
+		} catch (InstantiationException ex) {
+			Logger.error(ContentSyntax.class, "Cannot parse using content syntax: " + syntaxName);
+		} catch (IllegalAccessException ex) {
+			Logger.error(ContentSyntax.class, "Cannot parse using content syntax: " + syntaxName);
+		}
+
+		return "";
+	}
 }

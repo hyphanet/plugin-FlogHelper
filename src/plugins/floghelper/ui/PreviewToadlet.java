@@ -67,6 +67,10 @@ public class PreviewToadlet extends FlogHelperToadlet {
 					byte[] data = new FlogFactory(flog).getCSS().getBytes();
 					ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "text/css", data.length);
 					ctx.writeData(data);
+				} else if(file.equals("/AtomFeed.xml")) {
+					byte[] data = new FlogFactory(flog).getAtomFeed().getBytes();
+					ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "application/atom+xml", data.length);
+					ctx.writeData(data);
 				} else {
 					this.sendErrorPage(ctx, 404, "Not found", "Unintelligible URI.");
 				}

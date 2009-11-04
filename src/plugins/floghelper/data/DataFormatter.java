@@ -4,6 +4,9 @@
 package plugins.floghelper.data;
 
 import freenet.pluginmanager.PluginStore;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Random;
 import plugins.floghelper.FlogHelper;
 
@@ -13,6 +16,15 @@ import plugins.floghelper.FlogHelper;
  * @author Artefact2
  */
 public class DataFormatter {
+
+	/**
+	 * RFC3339-compliant dates are used in Atom feeds.
+	 */
+	public static final SimpleDateFormat RFC3339 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", java.util.Locale.US);
+	/**
+	 * Our date format used in the UI.
+	 */
+	public static final SimpleDateFormat DefaultDateFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
 	public static final Random r = new Random();
 
@@ -317,5 +329,22 @@ public class DataFormatter {
 		} catch (NumberFormatException e) {
 			return defaultValue;
 		}
+	}
+
+	/**
+	 * Obfuscate a date, eg. 2009-10-15 20:15:59 -> 2009-10-15 00:00:00
+	 * 
+	 * @param d Date to obfuscate
+	 * @return Simplified date with less precision.
+	 */
+	public static Date obfuscateDate(Date d) {
+		GregorianCalendar c = new GregorianCalendar();
+		c.setTime(d);
+		c.set(GregorianCalendar.MILLISECOND, 0);
+		c.set(GregorianCalendar.SECOND, 0);
+		c.set(GregorianCalendar.MINUTE, 0);
+		c.set(GregorianCalendar.HOUR, 0);
+
+		return c.getTime();
 	}
 }

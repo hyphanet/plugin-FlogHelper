@@ -3,6 +3,7 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package plugins.floghelper.ui.flog;
 
+import freenet.pluginmanager.PluginNotFoundException;
 import freenet.pluginmanager.PluginStore;
 import freenet.support.Logger;
 import java.io.BufferedReader;
@@ -15,6 +16,8 @@ import java.util.HashMap;
 import java.util.TreeMap;
 import plugins.floghelper.FlogHelper;
 import plugins.floghelper.contentsyntax.ContentSyntax;
+import plugins.floghelper.data.DataFormatter;
+import plugins.floghelper.fcp.wot.WoTOwnIdentities;
 
 /**
  * Flog parsing, generates xHTML code.
@@ -30,7 +33,6 @@ public class FlogFactory {
 		"/", "Index",
 		"/Archives-p1.html", "Archives",
 		"/AtomFeed.xml", "Atom feed",
-		"/RSSFeed.xml", "RSS feed",
 		null, "<form method=\"post\" action=\"\"><p>Search : <input type=\"text\" size=\"10\" /><input type=\"submit\" /></p></form>"
 	};
 
@@ -169,40 +171,33 @@ public class FlogFactory {
 			syntax = "RawXHTML";
 		}
 
-		try {
-			mainContent.append("<div class=\"content_container\">");
-			mainContent.append("<div class=\"content_header\">");
-			mainContent.append("<h1>").append(content.strings.get("Title")).append("</h1><p>");
-			mainContent.append("<a href=\"./Content-").append(content.strings.get("ID")).append(".html\">Permanent link</a> | <a href=\"./Content-").append(content.strings.get("ID")).append(".html#comments\">Comments</a> | Tags : ");
-			boolean first = true;
-			for (String tag : content.stringsArrays.get("Tags")) {
-				if(tag.trim().equals("")) continue;
-				if (first) {
-					first = false;
-				} else {
-					mainContent.append(", ");
-				}
-				mainContent.append("<a href=\"./Tag-").append(tag).append("-p1.html\">").append(tag).append("</a>");
+		mainContent.append("<div class=\"content_container\">");
+		mainContent.append("<div class=\"content_header\">");
+		mainContent.append("<h1>").append(content.strings.get("Title")).append("</h1><p>");
+		mainContent.append("<a href=\"./Content-").append(content.strings.get("ID")).append(".html\">Permanent link</a> | <a href=\"./Content-").append(content.strings.get("ID")).append(".html#comments\">Comments</a> | Tags : ");
+		boolean first = true;
+		for (String tag : content.stringsArrays.get("Tags")) {
+			if (tag.trim().equals("")) {
+				continue;
 			}
-
 			if (first) {
-				mainContent.append("<em>none</em>");
+				first = false;
+			} else {
+				mainContent.append(", ");
 			}
-
-			if (flog.booleans.get("PublishContentModificationDate") != null &&
-					flog.booleans.get("PublishContentModificationDate") == true) {
-				mainContent.append("<br />Creation date : ").append(
-						new SimpleDateFormat("yyyy-MM-dd HH:ss").format(new Date(content.longs.get("CreationDate"))));
-			}
-			mainContent.append("</p></div><div class=\"content_content\">").
-					append(((ContentSyntax) Class.forName("plugins.floghelper.contentsyntax." + syntax).newInstance()).parseSomeString(content.strings.get("Content"))).append("</div></div>");
-		} catch (InstantiationException ex) {
-			Logger.error(this, "Cannot instanciate Content syntax " + content.strings.get("ContentSyntax"));
-		} catch (IllegalAccessException ex) {
-			Logger.error(this, "Cannot instanciate Content syntax " + content.strings.get("ContentSyntax"));
-		} catch (ClassNotFoundException ex) {
-			Logger.error(this, "Cannot instanciate Content syntax " + content.strings.get("ContentSyntax"));
+			mainContent.append("<a href=\"./Tag-").append(tag).append("-p1.html\">").append(tag).append("</a>");
 		}
+
+		if (first) {
+			mainContent.append("<em>none</em>");
+		}
+
+		if (this.shouldPublishDates()) {
+			mainContent.append("<br />Creation date : ").append(
+					new SimpleDateFormat("yyyy-MM-dd HH:ss").format(new Date(content.longs.get("CreationDate"))));
+		}
+		mainContent.append("</p></div><div class=\"content_content\">").
+				append(ContentSyntax.parseSomeString(content.strings.get("Content"), syntax)).append("</div></div>");
 
 		return mainContent.toString();
 	}
@@ -213,27 +208,16 @@ public class FlogFactory {
 	 * @param flog Flog to use.
 	 * @return xHTML code of the description, or an empty string if the flog doesn't have a desription.
 	 */
-	private String getDescription(PluginStore flog) {
+	private String getDescription() {
 		String syntax = flog.strings.get("SmallDescriptionContentSyntax");
 		if (syntax == null) {
 			syntax = "RawXHTML";
 		}
 
-		String fDesc = "";
+		String rawDescr = flog.strings.get("SmallDescription");
+		if(rawDescr.trim().equals("")) return "";
 
-		try {
-			String rawDescr = flog.strings.get("SmallDescription");
-			if(rawDescr.trim().equals("")) return fDesc;
-			else fDesc = ((ContentSyntax) Class.forName("plugins.floghelper.contentsyntax." + syntax).newInstance()).parseSomeString(rawDescr);
-		} catch (InstantiationException ex) {
-			Logger.error(this, "Cannot instanciate Content syntax " + flog.strings.get("SmallDescriptionContentSyntax"));
-		} catch (IllegalAccessException ex) {
-			Logger.error(this, "Cannot instanciate Content syntax " + flog.strings.get("SmallDescriptionContentSyntax"));
-		} catch (ClassNotFoundException ex) {
-			Logger.error(this, "Cannot instanciate Content syntax " + flog.strings.get("SmallDescriptionContentSyntax"));
-		}
-
-		return fDesc;
+		return ContentSyntax.parseSomeString(rawDescr, syntax);
 	}
 
 	/**
@@ -307,7 +291,7 @@ public class FlogFactory {
 			mainContent.append(this.getParsedContentBlock(content));
 		}
 
-		return genPage.replace("{MainContent}", this.getDescription(flog) + mainContent.toString());
+		return genPage.replace("{MainContent}", this.getDescription() + mainContent.toString());
 	}
 
 	/**
@@ -378,6 +362,95 @@ public class FlogFactory {
 		final String pages = "<p class=\"pagination\">Page : " + this.makePagination(numberOfContents, numberOfContentsToShow, page, "./Tag-" + tag + "-p{Page}.html") + "</p>";
 
 		return genPage.replace("{MainContent}", pages + mainContent.toString() + pages);
+	}
+
+	/**
+	 * Get the Atom feed of contents.
+	 * @return Valid Atom 1.0 feed content (XML).
+	 */
+	public String getAtomFeed() {
+		StringBuilder feed = new StringBuilder();
+		feed.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+		feed.append("<feed xmlns=\"http://www.w3.org/2005/Atom\">\n");
+		feed.append("	<id>tag:freenet-");
+		feed.append(this.flog.strings.get("ID")).append("-").append(this.flog.strings.get("Author"));
+		feed.append("</id>\n");
+
+		feed.append("	<title type=\"text\">");
+		feed.append(this.flog.strings.get("Title"));
+		feed.append("</title>\n");
+
+		TreeMap<Long, PluginStore> contents = this.getContentsTreeMap();
+		Date mostRecentlyCreationDate = new Date(contents.lastKey());
+		if(!this.shouldPublishDates()) {
+			mostRecentlyCreationDate = DataFormatter.obfuscateDate(mostRecentlyCreationDate);
+		}
+
+		feed.append("	<updated>");
+		feed.append(DataFormatter.RFC3339.format(mostRecentlyCreationDate));
+		feed.append("</updated>\n");
+
+		String author = FlogHelper.getBaseL10n().getString("BadAuthorDeletedIdentity");
+		try {
+			if (WoTOwnIdentities.getWoTIdentities().containsKey(flog.strings.get("Author"))) {
+				author = WoTOwnIdentities.getWoTIdentities().get(flog.strings.get("Author"));
+			}
+		} catch (PluginNotFoundException ex) {
+			// Safe to ignore.
+		}
+
+		feed.append("	<author><name>");
+		feed.append(author);
+		feed.append("</name></author>\n");
+
+		feed.append("	<link rel=\"self\" href=\"./AtomFeed.xml\" />\n");
+		feed.append("	<generator version=\"r" + FlogHelper.REVISION + "\">FlogHelper</generator>\n");
+
+		feed.append("	<subtitle type=\"xhtml\">\n" +
+				"		<div xmlns=\"http://www.w3.org/1999/xhtml\">\n");
+		feed.append(this.getDescription());
+		feed.append("\n		</div>\n" +
+				"	</subtitle>\n");
+
+		for(Long creationDate : contents.descendingKeySet()) {
+			PluginStore content = contents.get(creationDate);
+			feed.append("	<entry>\n");
+			feed.append("		<id>tag:freenet-");
+			feed.append(this.flog.strings.get("ID")).append("-").append(content.strings.get("ID")).append("-").append(this.flog.strings.get("Author"));
+			feed.append("</id>\n");
+
+			feed.append("		<title type=\"text\">");
+			feed.append(content.strings.get("Title"));
+			feed.append("</title>\n");
+
+			Date modifDate = new Date(content.longs.get("LastModification"));
+			Date creaDate = new Date(creationDate);
+			if(!this.shouldPublishDates()) {
+				modifDate = DataFormatter.obfuscateDate(modifDate);
+				creaDate = DataFormatter.obfuscateDate(creaDate);
+			}
+
+			feed.append("	<published>");
+			feed.append(DataFormatter.RFC3339.format(creaDate));
+			feed.append("</published>\n");
+			feed.append("	<updated>");
+			feed.append(DataFormatter.RFC3339.format(modifDate));
+			feed.append("</updated>\n");
+			feed.append("		<author><name>");
+			feed.append(author);
+			feed.append("</name></author>\n");
+			feed.append("		<content type=\"xhtml\">\n" +
+					"			<div xmlns=\"http://www.w3.org/1999/xhtml\">\n");
+			feed.append(ContentSyntax.parseSomeString(content.strings.get("Content"),
+					content.strings.get("ContentSyntax") == null ? "RawXHTML" : content.strings.get("ContentSyntax")));
+			feed.append("\n			</div>\n" +
+					"		</content>\n");
+			feed.append("		<link rel=\"alternate\" href=\"./Content-" + content.strings.get("ID") + ".html\" />\n");
+			feed.append("</entry>\n");
+		}
+
+
+		return feed.append("</feed>").toString();
 	}
 
 	/**
@@ -463,5 +536,10 @@ public class FlogFactory {
 		}
 
 		return sb.toString().replaceAll("\t+", " ... ");
+	}
+
+	public boolean shouldPublishDates() {
+		return flog.booleans.get("PublishContentModificationDate") != null &&
+				flog.booleans.get("PublishContentModificationDate") == true;
 	}
 }
