@@ -33,10 +33,12 @@ import plugins.floghelper.ui.ImportFlogToadlet;
 import plugins.floghelper.ui.PreviewToadlet;
 
 /**
- * FlogHelper goals : lightweight, integrated in the node, SECURE,
+ * FlogHelper goals : lightweight, integrated in the node, SECURE BY DEFAULT,
  * don't recreate the wheel every time.
  *
  * This is the entry point of the plugin.
+ *
+ * TODO: update l10n before releasing
  *
  * TODO: proper GPL headers
  * TODO: proper javadoc
@@ -44,7 +46,7 @@ import plugins.floghelper.ui.PreviewToadlet;
  * TODO: WoT register context!
  * TODO: filters
  * TODO: sorting (by creation date first)
- * XXX: idea, maybe bundle the flog's index when inserting to allow searching using Librarian
+ * TODO: maybe bundle the flog's index when inserting to allow searching using Librarian
  * @author Artefact2
  */
 public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginBaseL10n, FredPluginL10n, FredPluginThemed, FredPluginVersioned, FredPluginRealVersioned, FredPluginTalker {

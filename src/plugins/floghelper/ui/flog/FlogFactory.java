@@ -3,13 +3,31 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package plugins.floghelper.ui.flog;
 
+import com.db4o.ObjectContainer;
+import freenet.client.DefaultMIMETypes;
+import freenet.client.async.ClientContext;
+import freenet.client.async.DBJob;
+import freenet.client.async.DatabaseDisabledException;
+import freenet.client.async.ManifestElement;
+import freenet.keys.FreenetURI;
+import freenet.node.RequestStarter;
+import freenet.node.fcp.ClientPutDir;
+import freenet.node.fcp.ClientRequest;
+import freenet.node.fcp.FCPClient;
+import freenet.node.fcp.FCPServer;
+import freenet.node.fcp.IdentifierCollisionException;
 import freenet.pluginmanager.PluginNotFoundException;
 import freenet.pluginmanager.PluginStore;
 import freenet.support.Logger;
+import freenet.support.api.Bucket;
+import freenet.support.io.BucketTools;
+import freenet.support.io.NativeThread;
+import freenet.support.io.PersistentTempBucketFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -29,7 +47,7 @@ public class FlogFactory {
 	 * List of primary navigation links.
 	 */
 	public static String[] primaryNavigationLinks = new String[] {
-		"/", "Index",
+		"/index.html", "Index",
 		"/Archives-p1.html", "Archives",
 		"/AtomFeed.xml", "Atom feed",
 		null, "<form method=\"post\" action=\"\"><p>Search : <input type=\"text\" size=\"10\" /><input type=\"submit\" /></p></form>"
@@ -44,18 +62,23 @@ public class FlogFactory {
 	 * If we don't publish dates, we don't publish a dump of the store, because it
 	 * contains the dates.
 	 */
-	public static boolean DEFAULT_SHOULD_INSERT_STOREDUMP = false;
+	public static final boolean DEFAULT_SHOULD_INSERT_STOREDUMP = false;
 
 	/**
 	 * Seven seems reasonable.
 	 */
-	public static long DEFAULT_CONTENTS_ON_INDEX = 7;
+	public static final long DEFAULT_CONTENTS_ON_INDEX = 7;
 
 	/**
 	 * We don't want to insert an insane number of pages, so this number
 	 * should be high enough.
 	 */
-	public static long DEFAULT_CONTENTS_ON_ARCHIVES = 25;
+	public static final long DEFAULT_CONTENTS_ON_ARCHIVES = 25;
+
+	/**
+	 * USK@crypto/__?__/revnumber
+	 */
+	public static final String DEFAULT_SSK_PATH = "flog";
 
 	private final PluginStore flog;
 
@@ -266,12 +289,123 @@ public class FlogFactory {
 	 *
 	 * @return All the flog pages, fully parsed, in xHTML.
 	 */
-	public HashMap<String, String> parseAllFlog() {
-		HashMap<String, String> fileMap = new HashMap<String, String>();
+	public HashMap<String, Object> parseAllFlog() throws IOException {
+		final HashMap<String, Object> fileMap = new HashMap<String, Object>();
+		Bucket data; String name;
+		final PersistentTempBucketFactory factory = FlogHelper.getPR().getNode().clientCore.persistentTempBucketFactory;
 
-		// TODO !
+		data = BucketTools.makeImmutableBucket(factory, this.getIndex().getBytes());
+		name = "index.html";
+		fileMap.put(name, new ManifestElement(name, data, DefaultMIMETypes.guessMIMEType(name, true), data.size()));
+
+		data = BucketTools.makeImmutableBucket(factory, this.getAtomFeed().getBytes());
+		name = "AtomFeed.xml";
+		fileMap.put(name, new ManifestElement(name, data, "application/atom+xml", data.size()));
+
+		data = BucketTools.makeImmutableBucket(factory, this.getCSS().getBytes());
+		name = "GlobalStyle.css";
+		fileMap.put(name, new ManifestElement(name, data, DefaultMIMETypes.guessMIMEType(name, true), data.size()));
+
+		TreeMap<Long, PluginStore> contents = this.getContentsTreeMap();
+		HashMap<String, Long> tagCount = new HashMap<String, Long>();
+
+		for(PluginStore s : contents.values()) {
+			final String cID = s.strings.get("ID");
+			data = BucketTools.makeImmutableBucket(factory, this.getContentPage(cID).getBytes());
+			name = "Content-" + cID + ".html";
+			fileMap.put(name, new ManifestElement(name, data, DefaultMIMETypes.guessMIMEType(name, true), data.size()));
+
+			String[] tags = s.stringsArrays.get("Tags");
+			if(tags != null && tags.length > 0) {
+				for(String tag : tags) {
+					tagCount.put(tag, tagCount.containsKey(tag) ? tagCount.get(tag) + 1 : 1);
+				}
+			}
+		}
+
+		final long contentsPerArchivesPage = flog.longs.containsKey("NumberOfContentsOnArchives")
+				? flog.longs.get("NumberOfContentsOnArchives") : FlogFactory.DEFAULT_CONTENTS_ON_ARCHIVES;
+
+		for(String tag : tagCount.keySet()) {
+			final long pageMax = (long)Math.ceil((double)tagCount.get(tag) / (double)contentsPerArchivesPage);
+			for(long i = 1; i <= pageMax; ++i) {
+				data = BucketTools.makeImmutableBucket(factory, this.getTagsPage(tag, i).getBytes());
+				name = "Tag-" + tag + "-p" + Long.toString(i) + ".html";
+				fileMap.put(name, new ManifestElement(name, data, DefaultMIMETypes.guessMIMEType(name, true), data.size()));
+			}
+		}
+
+		final long pageMax = (long)Math.ceil((double)contents.size() / (double)contentsPerArchivesPage);
+		for(long i = 1; i <= pageMax; ++i) {
+				data = BucketTools.makeImmutableBucket(factory, this.getArchives(i).getBytes());
+				name = "Archives-p" + Long.toString(i) + ".html";
+				fileMap.put(name, new ManifestElement(name, data, DefaultMIMETypes.guessMIMEType(name, true), data.size()));
+		}
+
+		// TODO generate an index here !
+
+		if(flog.bytesArrays.containsKey("Activelink") && flog.bytesArrays.get("Activelink").length > 0) {
+			data = BucketTools.makeImmutableBucket(factory, flog.bytesArrays.get("Activelink"));
+			name = "activelink.png";
+			fileMap.put(name, new ManifestElement(name, data, DefaultMIMETypes.guessMIMEType(name, true), data.size()));
+		}
 
 		return fileMap;
+	}
+
+	/**
+	 * Insert the flog using a global, persistent insert.
+	 * TODO make the path user-defineable
+	 *
+	 * @throws IOException
+	 * @throws PluginNotFoundException
+	 * @throws DatabaseDisabledException
+	 */
+	public void insert() throws IOException, PluginNotFoundException, DatabaseDisabledException {
+		final FCPServer fcp = FlogHelper.getPR().getNode().clientCore.getFCPServer();
+		final HashMap<String, Object> parsedFlog = this.parseAllFlog();
+		final FCPClient client = fcp.getGlobalForeverClient();
+		final FreenetURI uri = new FreenetURI("USK@" + WoTOwnIdentities.getWoTIdentities("InsertURI").get(this.flog.strings.get("Author")).split("@")[1].split("/")[0] + "/" + FlogFactory.DEFAULT_SSK_PATH + "/0");
+
+		Logger.error(this, uri.toString());
+
+		FlogHelper.getPR().getNode().clientCore.queue(new DBJob() {
+
+			public boolean run(ObjectContainer arg0, ClientContext arg1) {
+				try {
+					/**
+					 * FCPClient client,
+					 * FreenetURI uri,
+					 * String identifier,
+					 * int verbosity,
+					 * short priorityClass,
+					 * short persistenceType,
+					 * String clientToken,
+					 * boolean getCHKOnly,
+					 * boolean dontCompress,
+					 * int maxRetries,
+					 * HashMap<String, Object> elements,
+					 * String defaultName,
+					 * boolean global,
+					 * boolean earlyEncode,
+					 * boolean canWriteClientCache,
+					 * FCPServer server,
+					 * ObjectContainer container
+					 */
+					ClientPutDir cpd = new ClientPutDir(client, uri, "FlogHelper-" + flog.strings.get("ID"), Integer.MAX_VALUE, RequestStarter.MAXIMUM_PRIORITY_CLASS, ClientRequest.PERSIST_FOREVER, null, false, false, -1, parsedFlog, "index.html", true, false, false, fcp, arg0);
+					try {
+						fcp.startBlocking(cpd, arg0, arg1);
+					} catch (DatabaseDisabledException ex) {
+						// Ignore
+					}
+				} catch (IdentifierCollisionException ex) {
+					Logger.error(this, "",  ex);
+				} catch (MalformedURLException ex) {
+					Logger.error(this, "",  ex);
+				}
+				return true;
+			}
+		}, NativeThread.MAX_PRIORITY, true);
 	}
 
 	/**

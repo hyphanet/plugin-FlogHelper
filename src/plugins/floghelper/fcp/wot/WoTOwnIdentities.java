@@ -22,6 +22,10 @@ import plugins.floghelper.fcp.SyncPluginTalker;
 public class WoTOwnIdentities {
 
 	public static Map<String, String> getWoTIdentities() throws PluginNotFoundException {
+		return getWoTIdentities("Nickname");
+	}
+
+	public static Map<String, String> getWoTIdentities(final String field) throws PluginNotFoundException {
 		final HashMap<String, String> identities = new HashMap<String, String>();
 		final SimpleFieldSet sfs = new SimpleFieldSet(true);
 		sfs.putOverwrite("Message", "GetOwnIdentities");
@@ -36,7 +40,7 @@ public class WoTOwnIdentities {
 						for (final String s : params.toOrderedString().split("\n")) {
 							if (s.startsWith("Identity")) {
 								identifiers.add(s.split("=")[1]);
-							} else if (s.startsWith("Nickname")) {
+							} else if (s.startsWith(field)) {
 								nicknames.add(s.split("=")[1]);
 							}
 						}

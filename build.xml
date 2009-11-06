@@ -11,6 +11,7 @@
 
 	<!-- This location MUST point to a freenet jar. Change it if needed. -->
 	<property name="freenetjar" value="../fred/freenet-cvs-snapshot.jar"/>
+	<property name="freenet-extjar" value="../fred/freenet-ext.jar"/>
 
 	<target name="compile">
 		<mkdir dir="${build}"/>
@@ -20,6 +21,7 @@
 		<javac srcdir="${src}" destdir="${build}" debug="on" optimize="on" source="1.5">
 			<classpath>
 				<pathelement location="${freenetjar}"/>
+				<pathelement location="${freenet-extjar}"/>
 			</classpath>
 		</javac>
 		<copy todir="${build}">
