@@ -20,6 +20,7 @@ import javax.imageio.ImageIO;
 import plugins.floghelper.FlogHelper;
 import plugins.floghelper.contentsyntax.ContentSyntax;
 import plugins.floghelper.data.Activelink;
+import plugins.floghelper.ui.flog.FlogFactory;
 
 /**
  *
@@ -62,9 +63,9 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			flog.booleans.put("OverrideCSS", request.isPartSet("OverrideCSS"));
 			flog.strings.put("OverrideCSSValue", request.getPartAsString("OverrideCSSValue", 100000));
 			flog.longs.put("NumberOfContentsOnIndex", DataFormatter.tryParseLong(request.getPartAsString("NumberOfContentsOnIndex", 10),
-					flog.longs.containsKey("NumberOfContentsOnIndex") ? flog.longs.get("NumberOfContentsOnIndex") : 7L));
+					flog.longs.containsKey("NumberOfContentsOnIndex") ? flog.longs.get("NumberOfContentsOnIndex") : FlogFactory.DEFAULT_CONTENTS_ON_INDEX));
 			flog.longs.put("NumberOfContentsOnArchives", DataFormatter.tryParseLong(request.getPartAsString("NumberOfContentsOnArchives", 10),
-					flog.longs.containsKey("NumberOfContentsOnArchives") ? flog.longs.get("NumberOfContentsOnArchives") : 25L));
+					flog.longs.containsKey("NumberOfContentsOnArchives") ? flog.longs.get("NumberOfContentsOnArchives") : FlogFactory.DEFAULT_CONTENTS_ON_ARCHIVES));
 
 			if (request.isPartSet("ActivelinkDelete")) {
 				flog.bytesArrays.put("Activelink", null);
@@ -153,12 +154,12 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 					flog.strings.get("SmallDescriptionContentSyntax"), DataFormatter.toString(flog.strings.get("SmallDescription")),
 					FlogHelper.getBaseL10n().getString("SmallDescriptionFieldDesc"));
 
-			final boolean insertPluginStoreDump = flog.booleans.get("InsertPluginStoreDump") == null ? false : flog.booleans.get("InsertPluginStoreDump");
+			final boolean insertPluginStoreDump = flog.booleans.get("InsertPluginStoreDump") == null ? FlogFactory.DEFAULT_SHOULD_INSERT_STOREDUMP : flog.booleans.get("InsertPluginStoreDump");
 			checkBlock = settingsBox.addChild("p");
 			checkBlock.addChild("input", new String[]{"type", "name", "id", insertPluginStoreDump ? "checked" : "class"},
 					new String[]{"checkbox", "InsertPluginStoreDump", "InsertPluginStoreDump", insertPluginStoreDump ? "checked" : ""});
 
-			final boolean publishContentModificationDate = flog.booleans.get("PublishContentModificationDate") == null ? false : flog.booleans.get("PublishContentModificationDate");
+			final boolean publishContentModificationDate = flog.booleans.get("PublishContentModificationDate") == null ? FlogFactory.DEFAULT_SHOULD_PUBLISH_DATES : flog.booleans.get("PublishContentModificationDate");
 			checkBlock.addChild("label", "for", "InsertPluginStoreDump", FlogHelper.getBaseL10n().getString("InsertPluginStoreDumpDesc"));
 			checkBlock = settingsBox.addChild("p");
 			checkBlock.addChild("input", new String[]{"type", "name", "id", publishContentModificationDate ? "checked" : "class"},
@@ -168,11 +169,11 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			settingsBox.addChild("p").addChild("label", "for", "NumberOfContentsOnIndex", FlogHelper.getBaseL10n().getString("NumberOfContentsOnIndexFieldDesc")).addChild("br")
 					.addChild("input", new String[]{"type", "size", "name", "value"},
 					new String[]{"text", "4", "NumberOfContentsOnIndex", flog.longs.containsKey("NumberOfContentsOnIndex") ? 
-						DataFormatter.toString(flog.longs.get("NumberOfContentsOnIndex")) : "7"});
+						DataFormatter.toString(flog.longs.get("NumberOfContentsOnIndex")) : Long.toString(FlogFactory.DEFAULT_CONTENTS_ON_INDEX)});
 			settingsBox.addChild("p").addChild("label", "for", "NumberOfContentsOnArchives", FlogHelper.getBaseL10n().getString("NumberOfContentsOnArchivesFieldDesc")).addChild("br")
 					.addChild("input", new String[]{"type", "size", "name", "value"},
 					new String[]{"text", "4", "NumberOfContentsOnArchives", flog.longs.containsKey("NumberOfContentsOnArchives") ?
-						DataFormatter.toString(flog.longs.get("NumberOfContentsOnArchives")) : "25"});
+						DataFormatter.toString(flog.longs.get("NumberOfContentsOnArchives")) : Long.toString(FlogFactory.DEFAULT_CONTENTS_ON_ARCHIVES)});
 
 			final boolean overrideTemplate = flog.booleans.get("OverrideTemplate") == null ? false : flog.booleans.get("OverrideTemplate");
 			checkBlock = templatesBox.addChild("p");

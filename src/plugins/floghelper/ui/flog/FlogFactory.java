@@ -20,8 +20,7 @@ import plugins.floghelper.data.DataFormatter;
 import plugins.floghelper.fcp.wot.WoTOwnIdentities;
 
 /**
- * Flog parsing, generates xHTML code.
- * TODO: RSS2 & Atom feeds
+ * Flog parsing, generates xHTML code and various other flog-related things.
  *
  * @author Artefact2
  */
@@ -35,6 +34,28 @@ public class FlogFactory {
 		"/AtomFeed.xml", "Atom feed",
 		null, "<form method=\"post\" action=\"\"><p>Search : <input type=\"text\" size=\"10\" /><input type=\"submit\" /></p></form>"
 	};
+
+	/**
+	 * By default, we won't publish creation/modification dates of flogs/contents.
+	 */
+	public static boolean DEFAULT_SHOULD_PUBLISH_DATES = false;
+
+	/**
+	 * If we don't publish dates, we don't publish a dump of the store, because it
+	 * contains the dates.
+	 */
+	public static boolean DEFAULT_SHOULD_INSERT_STOREDUMP = false;
+
+	/**
+	 * Seven seems reasonable.
+	 */
+	public static long DEFAULT_CONTENTS_ON_INDEX = 7;
+
+	/**
+	 * We don't want to insert an insane number of pages, so this number
+	 * should be high enough.
+	 */
+	public static long DEFAULT_CONTENTS_ON_ARCHIVES = 25;
 
 	private final PluginStore flog;
 
