@@ -8,32 +8,11 @@
 	<property name="build" location="build"/>
 	<property name="lib" location="lib"/>
 	<property name="dist" location="dist"/>
-	<property name="deps" location="deps"/>
 
-	<property name="freenetjarurl.url" value="http://downloads.freenetproject.org/alpha/freenet-testing-latest.jar.url"/>
-	<property name="freenetjarurl.localpath" value="${deps}/freenet-testing-latest.jar.url"/>
+	<!-- This location MUST point to a freenet jar. Change it if needed. -->
+	<property name="freenetjar" value="../fred/freenet-cvs-snapshot.jar"/>
 
-	<!-- If you want to build using a custom jar, edit this and it won't be
-	fetched. You can also symlink your custom jars to deps/ -->
-	<property name="freenetjar" value="deps/freenet-cvs-snapshot.jar"/>
-
-	<target name="freenetjar-check">
-		<available file="${freenetjar}" property="freenetjar.present" />
-	</target>
-
-	<target name="freenetjar-fetch" depends="freenetjar-check" unless="freenetjar.present">
-		<echo>Fetching latest Freenet JAR from freenetproject.org...</echo>
-		<mkdir dir="${deps}" />
-		<get src="${freenetjarurl.url}"
-			dest="${freenetjarurl.localpath}" />
-		<loadfile property="freenetjar.url"
-			srcFile="${freenetjarurl.localpath}" />
-		<get src="${freenetjar.url}"
-			dest="${freenetjar}"
-			verbose="true" />
-	</target>
-
-	<target name="compile" depends="freenetjar-fetch">
+	<target name="compile">
 		<mkdir dir="${build}"/>
 
 		<tstamp/>
@@ -69,17 +48,5 @@
 		</delete>
 		<delete dir="${dist}"/>
 		<delete dir="${lib}"/>
-	</target>
-
-	<target name="cleaner">
-		<delete dir="${build}"/>
-		<delete dir="${lib}"/>
-	</target>
-
-	<target name="distclean" description="Delete everything and restore to the original state.">
-		<delete dir="${build}"/>
-		<delete dir="${lib}"/>
-		<delete dir="${deps}"/>
-		<delete dir="dist/"/>
 	</target>
 </project>
