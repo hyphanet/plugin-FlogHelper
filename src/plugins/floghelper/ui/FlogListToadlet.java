@@ -41,7 +41,7 @@ public class FlogListToadlet extends FlogHelperToadlet {
 
 		final HTMLNode actionsRow = new HTMLNode("tr");
 
-		final HTMLNode formCreateNew = FlogHelper.getPR().addFormChild(actionsRow.addChild("th", "colspan", "10"), FlogHelperToadlet.BASE_URI +
+		final HTMLNode formCreateNew = FlogHelper.getPR().addFormChild(actionsRow.addChild("th", "colspan", "12"), FlogHelperToadlet.BASE_URI +
 				CreateOrEditFlogToadlet.MY_URI, "CreateNewFlog");
 		formCreateNew.addAttribute("method", "get");
 		formCreateNew.addChild("input", new String[]{"type", "value"},
@@ -60,14 +60,14 @@ public class FlogListToadlet extends FlogHelperToadlet {
 		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("Author"));
 		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("SmallDescription"));
 		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("NumberOfEntries"));
-		headersRow.addChild("th", "colspan", "5", FlogHelper.getBaseL10n().getString("Actions"));
+		headersRow.addChild("th", "colspan", "7", FlogHelper.getBaseL10n().getString("Actions"));
 
 		tHead.addChild(actionsRow);
 		tHead.addChild(headersRow);
 		tFoot.addChild(headersRow);
 
 		if (FlogHelper.getStore().subStores.isEmpty()) {
-			tBody.addChild("tr").addChild("td", "colspan", "11", FlogHelper.getBaseL10n().getString("NoFlogsYet"));
+			tBody.addChild("tr").addChild("td", "colspan", "13", FlogHelper.getBaseL10n().getString("NoFlogsYet"));
 		}
 
 		for (final PluginStore flog : FlogHelper.getStore().subStores.values()) {
@@ -106,6 +106,12 @@ public class FlogListToadlet extends FlogHelperToadlet {
 			formDetails.addChild("input", new String[]{"type", "name", "value"},
 					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.strings.get("ID"))});
 
+			final HTMLNode formPreview = FlogHelper.getPR().addFormChild(row.addChild("td"), FlogHelperToadlet.BASE_URI +
+					PreviewToadlet.MY_URI + flog.strings.get("ID") + "/index.html", "PreviewFlog-" + flog.strings.get("ID"));
+			formPreview.addAttribute("method", "get");
+			formPreview.addChild("input", new String[]{"type", "value", "name"},
+					new String[]{"submit", FlogHelper.getBaseL10n().getString("Preview"), "Preview"});
+
 			final HTMLNode formDelete = FlogHelper.getPR().addFormChild(row.addChild("td"), this.path(),
 					"DeleteFlog-" + flog.strings.get("ID"));
 			formDelete.addChild("input", new String[]{"type", "value"},
@@ -129,6 +135,14 @@ public class FlogListToadlet extends FlogHelperToadlet {
 			formInsert.addChild("input", new String[]{"type", "name", "value"},
 					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.strings.get("ID"))});
 
+			final HTMLNode formAttachements = FlogHelper.getPR().addFormChild(row.addChild("td"), FlogHelperToadlet.BASE_URI +
+					AttachementsToadlet.MY_URI, "Attachements-" + flog.strings.get("ID"));
+			formAttachements.addAttribute("method", "get");
+			formAttachements.addChild("input", new String[]{"type", "value"},
+					new String[]{"submit", FlogHelper.getBaseL10n().getString("Attachements")});
+			formAttachements.addChild("input", new String[]{"type", "name", "value"},
+					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.strings.get("ID"))});
+
 			final HTMLNode formExport = FlogHelper.getPR().addFormChild(row.addChild("td"), FlogHelperToadlet.BASE_URI +
 					ExportFlogToadlet.MY_URI, "EditFlog-" + flog.strings.get("ID"));
 			formExport.addAttribute("method", "get");
@@ -138,7 +152,7 @@ public class FlogListToadlet extends FlogHelperToadlet {
 					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.strings.get("ID"))});
 		}
 
-		//this.getPM().getInfobox("infobox-minor", "DEBUG PluginStore Dump", pageNode.content).addChild("pre", DataFormatter.printStore(FlogHelper.getStore()));
+		this.getPM().getInfobox("infobox-minor", "DEBUG PluginStore Dump", pageNode.content).addChild("pre", DataFormatter.printStore(FlogHelper.getStore()));
 
 		writeHTMLReply(ctx, 200, "OK", null, pageNode.outer.generate());
 	}

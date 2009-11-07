@@ -7,6 +7,7 @@ import freenet.pluginmanager.PluginStore;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Map;
 import java.util.Random;
 import plugins.floghelper.FlogHelper;
 
@@ -306,14 +307,22 @@ public class DataFormatter {
 	 * @return Random, unused ID.
 	 */
 	public static final String createSubStoreUniqueID(final PluginStore store) {
-		while (true) {
-			final String id = getRandomID();
+		return makeUniqueID(store.subStores);
+	}
 
-			// Make sure we return a ID that isn't already used.
-			if (store.subStores.get(id) == null) {
-				return id;
-			}
+	/**
+	 * Even more general approach.
+	 *
+	 * @param map Map of anything to use.
+	 * @return Unique ID.
+	 */
+	public static final String makeUniqueID(Map<String, ? extends Object> map) {
+		String id = getRandomID();
+		while(map.containsKey(id)) {
+			id = getRandomID();
 		}
+
+		return id;
 	}
 
 	/**

@@ -3,6 +3,7 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package plugins.floghelper.ui;
 
+import freenet.client.DefaultMIMETypes;
 import freenet.client.HighLevelSimpleClient;
 import freenet.clients.http.PageNode;
 import freenet.clients.http.ToadletContext;
@@ -76,6 +77,13 @@ public class PreviewToadlet extends FlogHelperToadlet {
 					if(data != null) {
 						ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "image/png", data.length);
 						ctx.writeData(data);
+					}
+				} else if(file.startsWith("/Att-")) {
+					final PluginStore attachement = flog.subStores.get("Attachements").subStores.get(file.substring(1));
+					if(attachement != null) {
+						final String mimeType = DefaultMIMETypes.guessMIMEType(file, true);
+						ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), mimeType == null ? "application/octet-stream" : mimeType, attachement.bytesArrays.get("Content").length);
+						ctx.writeData(attachement.bytesArrays.get("Content"));
 					}
 				} else {
 					this.sendErrorPage(ctx, 404, "Not found", "Unintelligible URI.");

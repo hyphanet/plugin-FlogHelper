@@ -74,6 +74,9 @@ public class ContentListToadlet extends FlogHelperToadlet {
 		}
 
 		for (final PluginStore content : flog.subStores.values()) {
+			if(content.strings.get("ID") == null) continue;
+			if(content.strings.get("ID").length() != 7) continue;
+			
 			final HTMLNode row = tBody.addChild("tr");
 			row.addChild("td").addChild("pre", DataFormatter.toString(content.strings.get("ID")));
 			row.addChild("td", DataFormatter.toString(DataFormatter.htmlSpecialChars(content.strings.get("Title"))));

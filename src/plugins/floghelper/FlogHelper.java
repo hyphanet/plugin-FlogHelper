@@ -26,6 +26,7 @@ import plugins.floghelper.ui.ContentListToadlet;
 import plugins.floghelper.ui.CreateOrEditContentToadlet;
 import plugins.floghelper.ui.CreateOrEditFlogToadlet;
 import plugins.floghelper.data.DataFormatter;
+import plugins.floghelper.ui.AttachementsToadlet;
 import plugins.floghelper.ui.ExportFlogToadlet;
 import plugins.floghelper.ui.FlogHelperToadlet;
 import plugins.floghelper.ui.FlogListToadlet;
@@ -45,7 +46,6 @@ import plugins.floghelper.ui.PreviewToadlet;
  * TODO: sorting (by creation date first)
  * TODO: maybe bundle the flog's index when inserting to allow searching using Librarian
  * TODO: maybe a caendar view for archives like Dotclear/WP
- * TODO: BinaryContents / aka file attachements
  * @author Artefact2
  */
 public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginBaseL10n, FredPluginL10n, FredPluginThemed, FredPluginVersioned, FredPluginRealVersioned, FredPluginTalker {
@@ -117,6 +117,7 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 		this.myToadlets.add(new ImportFlogToadlet(FlogHelper.pr.getHLSimpleClient()));
 		this.myToadlets.add(new PreviewToadlet(FlogHelper.pr.getHLSimpleClient()));
 		this.myToadlets.add(new JavascriptFactoryToadlet(FlogHelper.pr.getHLSimpleClient()));
+		this.myToadlets.add(new AttachementsToadlet(FlogHelper.pr.getHLSimpleClient()));
 
 		FlogHelper.pr.getPageMaker().addNavigationCategory(FlogHelperToadlet.BASE_URI + "/",
 				FlogHelper.PLUGIN_NAME, FlogHelper.PLUGIN_NAME, this);

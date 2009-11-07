@@ -178,6 +178,8 @@ public class FlogFactory {
 	public String getTagList(String currentUri) {
 		TreeMap<String, Long> tags = new TreeMap<String, Long>();
 		for(PluginStore content : this.flog.subStores.values()) {
+			if(content.strings.get("ID") == null) continue;
+			if(content.strings.get("ID").length() != 7) continue;
 			for(String tag : content.stringsArrays.get("Tags")) {
 				tags.put(tag, tags.containsKey(tag) ? tags.get(tag) + 1L : 1L);
 			}
@@ -359,6 +361,15 @@ public class FlogFactory {
 			data = BucketTools.makeImmutableBucket(factory, flog.bytesArrays.get("Activelink"));
 			name = "activelink.png";
 			fileMap.put(name, new ManifestElement(name, data, DefaultMIMETypes.guessMIMEType(name, true), data.size()));
+		}
+
+		if(flog.subStores.get("Attachements") != null) {
+			final PluginStore attachements = flog.subStores.get("Attachements");
+			for(PluginStore attachement : attachements.subStores.values()) {
+				data = BucketTools.makeImmutableBucket(factory, attachement.bytesArrays.get("Content"));
+				name = attachement.strings.get("Filename");
+				fileMap.put(name, new ManifestElement(name, data, DefaultMIMETypes.guessMIMEType(name, true), data.size()));
+			}
 		}
 
 		return fileMap;
@@ -627,6 +638,7 @@ public class FlogFactory {
 		TreeMap<Long, PluginStore> map = new TreeMap<Long, PluginStore>();
 
 		for(String id : this.flog.subStores.keySet()) {
+			if(id.length() != 7) continue;
 			final PluginStore content = this.flog.subStores.get(id);
 			map.put(content.longs.get("CreationDate"), content);
 		}
