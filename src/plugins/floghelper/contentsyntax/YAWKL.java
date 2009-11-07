@@ -89,20 +89,20 @@ public class YAWKL extends ContentSyntax {
 				"<span style=\"color: $1;\">$2</span>", true));
 
 		// Text align
-		this.syntaxElements.add(new SyntaxElement(FlogHelper.getBaseL10n().getString("Center"), "[[><]]", "",
-				SyntaxElement.begin + "(.+?)\n\\s*\n",
+		this.syntaxElements.add(new SyntaxElement(FlogHelper.getBaseL10n().getString("Center"), "[[&gt;&lt;]]", "]]",
+				SyntaxElement.begin + "(.+?)(\n\\s*\n|\\s*</p>)",
 				Pattern.DOTALL | Pattern.CASE_INSENSITIVE,
 				"</p><p style=\"text-align: center;\">$1</p>\n<p>", true));
-		this.syntaxElements.add(new SyntaxElement(FlogHelper.getBaseL10n().getString("Left"), "[[<<]]", "",
-				SyntaxElement.begin + "(.+?)\n\\s*\n",
+		this.syntaxElements.add(new SyntaxElement(FlogHelper.getBaseL10n().getString("Left"), "[[&lt;&lt;]]", "",
+				SyntaxElement.begin + "(.+?)(\n\\s*\n|\\s*</p>)",
 				Pattern.DOTALL | Pattern.CASE_INSENSITIVE,
 				"</p><p style=\"text-align: left;\">$1</p>\n<p>", true));
-		this.syntaxElements.add(new SyntaxElement(FlogHelper.getBaseL10n().getString("Right"), "[[>>]]", "",
-				SyntaxElement.begin + "(.+?)\n\\s*\n",
+		this.syntaxElements.add(new SyntaxElement(FlogHelper.getBaseL10n().getString("Right"), "[[&gt;&gt;]]", "",
+				SyntaxElement.begin + "(.+?)(\n\\s*\n|\\s*</p>)",
 				Pattern.DOTALL | Pattern.CASE_INSENSITIVE,
 				"</p><p style=\"text-align: right;\">$1</p>\n<p>", true));
-		this.syntaxElements.add(new SyntaxElement(FlogHelper.getBaseL10n().getString("Justify"), "[[<>]]", "",
-				SyntaxElement.begin + "(.+?)\n\\s*\n",
+		this.syntaxElements.add(new SyntaxElement(FlogHelper.getBaseL10n().getString("Justify"), "[[&lt;&gt;]]", "",
+				SyntaxElement.begin + "(.+?)(\n\\s*\n|\\s*</p>)",
 				Pattern.DOTALL | Pattern.CASE_INSENSITIVE,
 				"</p><p style=\"text-align: justify;\">$1</p>\n<p>", true));
 
@@ -145,9 +145,10 @@ public class YAWKL extends ContentSyntax {
 	public String parseSomeString(String s) {
 		// Don't allow xHTML tags.
 		s = DataFormatter.htmlSpecialChars(s);
-		s = super.parseSomeString(s);
 
 		s = "<p>" + s + "</p>";
+
+		s = super.parseSomeString(s);
 
 		// Make the generated xHTML code prettier and generally valid
 		// Should work most of the time.

@@ -25,6 +25,14 @@ public class WoTOwnIdentities {
 		return getWoTIdentities("Nickname");
 	}
 
+	public static String getRequestURI(String author) {
+		try {
+			return getWoTIdentities("RequestURI").get(author);
+		} catch (PluginNotFoundException ex) {
+			return "**Error**";
+		}
+	}
+
 	public static Map<String, String> getWoTIdentities(final String field) throws PluginNotFoundException {
 		final HashMap<String, String> identities = new HashMap<String, String>();
 		final SimpleFieldSet sfs = new SimpleFieldSet(true);

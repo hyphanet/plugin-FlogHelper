@@ -4,7 +4,7 @@
 	<head>
 		<title>{PageTitle} - {FlogName}</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-		<meta name="author" content="{FlogAuthor}" />
+		<meta name="author" content="{AuthorName}" />
 		<link rel="start" title="Index" href="index.html" />
 		<link rel="stylesheet" media="screen" type="text/css" title="Default theme" href="{StyleURI}" />
 		<link rel="alternate" type="application/atom+xml" title="Latest contents (Atom)" href="{AtomFeedURI}" />
@@ -16,8 +16,11 @@
 		</div>
 		<div id="globmenu">
 			<div class="submenu">
-				<!-- TODO show the activelink here if any -->
-				<!-- TODO "About the author" -->
+				<h4>About the author</h4>
+				<p style="text-align: center; font-family: monospace;">{AuthorNameWithLineBreaks}</p>
+				{ActivelinkIfAny}
+			</div>
+			<div class="submenu">
 				<h4>Navigation</h4>
 				<ul>
 					{PrimaryNavigationLinks}

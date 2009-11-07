@@ -71,6 +71,12 @@ public class PreviewToadlet extends FlogHelperToadlet {
 					byte[] data = new FlogFactory(flog).getAtomFeed().getBytes();
 					ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "application/atom+xml", data.length);
 					ctx.writeData(data);
+				} else if(file.equals("/activelink.png")) {
+					byte[] data = flog.bytesArrays.get("Activelink");
+					if(data != null) {
+						ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "image/png", data.length);
+						ctx.writeData(data);
+					}
 				} else {
 					this.sendErrorPage(ctx, 404, "Not found", "Unintelligible URI.");
 				}

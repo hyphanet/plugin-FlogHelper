@@ -371,4 +371,26 @@ public class DataFormatter {
 				.replace("*", "\\*").replace(".", "\\.").replace("|", "\\|").replace("^", "\\^")
 				.replace("?", "\\?").replace("(", "\\(").replace(")", "\\)").replace("+", "\\+");
 	}
+
+	/**
+	 * Insert a string regularily in another string. Example : "abcdef", "X", 2
+	 * will give abXcdXef
+	 * @param str Main string
+	 * @param whatToInsert String to insert
+	 * @param period Period of the inserted string
+	 * @return
+	 */
+	public static String insertIntoString(String str, String whatToInsert, int period) {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append(str.substring(0, Math.min(str.length(), period)));
+		int offset = period;
+		while(offset < str.length()) {
+			sb.append(whatToInsert);
+			sb.append(str.substring(offset, Math.min(str.length(), offset + period)));
+			offset += period;
+		}
+
+		return sb.toString();
+	}
 }
