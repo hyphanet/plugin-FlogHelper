@@ -45,6 +45,7 @@ import plugins.floghelper.ui.PreviewToadlet;
  * TODO: sorting (by creation date first)
  * TODO: maybe bundle the flog's index when inserting to allow searching using Librarian
  * TODO: maybe a caendar view for archives like Dotclear/WP
+ * TODO: BinaryContents / aka file attachements
  * @author Artefact2
  */
 public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginBaseL10n, FredPluginL10n, FredPluginThemed, FredPluginVersioned, FredPluginRealVersioned, FredPluginTalker {

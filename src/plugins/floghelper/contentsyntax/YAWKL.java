@@ -92,7 +92,7 @@ public class YAWKL extends ContentSyntax {
 		this.syntaxElements.add(new SyntaxElement(FlogHelper.getBaseL10n().getString("Center"), "[[&gt;&lt;]]", "]]",
 				SyntaxElement.begin + "(.+?)(\n\\s*\n|\\s*</p>)",
 				Pattern.DOTALL | Pattern.CASE_INSENSITIVE,
-				"</p><p style=\"text-align: center;\">$1</p>\n<p>", true));
+				"</p><p style=\"text-align: center;\">$1</p>\n<p>$2", true));
 		this.syntaxElements.add(new SyntaxElement(FlogHelper.getBaseL10n().getString("Left"), "[[&lt;&lt;]]", "",
 				SyntaxElement.begin + "(.+?)(\n\\s*\n|\\s*</p>)",
 				Pattern.DOTALL | Pattern.CASE_INSENSITIVE,

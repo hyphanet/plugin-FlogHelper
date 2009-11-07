@@ -136,7 +136,7 @@ public class FlogFactory {
 					"./index.html", "Index",
 					"./Archives-p1.html", "Archives",
 					"./AtomFeed.xml", "Atom feed",
-					"/?newbookmark=USK@" + WoTOwnIdentities.getRequestURI(this.flog.strings.get("Author")).split("@")[1].split("/")[0] + "/" + this.flog.strings.get("SSKPath") + "/-1/&desc=" + this.flog.strings.get("Title"), "Bookmark this flog"
+					"/?newbookmark=USK@" + WoTOwnIdentities.getRequestURI(this.flog.strings.get("Author")).split("@")[1].split("/")[0] + "/" + this.flog.strings.get("SSKPath") + "/-1/&amp;desc=" + this.flog.strings.get("Title"), "Bookmark this flog"
 				};
 	}
 
