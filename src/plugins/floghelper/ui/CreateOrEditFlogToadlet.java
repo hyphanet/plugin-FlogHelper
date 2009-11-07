@@ -67,6 +67,18 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			flog.longs.put("NumberOfContentsOnArchives", DataFormatter.tryParseLong(request.getPartAsString("NumberOfContentsOnArchives", 10),
 					flog.longs.containsKey("NumberOfContentsOnArchives") ? flog.longs.get("NumberOfContentsOnArchives") : FlogFactory.DEFAULT_CONTENTS_ON_ARCHIVES));
 
+			final String sskPath = request.getPartAsString("SSKPath", 30).trim();
+			// A SSK path should not be just a number, should obviously not be empty
+			// and shouldn't contain any "/". It also mustn't be equal to "WoT" as
+			// this will screw the identity...
+			if(sskPath.length() > 0 && !sskPath.matches("^[0-9]+$") && !sskPath.contains("/") && !sskPath.equals("WoT")) {
+				flog.strings.put("SSKPath", sskPath);
+			} else {
+				final HTMLNode infobox = this.getPM().getInfobox("infobox-error", FlogHelper.getBaseL10n().getString("Error"), pageNode.content);
+				infobox.addChild("p", FlogHelper.getBaseL10n().getString("InvalidSSKPath"));
+				flog.strings.put("SSKPath", flog.strings.containsKey("SSKPath") ? flog.strings.get("SSKPath") : FlogFactory.DEFAULT_SSK_PATH);
+			}
+
 			if (request.isPartSet("ActivelinkDelete")) {
 				flog.bytesArrays.put("Activelink", null);
 			} else if (request.isPartSet("Activelink")) {
@@ -174,6 +186,10 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 					.addChild("input", new String[]{"type", "size", "name", "value"},
 					new String[]{"text", "4", "NumberOfContentsOnArchives", flog.longs.containsKey("NumberOfContentsOnArchives") ?
 						DataFormatter.toString(flog.longs.get("NumberOfContentsOnArchives")) : Long.toString(FlogFactory.DEFAULT_CONTENTS_ON_ARCHIVES)});
+			settingsBox.addChild("p").addChild("label", "for", "SSKPath", FlogHelper.getBaseL10n().getString("SSKPathDesc")).addChild("br")
+					.addChild("input", new String[]{"type", "size", "name", "value"},
+					new String[]{"text", "20", "SSKPath", flog.strings.containsKey("SSKPath") ?
+						flog.strings.get("SSKPath") : FlogFactory.DEFAULT_SSK_PATH});
 
 			final boolean overrideTemplate = flog.booleans.get("OverrideTemplate") == null ? false : flog.booleans.get("OverrideTemplate");
 			checkBlock = templatesBox.addChild("p");

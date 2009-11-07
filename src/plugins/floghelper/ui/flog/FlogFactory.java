@@ -355,7 +355,6 @@ public class FlogFactory {
 
 	/**
 	 * Insert the flog using a global, persistent insert.
-	 * TODO make the path user-defineable
 	 *
 	 * @throws IOException
 	 * @throws PluginNotFoundException
@@ -365,7 +364,7 @@ public class FlogFactory {
 		final FCPServer fcp = FlogHelper.getPR().getNode().clientCore.getFCPServer();
 		final HashMap<String, Object> parsedFlog = this.parseAllFlog();
 		final FCPClient client = fcp.getGlobalForeverClient();
-		final FreenetURI uri = new FreenetURI("USK@" + WoTOwnIdentities.getWoTIdentities("InsertURI").get(this.flog.strings.get("Author")).split("@")[1].split("/")[0] + "/" + FlogFactory.DEFAULT_SSK_PATH + "/0");
+		final FreenetURI uri = new FreenetURI("USK@" + WoTOwnIdentities.getWoTIdentities("InsertURI").get(this.flog.strings.get("Author")).split("@")[1].split("/")[0] + "/" + flog.strings.get("SSKPath") + "/0");
 
 		Logger.error(this, uri.toString());
 
@@ -430,7 +429,7 @@ public class FlogFactory {
 	 * @return Parsed xHTML page.
 	 */
 	public String getIndex() {
-		String genPage = this.parseInvariantData(getTemplate(), "/");
+		String genPage = this.parseInvariantData(getTemplate(), "/index.html");
 		genPage = genPage.replace("{PageTitle}", "Index");
 
 		final TreeMap<Long, PluginStore> contents = this.getContentsTreeMap();

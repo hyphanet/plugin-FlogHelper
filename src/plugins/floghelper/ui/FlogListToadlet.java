@@ -188,7 +188,11 @@ public class FlogListToadlet extends FlogHelperToadlet {
 
 			HTMLNode infobox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("InsertInProgress"), pageNode.content);
 
-			// TODO before release : fill me
+			infobox.addChild("p", FlogHelper.getBaseL10n().getString("FlogIsInsertingLong"));
+			HTMLNode links = infobox.addChild("p");
+			links.addChild("strong").addChild("a", "href", "/uploads/", FlogHelper.getBaseL10n().getString("GoToInsertsPage"));
+			links.addChild("br");
+			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + FlogListToadlet.MY_URI, FlogHelper.getBaseL10n().getString("ReturnToFlogList"));
 
 			writeHTMLReply(ctx, 200, "OK", null, pageNode.outer.generate());
 		}

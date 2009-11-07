@@ -38,15 +38,13 @@ import plugins.floghelper.ui.PreviewToadlet;
  *
  * This is the entry point of the plugin.
  *
- * TODO: update l10n before releasing
- *
  * TODO: proper GPL headers
  * TODO: proper javadoc
- * TODO: insert (maybe use the same SSK as the main WoT identity?)
  * TODO: WoT register context!
  * TODO: filters
  * TODO: sorting (by creation date first)
  * TODO: maybe bundle the flog's index when inserting to allow searching using Librarian
+ * TODO: maybe a caendar view for archives like Dotclear/WP
  * @author Artefact2
  */
 public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginBaseL10n, FredPluginL10n, FredPluginThemed, FredPluginVersioned, FredPluginRealVersioned, FredPluginTalker {
