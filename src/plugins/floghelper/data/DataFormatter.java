@@ -347,4 +347,28 @@ public class DataFormatter {
 
 		return c.getTime();
 	}
+
+	/**
+	 * Make a string safe for printing in a xHTML document : symbols like >, <, ", &
+	 * are replaced with their xHTML counterpart (&lt;, &gt;, ...).
+	 *
+	 * @param s String to parse.
+	 * @return String that can be safely printed in a xHTML document.
+	 */
+	public static String htmlSpecialChars(String s) {
+		return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
+	}
+
+	/**
+	 * This should escape a string for regex use.
+	 *
+	 * @param s String to escape.
+	 * @return Escaped string that might be safe to use in a regex.
+	 */
+	public static String makeRegexSafe(String s) {
+		// FIXME that list is not exhaustive at all.
+		return s.replace("\\", "\\\\").replace("[", "\\[").replace("]", "\\]")
+				.replace("*", "\\*").replace(".", "\\.").replace("|", "\\|").replace("^", "\\^")
+				.replace("?", "\\?").replace("(", "\\(").replace(")", "\\)").replace("+", "\\+");
+	}
 }

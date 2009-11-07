@@ -190,7 +190,7 @@ public class FlogFactory {
 			if(thereIsALink) {
 				sb.append("<a href=\"./Tag-" + tag + "-p1.html\">");
 			}
-			sb.append(tag);
+			sb.append(DataFormatter.htmlSpecialChars(tag));
 			if(thereIsALink) {
 				sb.append("</a>");
 			}
@@ -217,7 +217,7 @@ public class FlogFactory {
 
 		mainContent.append("<div class=\"content_container\">");
 		mainContent.append("<div class=\"content_header\">");
-		mainContent.append("<h1>").append(content.strings.get("Title")).append("</h1><p>");
+		mainContent.append("<h1>").append(DataFormatter.htmlSpecialChars(content.strings.get("Title"))).append("</h1><p>");
 		mainContent.append("<a href=\"./Content-").append(content.strings.get("ID")).append(".html\">Permanent link</a> | <a href=\"./Content-").append(content.strings.get("ID")).append(".html#comments\">Comments</a> | Tags : ");
 		boolean first = true;
 		for (String tag : content.stringsArrays.get("Tags")) {
@@ -229,7 +229,7 @@ public class FlogFactory {
 			} else {
 				mainContent.append(", ");
 			}
-			mainContent.append("<a href=\"./Tag-").append(tag).append("-p1.html\">").append(tag).append("</a>");
+			mainContent.append("<a href=\"./Tag-").append(tag).append("-p1.html\">").append(DataFormatter.htmlSpecialChars(tag)).append("</a>");
 		}
 
 		if (first) {
@@ -272,8 +272,8 @@ public class FlogFactory {
 	 * @return Partially parsed template.
 	 */
 	private String parseInvariantData(String template, String uri) {
-		template = template.replace("{FlogAuthor}", this.flog.strings.get("Author"));
-		template = template.replace("{FlogName}", this.flog.strings.get("Title"));
+		template = template.replace("{FlogAuthor}", DataFormatter.htmlSpecialChars(this.flog.strings.get("Author")));
+		template = template.replace("{FlogName}", DataFormatter.htmlSpecialChars(this.flog.strings.get("Title")));
 		template = template.replace("{StyleURI}", "./GlobalStyle.css");
 		template = template.replace("{AtomFeedURI}", "./AtomFeed.xml");
 		template = template.replace("{AdditionnalMenuContent}", ""); // FIXME that might have a use later
@@ -418,7 +418,7 @@ public class FlogFactory {
 		PluginStore content = this.flog.subStores.get(contentID);
 
 		String genPage = this.parseInvariantData(getTemplate(), null);
-		genPage = genPage.replace("{PageTitle}", content.strings.get("Title"));
+		genPage = genPage.replace("{PageTitle}", DataFormatter.htmlSpecialChars(content.strings.get("Title")));
 		
 		return genPage.replace("{MainContent}", "<div id=\"singlecontent\">" + this.getParsedContentBlock(content) + "</div>");
 	}
@@ -492,7 +492,7 @@ public class FlogFactory {
 	 */
 	public String getTagsPage(String tag, long page) {
 		String genPage = this.parseInvariantData(getTemplate(), "/Tag-" + tag + "-p" + Long.toString(page) + ".html");
-		genPage = genPage.replace("{PageTitle}", "Archives having the tag \"" + tag + "\" (page " + Long.toString(page) +")");
+		genPage = genPage.replace("{PageTitle}", "Archives having the tag \"" + DataFormatter.htmlSpecialChars(tag) + "\" (page " + Long.toString(page) +")");
 
 		final TreeMap<Long, PluginStore> contents = this.getContentsTreeMapFilteredByTag(tag);
 		final Long numberOfContentsToShow = this.flog.longs.get("NumberOfContentsOnArchives");
@@ -527,11 +527,11 @@ public class FlogFactory {
 		feed.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
 		feed.append("<feed xmlns=\"http://www.w3.org/2005/Atom\">\n");
 		feed.append("	<id>tag:freenet-");
-		feed.append(this.flog.strings.get("ID")).append("-").append(this.flog.strings.get("Author"));
+		feed.append(this.flog.strings.get("ID")).append("-").append(DataFormatter.htmlSpecialChars(this.flog.strings.get("Author")));
 		feed.append("</id>\n");
 
-		feed.append("	<title type=\"text\">");
-		feed.append(this.flog.strings.get("Title"));
+		feed.append("	<title type=\"html\">");
+		feed.append(DataFormatter.htmlSpecialChars(this.flog.strings.get("Title")));
 		feed.append("</title>\n");
 
 		TreeMap<Long, PluginStore> contents = this.getContentsTreeMap();
@@ -554,7 +554,7 @@ public class FlogFactory {
 		}
 
 		feed.append("	<author><name>");
-		feed.append(author);
+		feed.append(DataFormatter.htmlSpecialChars(author));
 		feed.append("</name></author>\n");
 
 		feed.append("	<link rel=\"self\" href=\"./AtomFeed.xml\" />\n");
@@ -570,7 +570,7 @@ public class FlogFactory {
 			PluginStore content = contents.get(creationDate);
 			feed.append("	<entry>\n");
 			feed.append("		<id>tag:freenet-");
-			feed.append(this.flog.strings.get("ID")).append("-").append(content.strings.get("ID")).append("-").append(this.flog.strings.get("Author"));
+			feed.append(this.flog.strings.get("ID")).append("-").append(content.strings.get("ID")).append("-").append(DataFormatter.htmlSpecialChars(this.flog.strings.get("Author")));
 			feed.append("</id>\n");
 
 			feed.append("		<title type=\"text\">");

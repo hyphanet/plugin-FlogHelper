@@ -5,12 +5,9 @@ package plugins.floghelper.ui;
 
 import freenet.client.async.DatabaseDisabledException;
 import freenet.pluginmanager.PluginNotFoundException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import plugins.floghelper.data.DataFormatter;
 import freenet.client.HighLevelSimpleClient;
 import freenet.clients.http.PageNode;
-import freenet.clients.http.Toadlet;
 import freenet.clients.http.ToadletContext;
 import freenet.clients.http.ToadletContextClosedException;
 import freenet.pluginmanager.PluginStore;
@@ -96,9 +93,9 @@ public class FlogListToadlet extends FlogHelperToadlet {
 			final HTMLNode row = tBody.addChild("tr");
 			row.addChild("td").addChild("pre", DataFormatter.toString(flog.strings.get("ID")));
 			row.addChild(activelinkP);
-			row.addChild("td", DataFormatter.toString(flog.strings.get("Title")));
+			row.addChild("td", DataFormatter.toString(DataFormatter.htmlSpecialChars(flog.strings.get("Title"))));
 			row.addChild("td", DataFormatter.toString(author));
-			row.addChild("td", DataFormatter.toString(flog.strings.get("SmallDescription")));
+			row.addChild("td", DataFormatter.toString(DataFormatter.htmlSpecialChars(flog.strings.get("SmallDescription"))));
 			row.addChild("td", DataFormatter.toString(flog.subStores.size()));
 
 			final HTMLNode formDetails = FlogHelper.getPR().addFormChild(row.addChild("td"), FlogHelperToadlet.BASE_URI +
@@ -141,7 +138,7 @@ public class FlogListToadlet extends FlogHelperToadlet {
 					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.strings.get("ID"))});
 		}
 
-		this.getPM().getInfobox("infobox-minor", "DEBUG PluginStore Dump", pageNode.content).addChild("pre", DataFormatter.printStore(FlogHelper.getStore()));
+		//this.getPM().getInfobox("infobox-minor", "DEBUG PluginStore Dump", pageNode.content).addChild("pre", DataFormatter.printStore(FlogHelper.getStore()));
 
 		writeHTMLReply(ctx, 200, "OK", null, pageNode.outer.generate());
 	}

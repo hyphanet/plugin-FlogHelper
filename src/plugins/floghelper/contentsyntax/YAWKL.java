@@ -5,6 +5,7 @@ package plugins.floghelper.contentsyntax;
 
 import java.util.regex.Pattern;
 import plugins.floghelper.FlogHelper;
+import plugins.floghelper.data.DataFormatter;
 
 /**
  * YAWKL stands for "Yet Another WiKicode Like language"...
@@ -142,6 +143,8 @@ public class YAWKL extends ContentSyntax {
 
 	@Override
 	public String parseSomeString(String s) {
+		// Don't allow xHTML tags.
+		s = DataFormatter.htmlSpecialChars(s);
 		s = super.parseSomeString(s);
 
 		s = "<p>" + s + "</p>";

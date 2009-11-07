@@ -36,7 +36,7 @@ public class ContentListToadlet extends FlogHelperToadlet {
 		}
 
 		final HTMLNode table = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("ContentListOf").replace("${FlogName}",
-				flog.strings.get("Title")), pageNode.content).addChild("table");
+				DataFormatter.htmlSpecialChars(flog.strings.get("Title"))), pageNode.content).addChild("table");
 
 		final HTMLNode tHead = table.addChild("thead");
 		final HTMLNode tFoot = table.addChild("tfoot");
@@ -60,7 +60,7 @@ public class ContentListToadlet extends FlogHelperToadlet {
 
 		final HTMLNode headersRow = new HTMLNode("tr");
 		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("ID"));
-		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("Title"));
+		headersRow.addChild("th", DataFormatter.htmlSpecialChars(FlogHelper.getBaseL10n().getString("Title")));
 		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("CreationDate"));
 		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("LastModification"));
 		headersRow.addChild("th", "colspan", "3", FlogHelper.getBaseL10n().getString("Actions"));
@@ -76,7 +76,7 @@ public class ContentListToadlet extends FlogHelperToadlet {
 		for (final PluginStore content : flog.subStores.values()) {
 			final HTMLNode row = tBody.addChild("tr");
 			row.addChild("td").addChild("pre", DataFormatter.toString(content.strings.get("ID")));
-			row.addChild("td", DataFormatter.toString(content.strings.get("Title")));
+			row.addChild("td", DataFormatter.toString(DataFormatter.htmlSpecialChars(content.strings.get("Title"))));
 			row.addChild("td", DataFormatter.toString(new Date(content.longs.get("CreationDate")).toString()));
 			row.addChild("td", DataFormatter.toString(new Date(content.longs.get("LastModification")).toString()));
 
