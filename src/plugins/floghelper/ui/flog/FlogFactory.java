@@ -634,7 +634,7 @@ public class FlogFactory {
 	 *
 	 * @return Tree of all the contents.
 	 */
-	private TreeMap<Long, PluginStore> getContentsTreeMap() {
+	public TreeMap<Long, PluginStore> getContentsTreeMap() {
 		TreeMap<Long, PluginStore> map = new TreeMap<Long, PluginStore>();
 
 		for(String id : this.flog.subStores.keySet()) {

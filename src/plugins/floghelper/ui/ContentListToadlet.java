@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Date;
 import plugins.floghelper.FlogHelper;
+import plugins.floghelper.ui.flog.FlogFactory;
 
 /**
  *
@@ -61,7 +62,7 @@ public class ContentListToadlet extends FlogHelperToadlet {
 		final HTMLNode headersRow = new HTMLNode("tr");
 		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("ID"));
 		headersRow.addChild("th", DataFormatter.htmlSpecialChars(FlogHelper.getBaseL10n().getString("Title")));
-		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("CreationDate"));
+		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("CreationDate") + " \u25BC");
 		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("LastModification"));
 		headersRow.addChild("th", "colspan", "3", FlogHelper.getBaseL10n().getString("Actions"));
 
@@ -73,10 +74,8 @@ public class ContentListToadlet extends FlogHelperToadlet {
 			tBody.addChild("tr").addChild("td", "colspan", "7", FlogHelper.getBaseL10n().getString("NoContentsYet"));
 		}
 
-		for (final PluginStore content : flog.subStores.values()) {
-			if(content.strings.get("ID") == null) continue;
-			if(content.strings.get("ID").length() != 7) continue;
-			
+		// Let's sort the contents by descending creation date.
+		for (final PluginStore content : new FlogFactory(flog).getContentsTreeMap().descendingMap().values()) {
 			final HTMLNode row = tBody.addChild("tr");
 			row.addChild("td").addChild("pre", DataFormatter.toString(content.strings.get("ID")));
 			row.addChild("td", DataFormatter.toString(DataFormatter.htmlSpecialChars(content.strings.get("Title"))));

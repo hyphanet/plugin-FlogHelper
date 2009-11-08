@@ -10,13 +10,13 @@ import freenet.clients.http.ToadletContext;
 import freenet.clients.http.ToadletContextClosedException;
 import freenet.pluginmanager.PluginStore;
 import freenet.support.HTMLNode;
-import freenet.support.Logger;
 import freenet.support.SizeUtil;
 import freenet.support.api.HTTPRequest;
 import freenet.support.api.HTTPUploadedFile;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Date;
+import java.util.TreeMap;
 import plugins.floghelper.FlogHelper;
 import plugins.floghelper.data.Activelink;
 
@@ -77,7 +77,7 @@ public class AttachementsToadlet extends FlogHelperToadlet {
 
 		final HTMLNode headersRow = new HTMLNode("tr");
 		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("Filename"));
-		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("CreationDate"));
+		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("CreationDate") + " \u25BC");
 		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("Size"));
 		headersRow.addChild("th", "colspan", "2", FlogHelper.getBaseL10n().getString("Actions"));
 
@@ -89,7 +89,12 @@ public class AttachementsToadlet extends FlogHelperToadlet {
 			tBody.addChild("tr").addChild("td", "colspan", "5", FlogHelper.getBaseL10n().getString("NoAttachementsYet"));
 		}
 
+		TreeMap<Long, PluginStore> sortedAttachments = new TreeMap<Long, PluginStore>();
 		for (final PluginStore attachement : attachements.subStores.values()) {
+			sortedAttachments.put(attachement.longs.get("CreationDate"), attachement);
+		}
+		
+		for (final PluginStore attachement : sortedAttachments.descendingMap().values()) {
 			final HTMLNode row = tBody.addChild("tr");
 			row.addChild("td").addChild("pre", DataFormatter.toString(attachement.strings.get("Filename")));
 			row.addChild("td", DataFormatter.toString(new Date(attachement.longs.get("CreationDate")).toString()));
