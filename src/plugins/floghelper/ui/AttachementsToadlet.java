@@ -98,7 +98,7 @@ public class AttachementsToadlet extends FlogHelperToadlet {
 		for (final PluginStore attachement : sortedAttachments.descendingMap().values()) {
 			final HTMLNode row = tBody.addChild("tr");
 			row.addChild("td").addChild("pre", DataFormatter.toString(attachement.strings.get("Filename")));
-			row.addChild("td", DataFormatter.toString(new Date(attachement.longs.get("CreationDate")).toString()));
+			row.addChild("td", DataFormatter.toString(DataFormatter.LocalDateFormatter.format(new Date(attachement.longs.get("CreationDate")))));
 			row.addChild("td", SizeUtil.formatSize(attachement.bytesArrays.get("Content").length, true));
 
 			final HTMLNode formPreview = FlogHelper.getPR().addFormChild(row.addChild("td"), FlogHelperToadlet.BASE_URI +

@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Map;
 import java.util.Random;
+import java.util.SimpleTimeZone;
 import plugins.floghelper.FlogHelper;
 
 /**
@@ -23,9 +24,18 @@ public class DataFormatter {
 	 */
 	public static final SimpleDateFormat RFC3339 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", java.util.Locale.US);
 	/**
-	 * Our date format used in the UI.
+	 * Our date format used in the flog (is UTC).
 	 */
-	public static final SimpleDateFormat DefaultDateFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+	public static final SimpleDateFormat DefaultDateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+	/**
+	 * Date format used in the web UI (is local, eg. CET, ...)
+	 */
+	public static final SimpleDateFormat LocalDateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+
+	static {
+		RFC3339.setTimeZone(new SimpleTimeZone(SimpleTimeZone.UTC_TIME, "UTC"));
+		DefaultDateFormatter.setTimeZone(new SimpleTimeZone(SimpleTimeZone.UTC_TIME, "UTC"));
+	}
 
 	public static final Random r = new Random();
 

@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.TreeMap;
@@ -241,8 +240,12 @@ public class FlogFactory {
 		}
 
 		if (this.shouldPublishDates()) {
-			mainContent.append("<br />Creation date : ").append(
-					new SimpleDateFormat("yyyy-MM-dd HH:ss").format(new Date(content.longs.get("CreationDate"))));
+			if(content.longs.containsKey("LastModification") && Math.abs(content.longs.get("LastModification") - content.longs.get("CreationDate")) > 10000) {
+				mainContent.append("<br /><small>Last modification : " +
+						DataFormatter.DefaultDateFormatter.format(new Date(content.longs.get("LastModification")))).append("</small>");
+			}
+			mainContent.append("<br /><small>Creation date : ").append(
+					DataFormatter.DefaultDateFormatter.format(new Date(content.longs.get("CreationDate")))).append("</small>");
 		}
 		mainContent.append("</p></div><div class=\"content_content\">").
 				append(ContentSyntax.parseSomeString(content.strings.get("Content"), syntax)).append("</div></div>");
@@ -413,7 +416,7 @@ public class FlogFactory {
 					 * FCPServer server,
 					 * ObjectContainer container
 					 */
-					ClientPutDir cpd = new ClientPutDir(client, uri, "FlogHelper-" + flog.strings.get("ID"), Integer.MAX_VALUE, RequestStarter.MAXIMUM_PRIORITY_CLASS, ClientRequest.PERSIST_FOREVER, null, false, false, -1, parsedFlog, "index.html", true, false, false, fcp, arg0);
+					ClientPutDir cpd = new ClientPutDir(client, uri, "FlogHelper-" + flog.strings.get("ID") + "-" + DataFormatter.getRandomID(14), Integer.MAX_VALUE, RequestStarter.MAXIMUM_PRIORITY_CLASS, ClientRequest.PERSIST_FOREVER, null, false, false, -1, parsedFlog, "index.html", true, false, false, fcp, arg0);
 					try {
 						fcp.startBlocking(cpd, arg0, arg1);
 					} catch (DatabaseDisabledException ex) {

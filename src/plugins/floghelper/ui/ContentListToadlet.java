@@ -80,8 +80,8 @@ public class ContentListToadlet extends FlogHelperToadlet {
 			final HTMLNode row = tBody.addChild("tr");
 			row.addChild("td").addChild("pre", DataFormatter.toString(content.strings.get("ID")));
 			row.addChild("td", DataFormatter.toString(DataFormatter.htmlSpecialChars(content.strings.get("Title"))));
-			row.addChild("td", DataFormatter.toString(new Date(content.longs.get("CreationDate")).toString()));
-			row.addChild("td", DataFormatter.toString(new Date(content.longs.get("LastModification")).toString()));
+			row.addChild("td", DataFormatter.toString(DataFormatter.LocalDateFormatter.format(new Date(content.longs.get("CreationDate")))));
+			row.addChild("td", DataFormatter.toString(DataFormatter.LocalDateFormatter.format(new Date(content.longs.get("LastModification")))));
 
 			final HTMLNode formDetails = FlogHelper.getPR().addFormChild(row.addChild("td"), FlogHelperToadlet.BASE_URI +
 					PreviewToadlet.MY_URI + flog.strings.get("ID") + "/Content-" + content.strings.get("ID") + ".html", "ContentDetails-" + content.strings.get("ID"));
