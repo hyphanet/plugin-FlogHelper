@@ -94,6 +94,7 @@ OverrideTemplateLong=Override the xHTML template ?
 Picture=Picture
 PreviewContent=Preview this content
 Preview=Preview
+PreviewWarning=You are currently in preview mode.
 Proceed=Proceed
 PublishContentModificationDateDesc=Publish content modification dates too ? (This might help a potential attacker to identify what your timezone is.)
 Quote=Quote

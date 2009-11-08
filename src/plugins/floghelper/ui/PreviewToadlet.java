@@ -53,20 +53,20 @@ public class PreviewToadlet extends FlogHelperToadlet {
 			} else {
 				final String file = uri.getPath().replace(FlogHelperToadlet.BASE_URI + PreviewToadlet.MY_URI, "").replace(flogID, "");
 				if(file.equals("/") || file.equals("/index.html")) {
-					writeHTMLReply(ctx, 200, "OK", null, factory.getIndex());
+					writeHTMLReply(ctx, 200, "OK", null, appendPreviewWarning(factory.getIndex()));
 				} else if(file.startsWith("/Content-") && file.endsWith(".html")) {
 					final String contentID = file.replace("/Content-", "").replace(".html", "");
 					if(flog.subStores.containsKey(contentID)) {
-						writeHTMLReply(ctx, 200, "OK", null, factory.getContentPage(contentID));
+						writeHTMLReply(ctx, 200, "OK", null, appendPreviewWarning(factory.getContentPage(contentID)));
 					} else {
 						this.sendErrorPage(ctx, 404, "Not found", "Incorrect or missing ContentID.");
 					}
 				} else if(file.startsWith("/Archives-p") && file.endsWith(".html")) {
-					writeHTMLReply(ctx, 200, "OK", null, factory.getArchives(Long.parseLong(file.replace("/Archives-p", "").replace(".html", ""))));
+					writeHTMLReply(ctx, 200, "OK", null, appendPreviewWarning(factory.getArchives(Long.parseLong(file.replace("/Archives-p", "").replace(".html", "")))));
 				} else if(file.startsWith("/Tag-") && file.endsWith(".html")) {
 					final long page = Long.parseLong(file.replaceAll("^/Tag-(.+?)-p([0-9]+)\\.html$", "$2"));
 					final String tag = file.replaceAll("^/Tag-(.+?)-p([0-9]+)\\.html$", "$1");
-					writeHTMLReply(ctx, 200, "OK", null, factory.getTagsPage(tag, page));
+					writeHTMLReply(ctx, 200, "OK", null, appendPreviewWarning(factory.getTagsPage(tag, page)));
 				} else if(file.equals("/GlobalStyle.css")) {
 					byte[] data = new FlogFactory(flog).getCSS().getBytes();
 					ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "text/css", data.length);
@@ -105,5 +105,16 @@ public class PreviewToadlet extends FlogHelperToadlet {
 		byte[] data = new FlogFactory(new PluginStore()).getCSS().getBytes();
 		ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "text/plain", data.length);
 		ctx.writeData(data);
+	}
+
+	private static String appendPreviewWarning(String page) {
+		return page.replaceFirst("</head>(\\s*(\n)\\s*)*<body>", "</head>" +
+				"$1<body style=\"margin-top: 25px;\">" +
+				"<div style=\"position: absolute; background-color: yellow; " +
+				"border-bottom: 1px solid black; left: 0; right: 0; top: 0;" +
+				"height: 25px;\"><p style=\"margin: 0; padding-left: 5px;" +
+				" padding-top: 5px;\">" + FlogHelper.getBaseL10n().getString("PreviewWarning") +
+				" <strong><a href=\"" + FlogHelperToadlet.BASE_URI + FlogListToadlet.MY_URI + "\">" +
+				FlogHelper.getBaseL10n().getString("ReturnToFlogList") + "</a></strong></p></div>");
 	}
 }

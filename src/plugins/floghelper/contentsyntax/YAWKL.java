@@ -89,20 +89,20 @@ public class YAWKL extends ContentSyntax {
 				"<span style=\"color: $1;\">$2</span>", true));
 
 		// Text align
-		this.syntaxElements.add(new SyntaxElement(FlogHelper.getBaseL10n().getString("Center"), "[[&gt;&lt;]]", "]]",
-				SyntaxElement.begin + "(.+?)(\n\\s*\n|\\s*</p>)",
+		this.syntaxElements.add(new SyntaxElement(FlogHelper.getBaseL10n().getString("Center"), "[[><]]", "",
+				"\\[\\[&gt;&lt;\\]\\](.+?)(\n\\s*\n|\\s*</p>)",
 				Pattern.DOTALL | Pattern.CASE_INSENSITIVE,
 				"</p><p style=\"text-align: center;\">$1</p>\n<p>$2", true));
-		this.syntaxElements.add(new SyntaxElement(FlogHelper.getBaseL10n().getString("Left"), "[[&lt;&lt;]]", "",
-				SyntaxElement.begin + "(.+?)(\n\\s*\n|\\s*</p>)",
+		this.syntaxElements.add(new SyntaxElement(FlogHelper.getBaseL10n().getString("Left"), "[[<<]]", "",
+				"\\[\\[&lt;&lt;\\]\\](.+?)(\n\\s*\n|\\s*</p>)",
 				Pattern.DOTALL | Pattern.CASE_INSENSITIVE,
 				"</p><p style=\"text-align: left;\">$1</p>\n<p>", true));
-		this.syntaxElements.add(new SyntaxElement(FlogHelper.getBaseL10n().getString("Right"), "[[&gt;&gt;]]", "",
-				SyntaxElement.begin + "(.+?)(\n\\s*\n|\\s*</p>)",
+		this.syntaxElements.add(new SyntaxElement(FlogHelper.getBaseL10n().getString("Right"), "[[>>]]", "",
+				"\\[\\[&gt;&gt;\\]\\](.+?)(\n\\s*\n|\\s*</p>)",
 				Pattern.DOTALL | Pattern.CASE_INSENSITIVE,
 				"</p><p style=\"text-align: right;\">$1</p>\n<p>", true));
-		this.syntaxElements.add(new SyntaxElement(FlogHelper.getBaseL10n().getString("Justify"), "[[&lt;&gt;]]", "",
-				SyntaxElement.begin + "(.+?)(\n\\s*\n|\\s*</p>)",
+		this.syntaxElements.add(new SyntaxElement(FlogHelper.getBaseL10n().getString("Justify"), "[[<>]]", "",
+				"\\[\\[&lt;&gt;\\]\\](.+?)(\n\\s*\n|\\s*</p>)",
 				Pattern.DOTALL | Pattern.CASE_INSENSITIVE,
 				"</p><p style=\"text-align: justify;\">$1</p>\n<p>", true));
 

@@ -94,6 +94,7 @@ OverrideTemplateLong=Utiliser un modèle xHTML personnalisé ?
 Picture=Image 
 Preview=Aperçu 
 PreviewContent=Aperçu du contenu 
+PreviewWarning=Vous êtes actuellement en prévisualisation.
 Proceed=Procéder 
 PublishContentModificationDateDesc=Publier les dates de création/modification des contenus ? (Cela peut potentiellement aider un attaquant à vous identifier)
 Quote=Citation 
