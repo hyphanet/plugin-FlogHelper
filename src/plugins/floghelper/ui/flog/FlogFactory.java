@@ -715,6 +715,10 @@ public class FlogFactory {
 		return sb.toString().replaceAll("\t+", " ... ");
 	}
 
+	/**
+	 * Should we publish creation/modification dates ?
+	 * @return true if we should.
+	 */
 	public boolean shouldPublishDates() {
 		return flog.booleans.get("PublishContentModificationDate") != null &&
 				flog.booleans.get("PublishContentModificationDate") == true;

@@ -18,7 +18,8 @@ import plugins.floghelper.FlogHelper;
 import plugins.floghelper.contentsyntax.ContentSyntax;
 
 /**
- *
+ * This toadlet is used for creating/editing contents.
+ * 
  * @author Artefact2
  */
 public class CreateOrEditContentToadlet extends FlogHelperToadlet {

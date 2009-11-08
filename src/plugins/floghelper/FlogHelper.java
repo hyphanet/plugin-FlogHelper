@@ -39,13 +39,12 @@ import plugins.floghelper.ui.PreviewToadlet;
  *
  * This is the entry point of the plugin.
  *
- * TODO: proper GPL headers
- * TODO: proper javadoc
  * TODO: WoT register context!
- * TODO: filters
- * TODO: sorting (by creation date first)
+ * TODO: filters / search
  * TODO: maybe bundle the flog's index when inserting to allow searching using Librarian
  * TODO: maybe a caendar view for archives like Dotclear/WP
+ * TODO: Freetalk
+ * TODO: Freetalk !
  * @author Artefact2
  */
 public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginBaseL10n, FredPluginL10n, FredPluginThemed, FredPluginVersioned, FredPluginRealVersioned, FredPluginTalker {
@@ -63,18 +62,38 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 	 */
 	private final Vector<FlogHelperToadlet> myToadlets = new Vector<FlogHelperToadlet>();
 
+	/**
+	 * BaseL10n object can be accessed statically to get L10n data from anywhere.
+	 *
+	 * @return L10n object.
+	 */
 	public static BaseL10n getBaseL10n() {
 		return FlogHelper.l10n.getBase();
 	}
 
+	/**
+	 * Get the top-level PluginStored used by this plugin.
+	 *
+	 * @return Top-level PluginStore.
+	 */
 	public static PluginStore getStore() {
 		return FlogHelper.store;
 	}
 
+	/**
+	 * Get the PluginRespirator given in runPlugin().
+	 *
+	 * @return PluginRespirator used by the plugin.
+	 */
 	public static PluginRespirator getPR() {
 		return FlogHelper.pr;
 	}
 
+	/**
+	 * This indicates to the node that the Database must be commited. You must
+	 * call this when you insert/delete/update stuff in the database or the changes
+	 * won't be saved.
+	 */
 	public static void putStore() {
 		try {
 			FlogHelper.pr.putStore(FlogHelper.store);
@@ -134,43 +153,92 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 		}
 	}
 
+	/**
+	 * This is pretty much useless because we use toadlets.
+	 * @param theme
+	 */
 	public void setTheme(final THEME theme) {
 	}
 
+	/**
+	 * This code is only called during startup or when the user
+	 * selects another language in the UI.
+	 * @param arg0 Language to use.
+	 */
 	public void setLanguage(final BaseL10n.LANGUAGE arg0) {
 		FlogHelper.l10n = new PluginL10n(this, arg0);
 	}
 
+	/**
+	 * This is where our L10n files are stored.
+	 * @return Path of our L10n files.
+	 */
 	public String getL10nFilesBasePath() {
 		return "plugins/floghelper/l10n/";
 	}
 
+	/**
+	 * This is the mask of our L10n files : UI_en.l10n, UI_fr.10n, ...
+	 * @return Mask of the L10n files.
+	 */
 	public String getL10nFilesMask() {
 		return "UI_${lang}.l10n";
 	}
 
+	/**
+	 * Override L10n files are stored on the disk, their names should be explicit
+	 * we put here the plugin name, and the "override" indication. Plugin L10n
+	 * override is not implemented in the node yet.
+	 * @return Mask of the override L10n files.
+	 */
 	public String getL10nOverrideFilesMask() {
 		return "FlogHelper_UI_${lang}.override.l10n";
 	}
 
+	/**
+	 * Get the ClassLoader of this plugin. This is necessary when getting
+	 * resources inside the plugin's Jar, for example L10n files.
+	 * @return
+	 */
 	public ClassLoader getPluginClassLoader() {
 		return FlogHelper.class.getClassLoader();
 	}
 
+	/**
+	 * Get the formatted version of this plugin, for example "r0012" if revision 12.
+	 * @return Formatted version.
+	 */
 	public String getVersion() {
 		String rev = DataFormatter.formatIntLength(FlogHelper.REVISION, 4, false);
 		return "r" + rev;
 	}
 
-	public String getString(final String arg0) {
-		return FlogHelper.getBaseL10n().getString(arg0);
-	}
-
+	/**
+	 * Get the revision of this plugin.
+	 * @return Revision
+	 */
 	public long getRealVersion() {
 		return FlogHelper.REVISION;
 	}
 
+	/**
+	 * This code is never used, it's just there because we need to talk to WoT
+	 * via FCP.
+	 * @param arg0
+	 * @param arg1
+	 * @param arg2
+	 * @param arg3
+	 */
 	public void onReply(String arg0, String arg1, SimpleFieldSet arg2, Bucket arg3) {
 		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	/**
+	 * This code is only used by FredPluginL10n...
+	 * @param arg0
+	 * @return
+	 */
+	public String getString(String arg0) {
+		return FlogHelper.getBaseL10n().getString(arg0);
 	}
 }

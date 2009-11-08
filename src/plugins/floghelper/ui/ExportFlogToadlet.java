@@ -17,7 +17,8 @@ import plugins.floghelper.FlogHelper;
 import plugins.floghelper.data.DataFormatter;
 
 /**
- *
+ * This toadlet let the user export flogs.
+ * 
  * @author Artefact2
  */
 public class ExportFlogToadlet extends FlogHelperToadlet {

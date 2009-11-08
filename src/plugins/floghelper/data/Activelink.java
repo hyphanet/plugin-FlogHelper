@@ -32,7 +32,7 @@ public class Activelink {
 	 * Get a byte array from an uploaded file.
 	 *
 	 * @param activelink Matching HTTPUploadedFile
-	 * @return Picture bytes.
+	 * @return File bytes.
 	 */
 	public static byte[] getByteArrayFromUploadedFile(HTTPUploadedFile activelink) {
 		byte[] bytesAL = new byte[(int) activelink.getData().size()];

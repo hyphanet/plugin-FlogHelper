@@ -18,7 +18,8 @@ import plugins.floghelper.FlogHelper;
 import plugins.floghelper.ui.flog.FlogFactory;
 
 /**
- *
+ * This toadlet shows a list of a given Flog's contents.
+ * 
  * @author Artefact2
  */
 public class ContentListToadlet extends FlogHelperToadlet {

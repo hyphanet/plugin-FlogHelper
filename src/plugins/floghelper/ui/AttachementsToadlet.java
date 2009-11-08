@@ -21,7 +21,8 @@ import plugins.floghelper.FlogHelper;
 import plugins.floghelper.data.Activelink;
 
 /**
- *
+ * This toadlet handles Flog's attachments.
+ * 
  * @author Artefact2
  */
 public class AttachementsToadlet extends FlogHelperToadlet {

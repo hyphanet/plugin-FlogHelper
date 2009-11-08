@@ -14,6 +14,10 @@ import freenet.support.api.Bucket;
  */
 public class PluginReceptor implements FredPluginTalker {
 
+	/**
+	 * Our ReceptorCore is basically a callback to handle the stuff when the plugin sends
+	 * back a FCP response.
+	 */
 	private final ReceptorCore c;
 	private boolean isOver = false;
 	private boolean isStarted = false;

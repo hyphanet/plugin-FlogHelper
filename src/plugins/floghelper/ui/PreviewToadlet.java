@@ -17,6 +17,9 @@ import plugins.floghelper.FlogHelper;
 import plugins.floghelper.ui.flog.FlogFactory;
 
 /**
+ * This toadlet does all the "offline" previewing of flogs. The result should be
+ * exactly the same than what will be inserted, except that the returned code here
+ * isn't filtered in any way.
  *
  * @author Artefact2
  */

@@ -7,7 +7,7 @@ import freenet.support.SimpleFieldSet;
 import freenet.support.api.Bucket;
 
 /**
- *
+ * This is the callback to use when dealing with FCP.
  * @author Artefact2
  */
 public interface ReceptorCore {

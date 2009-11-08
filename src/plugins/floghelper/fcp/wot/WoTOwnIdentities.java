@@ -21,10 +21,20 @@ import plugins.floghelper.fcp.SyncPluginTalker;
  */
 public class WoTOwnIdentities {
 
+	/**
+	 * Get the nicknames of WoT identities. The map is <"ID", "Nickname (ID)">.
+	 * @return Map of WoT identities.
+	 * @throws PluginNotFoundException
+	 */
 	public static Map<String, String> getWoTIdentities() throws PluginNotFoundException {
 		return getWoTIdentities("Nickname");
 	}
 
+	/**
+	 * Get the request URI of a given author ID.
+	 * @param author Author ID.
+	 * @return Request URI of this identity.
+	 */
 	public static String getRequestURI(String author) {
 		try {
 			return getWoTIdentities("RequestURI").get(author);
@@ -33,6 +43,12 @@ public class WoTOwnIdentities {
 		}
 	}
 
+	/**
+	 * Get a specific field from WoT identities.
+	 * @param field Field to get, eg "Nickname" or "InsertURI".
+	 * @return Map of the requested data.
+	 * @throws PluginNotFoundException
+	 */
 	public static Map<String, String> getWoTIdentities(final String field) throws PluginNotFoundException {
 		final HashMap<String, String> identities = new HashMap<String, String>();
 		final SimpleFieldSet sfs = new SimpleFieldSet(true);
@@ -72,6 +88,11 @@ public class WoTOwnIdentities {
 		return identities;
 	}
 
+	/**
+	 * Sends a "Ping" FCP message to the WoT plugin.
+	 * @throws PluginNotFoundException If the plugin is not loaded/not
+	 * responding/buggy/whatever.
+	 */
 	public static void sendPing() throws PluginNotFoundException {
 		final SimpleFieldSet sfs = new SimpleFieldSet(true);
 		sfs.putOverwrite("Message", "Ping");

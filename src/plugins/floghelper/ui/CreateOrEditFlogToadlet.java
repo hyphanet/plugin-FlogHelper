@@ -23,6 +23,7 @@ import plugins.floghelper.data.Activelink;
 import plugins.floghelper.ui.flog.FlogFactory;
 
 /**
+ * This toadlet is used for editing/creating flogs.
  *
  * @author Artefact2
  */

@@ -21,6 +21,8 @@ import plugins.floghelper.data.Activelink;
 import plugins.floghelper.ui.flog.FlogFactory;
 
 /**
+ * This toadlet shows the list of all the flogs, it's also the main index
+ * page of the plugin.
  *
  * @author Artefact2
  */
@@ -152,6 +154,7 @@ public class FlogListToadlet extends FlogHelperToadlet {
 					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.strings.get("ID"))});
 		}
 
+		// This is only debug code to see what is in the PluginStore.
 		//this.getPM().getInfobox("infobox-minor", "DEBUG PluginStore Dump", pageNode.content).addChild("pre", DataFormatter.printStore(FlogHelper.getStore()));
 
 		writeHTMLReply(ctx, 200, "OK", null, pageNode.outer.generate());

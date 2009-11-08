@@ -17,6 +17,7 @@ import plugins.floghelper.FlogHelper;
 import plugins.floghelper.data.DataFormatter;
 
 /**
+ * This toadlet handles the flog imports.
  *
  * @author Artefact2
  */
