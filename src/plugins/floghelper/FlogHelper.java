@@ -38,13 +38,7 @@ import plugins.floghelper.ui.PreviewToadlet;
  * don't recreate the wheel every time.
  *
  * This is the entry point of the plugin.
- *
- * TODO: WoT register context!
- * TODO: filters / search
- * TODO: maybe bundle the flog's index when inserting to allow searching using Librarian
- * TODO: maybe a caendar view for archives like Dotclear/WP
- * TODO: Freetalk
- * TODO: Freetalk !
+ * 
  * @author Artefact2
  */
 public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginBaseL10n, FredPluginL10n, FredPluginThemed, FredPluginVersioned, FredPluginRealVersioned, FredPluginTalker {

@@ -3,7 +3,12 @@ using the FProxy interface (which means within a browser).
 
 It's currently under developement.
 
-Planned features :
+Key features :
+* Easy to use by newbies, secure
 * WoT integration (for comments & author identity)
 * Freetalk integration (for comments)
 * Store flog data in node.db4o 
+
+Todo list :
+* Freetalk !
+* Index generation / search form
