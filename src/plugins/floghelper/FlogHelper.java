@@ -203,8 +203,16 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 	 * @return Formatted version.
 	 */
 	public String getVersion() {
+		return FlogHelper.getVersionStatic();
+	}
+
+	/**
+	 * Get the formatted version of this plugin, for example "r0012" if revision 12.
+	 * @return Formatted version.
+	 */
+	public static String getVersionStatic() {
 		String rev = DataFormatter.formatIntLength(FlogHelper.REVISION, 4, false);
-		return "r" + rev;
+		return "r" + rev + "-" + Version.getRevision();
 	}
 
 	/**

@@ -9,20 +9,55 @@
 	<property name="lib" location="lib"/>
 	<property name="dist" location="dist"/>
 
+	<property name="version.src" value="plugins/floghelper/Version.java" />
+	<property name="version.build" value="plugins/floghelper/Version.class" />
+	<available file="${src}/${version.src}" property="version.present" />
+
 	<!-- This location MUST point to a freenet jar. Change it if needed. -->
 	<property name="freenetjar" value="../fred/freenet-cvs-snapshot.jar"/>
 	<property name="freenet-extjar" value="../fred/freenet-ext.jar"/>
 
-	<target name="compile">
+	<!-- Originally from Library's build script -->
+	<exec executable="git"
+		failifexecutionfails="false"
+		errorProperty="git.errror"
+		outputproperty="git.describe"
+		resultproperty="git.result">
+		<arg value="describe" />
+		<arg value="--always" />
+		<arg value="--abbrev=7" />
+	</exec>
+	<condition property="git.revision" value="${git.describe}" else="@unknown@">
+		<and>
+			<equals arg1="${git.result}" arg2="0" />
+			<isset property="git.describe" />
+		</and>
+	</condition>
+
+	<target name="setver" if="version.present">
+		<!-- Update the Version.java file in ${build}-->
+		<copy file="${src}/${version.src}" tofile="${build}/${version.src}" overwrite="true" />
+		<delete file="${build}/${version.build}"/>
+		<replace file="${build}/${version.src}">
+			<replacefilter token="@custom@" value="${git.revision}"/>
+		</replace>
+		<echo message="Updated build version to ${git.revision} in ${build}/${version.src}"/>
+	</target>
+
+	<target name="compile" depends="setver">
 		<mkdir dir="${build}"/>
 
 		<tstamp/>
 
 		<javac srcdir="${src}" destdir="${build}" debug="on" optimize="on" source="1.5">
+			<sourcepath>
+				<pathelement path="${build}"/>
+			</sourcepath>
 			<classpath>
 				<pathelement location="${freenetjar}"/>
 				<pathelement location="${freenet-extjar}"/>
 			</classpath>
+			<exclude name="${version.src}" />
 		</javac>
 		<copy todir="${build}">
 			<fileset dir="${src}">
@@ -30,7 +65,6 @@
 			</fileset>
 		</copy>
 	</target>
-
 
 	<target name="dist" depends="compile">
 		<mkdir dir="${dist}"/>
