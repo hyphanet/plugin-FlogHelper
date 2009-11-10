@@ -173,7 +173,8 @@ public class YAWKL extends ContentSyntax {
 
 		// Add <ul> when necessary
 		s = s.replaceAll("<p>\\s*<li>", "<ul>\n<li>");
-		s = s.replaceAll("</li>\\s*</p>", "</li></ul>");
+		s = s.replaceAll("<br />\\s*\n<li>", "</p><ul>\n<li>");
+		s = s.replaceAll("</li>\\s*</p>|</p>\\s*</li>", "</li></ul>");
 
 		// Unescape escaped formatting characters, eg \'\' -> ''
 		s = s.replace("\\*\\*", "**");
