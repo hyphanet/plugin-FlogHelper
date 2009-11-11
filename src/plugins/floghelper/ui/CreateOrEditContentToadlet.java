@@ -16,6 +16,7 @@ import java.net.URI;
 import java.util.Vector;
 import plugins.floghelper.FlogHelper;
 import plugins.floghelper.contentsyntax.ContentSyntax;
+import plugins.floghelper.ui.flog.FlogFactory;
 
 /**
  * This toadlet is used for creating/editing contents.
@@ -56,6 +57,7 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 			content.strings.put("Title", request.getPartAsString("Title", 100));
 			content.strings.put("Content", request.getPartAsString("Content", Integer.MAX_VALUE));
 			content.strings.put("ContentSyntax", request.getPartAsString("Content_syntaxes", 1000));
+			content.booleans.put("IsDraft", request.isPartSet("IsDraft"));
 			if (content.longs.get("CreationDate") == null) {
 				content.longs.put("CreationDate", System.currentTimeMillis());
 			}
@@ -103,6 +105,7 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 
 			final HTMLNode generalBox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("GeneralContentData"), form, "GeneralContentData", true);
 			final HTMLNode tagsBox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("Tags"), form, "TagsContentData", true);
+			final HTMLNode settingsBox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("Settings"), form, "SettingsContentData", true);
 			final HTMLNode submitBox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("SaveChanges"), form, "SubmitContentData", true);
 
 			form.addChild("input", new String[]{"type", "name", "value"},
@@ -141,6 +144,13 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 			}
 			tagsBox.addChild("p").addChild("label", "for", "Tags", FlogHelper.getBaseL10n().getString("TagsFieldDesc")).addChild("br").addChild("input", new String[]{"type", "size", "name", "value"},
 					new String[]{"text", "50", "Tags", tagz.toString()});
+
+			final boolean isDraft = content.booleans.get("IsDraft") == null ? FlogFactory.DEFAULT_DRAFT_STATUS : content.booleans.get("IsDraft");
+			HTMLNode checkBlock = settingsBox.addChild("p");
+			checkBlock.addChild("input", new String[]{"type", "name", "id", isDraft ? "checked" : "class"},
+					new String[]{"checkbox", "IsDraft", "IsDraft", isDraft ? "checked" : ""});
+			checkBlock.addChild("label", "for", "IsDraft", FlogHelper.getBaseL10n().getString("IsDraftDesc"));
+
 
 			final HTMLNode buttons = submitBox.addChild("p");
 			buttons.addChild("input", new String[]{"type", "name", "value"},

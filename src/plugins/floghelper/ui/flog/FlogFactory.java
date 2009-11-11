@@ -70,6 +70,11 @@ public class FlogFactory {
 	public static final long DEFAULT_CONTENTS_ON_ARCHIVES = 25;
 
 	/**
+	 * Should new contents be drafts by default ?
+	 */
+	public static final boolean DEFAULT_DRAFT_STATUS = false;
+
+	/**
 	 * USK@crypto/__?__/revnumber
 	 */
 	public static final String DEFAULT_SSK_PATH = "flog";
@@ -179,6 +184,7 @@ public class FlogFactory {
 		for(PluginStore content : this.flog.subStores.values()) {
 			if(content.strings.get("ID") == null) continue;
 			if(content.strings.get("ID").length() != 7) continue;
+			if(content.booleans.containsKey("IsDraft") && content.booleans.get("IsDraft") == true) continue;
 			for(String tag : content.stringsArrays.get("Tags")) {
 				tags.put(tag, tags.containsKey(tag) ? tags.get(tag) + 1L : 1L);
 			}
@@ -322,7 +328,7 @@ public class FlogFactory {
 		name = "GlobalStyle.css";
 		fileMap.put(name, new ManifestElement(name, data, DefaultMIMETypes.guessMIMEType(name, true), data.size()));
 
-		TreeMap<Long, PluginStore> contents = this.getContentsTreeMap();
+		TreeMap<Long, PluginStore> contents = this.getContentsTreeMap(false);
 		HashMap<String, Long> tagCount = new HashMap<String, Long>();
 
 		for(PluginStore s : contents.values()) {
@@ -437,12 +443,18 @@ public class FlogFactory {
 	 * @return Parsed xHTML page.
 	 */
 	public String getContentPage(String contentID) {
+		final String draftWarning;
 		PluginStore content = this.flog.subStores.get(contentID);
 
 		String genPage = this.parseInvariantData(getTemplate(), null);
 		genPage = genPage.replace("{PageTitle}", DataFormatter.htmlSpecialChars(content.strings.get("Title")));
-		
-		return genPage.replace("{MainContent}", "<div id=\"singlecontent\">" + this.getParsedContentBlock(content) + "</div>");
+
+		if(content.booleans.containsKey("IsDraft") && content.booleans.get("IsDraft") == true) {
+			draftWarning = "<p style=\"margin-top: 5px; padding: 5px; border: 1px solid red;\">"
+					+ FlogHelper.getBaseL10n().getString("PreviewingDraftContent") + "</p>";
+		} else draftWarning = "";
+
+		return genPage.replace("{MainContent}", draftWarning + "<div id=\"singlecontent\">" + this.getParsedContentBlock(content) + "</div>");
 	}
 
 	/**
@@ -454,7 +466,7 @@ public class FlogFactory {
 		String genPage = this.parseInvariantData(getTemplate(), "/index.html");
 		genPage = genPage.replace("{PageTitle}", "Index");
 
-		final TreeMap<Long, PluginStore> contents = this.getContentsTreeMap();
+		final TreeMap<Long, PluginStore> contents = this.getContentsTreeMap(false);
 		final Long numberOfContentsToShow = this.flog.longs.get("NumberOfContentsOnIndex");
 
 		StringBuilder mainContent = new StringBuilder();
@@ -480,7 +492,7 @@ public class FlogFactory {
 		String genPage = this.parseInvariantData(getTemplate(), "/Archives-p" + Long.toString(page) + ".html");
 		genPage = genPage.replace("{PageTitle}", "Archives (page " + Long.toString(page) +")");
 
-		final TreeMap<Long, PluginStore> contents = this.getContentsTreeMap();
+		final TreeMap<Long, PluginStore> contents = this.getContentsTreeMap(false);
 		final Long numberOfContentsToShow = this.flog.longs.get("NumberOfContentsOnArchives");
 		final long numberOfContents = contents.size();
 
@@ -516,7 +528,7 @@ public class FlogFactory {
 		String genPage = this.parseInvariantData(getTemplate(), "/Tag-" + tag + "-p" + Long.toString(page) + ".html");
 		genPage = genPage.replace("{PageTitle}", "Archives having the tag \"" + DataFormatter.htmlSpecialChars(tag) + "\" (page " + Long.toString(page) +")");
 
-		final TreeMap<Long, PluginStore> contents = this.getContentsTreeMapFilteredByTag(tag);
+		final TreeMap<Long, PluginStore> contents = this.getContentsTreeMapFilteredByTag(tag, false);
 		final Long numberOfContentsToShow = this.flog.longs.get("NumberOfContentsOnArchives");
 		final long numberOfContents = contents.size();
 
@@ -556,7 +568,7 @@ public class FlogFactory {
 		feed.append(DataFormatter.htmlSpecialChars(this.flog.strings.get("Title")));
 		feed.append("</title>\n");
 
-		TreeMap<Long, PluginStore> contents = this.getContentsTreeMap();
+		TreeMap<Long, PluginStore> contents = this.getContentsTreeMap(false);
 		Date mostRecentlyCreationDate = new Date(contents.lastKey());
 		if(!this.shouldPublishDates()) {
 			mostRecentlyCreationDate = DataFormatter.obfuscateDate(mostRecentlyCreationDate);
@@ -634,12 +646,13 @@ public class FlogFactory {
 	 *
 	 * @return Tree of all the contents.
 	 */
-	public TreeMap<Long, PluginStore> getContentsTreeMap() {
+	public TreeMap<Long, PluginStore> getContentsTreeMap(boolean includeDrafts) {
 		TreeMap<Long, PluginStore> map = new TreeMap<Long, PluginStore>();
 
 		for(String id : this.flog.subStores.keySet()) {
 			if(id.length() != 7) continue;
 			final PluginStore content = this.flog.subStores.get(id);
+			if(!includeDrafts && content.booleans.containsKey("IsDraft") && content.booleans.get("IsDraft") == true) continue;
 			map.put(content.longs.get("CreationDate"), content);
 		}
 
@@ -652,11 +665,12 @@ public class FlogFactory {
 	 * @param tag Tag to match.
 	 * @return Tree of contents tagged with the specified tag.
 	 */
-	private TreeMap<Long, PluginStore> getContentsTreeMapFilteredByTag(String tag) {
+	private TreeMap<Long, PluginStore> getContentsTreeMapFilteredByTag(String tag, boolean includeDrafts) {
 		TreeMap<Long, PluginStore> map = new TreeMap<Long, PluginStore>();
 
 		for (String id : this.flog.subStores.keySet()) {
 			final PluginStore content = this.flog.subStores.get(id);
+			if(!includeDrafts && content.booleans.containsKey("IsDraft") && content.booleans.get("IsDraft") == true) continue;
 			if (content.stringsArrays.get("Tags") != null) {
 				boolean isTagInside = false;
 				for (String s : content.stringsArrays.get("Tags")) {

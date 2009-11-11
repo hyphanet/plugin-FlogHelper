@@ -47,7 +47,7 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 	/**
 	 * Don't forget to bump this when a new release is up.
 	 */
-	public static final int REVISION = 12;
+	public static final int REVISION = 13;
 	private static PluginRespirator pr;
 	private static PluginL10n l10n;
 	private static PluginStore store;

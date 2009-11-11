@@ -76,7 +76,7 @@ public class ContentListToadlet extends FlogHelperToadlet {
 		}
 
 		// Let's sort the contents by descending creation date.
-		for (final PluginStore content : new FlogFactory(flog).getContentsTreeMap().descendingMap().values()) {
+		for (final PluginStore content : new FlogFactory(flog).getContentsTreeMap(true).descendingMap().values()) {
 			final HTMLNode row = tBody.addChild("tr");
 			row.addChild("td").addChild("pre", DataFormatter.toString(content.strings.get("ID")));
 			row.addChild("td", DataFormatter.toString(DataFormatter.htmlSpecialChars(content.strings.get("Title"))));

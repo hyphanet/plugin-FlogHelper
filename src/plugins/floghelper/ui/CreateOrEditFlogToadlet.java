@@ -171,9 +171,9 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			checkBlock = settingsBox.addChild("p");
 			checkBlock.addChild("input", new String[]{"type", "name", "id", insertPluginStoreDump ? "checked" : "class"},
 					new String[]{"checkbox", "InsertPluginStoreDump", "InsertPluginStoreDump", insertPluginStoreDump ? "checked" : ""});
+			checkBlock.addChild("label", "for", "InsertPluginStoreDump", FlogHelper.getBaseL10n().getString("InsertPluginStoreDumpDesc"));
 
 			final boolean publishContentModificationDate = flog.booleans.get("PublishContentModificationDate") == null ? FlogFactory.DEFAULT_SHOULD_PUBLISH_DATES : flog.booleans.get("PublishContentModificationDate");
-			checkBlock.addChild("label", "for", "InsertPluginStoreDump", FlogHelper.getBaseL10n().getString("InsertPluginStoreDumpDesc"));
 			checkBlock = settingsBox.addChild("p");
 			checkBlock.addChild("input", new String[]{"type", "name", "id", publishContentModificationDate ? "checked" : "class"},
 					new String[]{"checkbox", "PublishContentModificationDate", "PublishContentModificationDate", publishContentModificationDate ? "checked" : ""});
