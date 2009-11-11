@@ -67,7 +67,8 @@ public abstract class FlogHelperToadlet extends Toadlet {
 		try {
 			WoTOwnIdentities.sendPing();
 		} catch (PluginNotFoundException ex) {
-			this.getPM().getInfobox("infobox-error", FlogHelper.getBaseL10n().getString("MissingWoT"), pageNode.content).addChild("p", FlogHelper.getBaseL10n().getString("MissingWoTLong"));
+			this.getPM().getInfobox("infobox-error", FlogHelper.getBaseL10n().getString("MissingWoT"),
+					pageNode.content).addChild("p", FlogHelper.getBaseL10n().getString("MissingWoTLong"));
 			writeHTMLReply(ctx, 200, "OK", null, pageNode.outer.generate());
 			return false;
 		}
@@ -80,7 +81,8 @@ public abstract class FlogHelperToadlet extends Toadlet {
 
 		// Make sure we have at least one identity
 		if (this.wotIdentities.size() == 0) {
-			this.getPM().getInfobox("infobox-error", FlogHelper.getBaseL10n().getString("MissingWoTIdentity"), pageNode.content).addChild("p", FlogHelper.getBaseL10n().getString("MissingWoTIdentityLong"));
+			this.getPM().getInfobox("infobox-error", FlogHelper.getBaseL10n().getString("MissingWoTIdentity"),
+					pageNode.content).addChild("p", FlogHelper.getBaseL10n().getString("MissingWoTIdentityLong"));
 			writeHTMLReply(ctx, 200, "OK", null, pageNode.outer.generate());
 			return false;
 		}

@@ -90,14 +90,11 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 			links.addChild("br");
 			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + CreateOrEditContentToadlet.MY_URI + "?FlogID=" + flog.strings.get("ID"), FlogHelper.getBaseL10n().getString("CreateNewContent"));
 		} else {
-			final String title;
 			final PluginStore content;
 			if (contentID == null || contentID.equals("") || !flog.subStores.containsKey(contentID)) {
-				title = "CreateContent";
 				contentID = DataFormatter.createSubStoreUniqueID(flog);
 				(content = new PluginStore()).strings.put("ID", contentID);
 			} else {
-				title = "EditContent";
 				content = flog.subStores.get(contentID);
 			}
 
