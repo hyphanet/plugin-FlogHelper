@@ -1,0 +1,21 @@
+body {
+	color: white;
+	background-color: black;
+}
+
+div#maincontent {
+	margin-left: 255px;
+}
+
+div#globmenu {
+	float: left;
+	width: 250px;
+}
+
+div#header {
+	text-align: center;
+}
+
+a {
+	color: white;
+}

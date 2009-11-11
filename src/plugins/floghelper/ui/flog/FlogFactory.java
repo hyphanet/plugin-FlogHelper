@@ -46,7 +46,9 @@ public class FlogFactory {
 	 * List of availible flog themes.
 	 */
 	public static String[] THEMES = new String[]{
-		"WhiteAndGray" // The first here is the default one.
+		"WhiteAndGray", // The first here is the default one.
+		"VeryMinimalist-Light",
+		"VeryMinimalist-Dark"
 	};
 
 	/**

@@ -202,7 +202,7 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			checkBlock.addChild("textarea", new String[]{"rows", "cols", "name", "id"},
 					new String[]{"12", "80", "OverrideTemplateValue", "OverrideTemplateValue"}, flog.strings.get("OverrideTemplateValue"));
 			checkBlock.addChild("br");
-			checkBlock.addChild("a", "href", FlogHelperToadlet.BASE_URI + PreviewToadlet.MY_URI + PreviewToadlet.VIEW_RAW_DEFAULT_TEMPLATE_URI,
+			checkBlock.addChild("a", "href", FlogHelperToadlet.BASE_URI + PreviewToadlet.MY_URI + flog.strings.get("ID") + "/" + PreviewToadlet.VIEW_RAW_DEFAULT_TEMPLATE_URI,
 					FlogHelper.getBaseL10n().getString("SeeTheRawDefaultTemplate"));
 
 			final HTMLNode themesBox = new HTMLNode("select", new String[]{"id", "name"}, new String[]{"Theme", "Theme"});
@@ -215,7 +215,6 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 
 			templatesBox.addChild("p").addChild("label", "for", "Theme", FlogHelper.getBaseL10n().getString("ThemeFieldDesc")).addChild("br").addChild(themesBox);
 
-
 			final boolean overrideCSS = flog.booleans.get("OverrideCSS") == null ? false : flog.booleans.get("OverrideCSS");
 			checkBlock = templatesBox.addChild("p");
 			checkBlock.addChild("input", new String[]{"type", "name", "id", overrideCSS ? "checked" : "class"},
@@ -225,8 +224,9 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			checkBlock.addChild("textarea", new String[]{"rows", "cols", "name", "id"},
 					new String[]{"12", "80", "OverrideCSSValue", "OverrideCSSValue"}, flog.strings.get("OverrideCSSValue"));
 			checkBlock.addChild("br");
-			checkBlock.addChild("a", "href", FlogHelperToadlet.BASE_URI + PreviewToadlet.MY_URI + PreviewToadlet.VIEW_DEFAULT_CSS_URI,
+			checkBlock.addChild("a", "href", FlogHelperToadlet.BASE_URI + PreviewToadlet.MY_URI + flog.strings.get("ID") + "/" + PreviewToadlet.VIEW_DEFAULT_CSS_URI,
 					FlogHelper.getBaseL10n().getString("SeeTheDefaultCSS"));
+
 
 			final HTMLNode buttons = submitBox.addChild("p");
 			buttons.addChild("input", new String[]{"type", "name", "value"},
