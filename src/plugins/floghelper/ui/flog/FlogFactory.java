@@ -43,9 +43,11 @@ import plugins.floghelper.fcp.wot.WoTOwnIdentities;
  */
 public class FlogFactory {
 	/**
-	 * List of primary navigation links.
+	 * List of availible flog themes.
 	 */
-	private String[] primaryNavigationLinks;
+	public static String[] THEMES = new String[]{
+		"WhiteAndGray" // The first here is the default one.
+	};
 
 	/**
 	 * By default, we won't publish creation/modification dates of flogs/contents.
@@ -78,6 +80,11 @@ public class FlogFactory {
 	 * USK@crypto/__?__/revnumber
 	 */
 	public static final String DEFAULT_SSK_PATH = "flog";
+
+	/**
+	 * List of primary navigation links.
+	 */
+	private String[] primaryNavigationLinks;
 
 	private final PluginStore flog;
 
@@ -124,7 +131,13 @@ public class FlogFactory {
 	public String getCSS() {
 		if(flog.booleans.get("OverrideCSS") != null && flog.booleans.get("OverrideCSS") == true) {
 			return flog.strings.get("OverrideCSSValue");
-		} else return getResourceAsString("plugins/floghelper/ui/flog/GlobalStyle.css");
+		} else {
+			String theme = THEMES[0];
+			if(flog.strings.containsKey("Theme")) {
+				theme = flog.strings.get("Theme");
+			}
+			return getResourceAsString("plugins/floghelper/ui/flog/" + theme + ".css");
+		}
 
 	}
 

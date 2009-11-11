@@ -55,6 +55,7 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			flog.strings.put("ID", flogID);
 			flog.strings.put("Title", request.getPartAsString("Title", 100));
 			flog.strings.put("Author", request.getPartAsString("Author", 1000));
+			flog.strings.put("Theme", request.getPartAsString("Theme", 250));
 			flog.strings.put("SmallDescription", request.getPartAsString("SmallDescription", 100000));
 			flog.strings.put("SmallDescriptionContentSyntax", request.getPartAsString("SmallDescription_syntaxes", 1000));
 			flog.booleans.put("InsertPluginStoreDump", request.isPartSet("InsertPluginStoreDump"));
@@ -203,6 +204,17 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			checkBlock.addChild("br");
 			checkBlock.addChild("a", "href", FlogHelperToadlet.BASE_URI + PreviewToadlet.MY_URI + PreviewToadlet.VIEW_RAW_DEFAULT_TEMPLATE_URI,
 					FlogHelper.getBaseL10n().getString("SeeTheRawDefaultTemplate"));
+
+			final HTMLNode themesBox = new HTMLNode("select", new String[]{"id", "name"}, new String[]{"Theme", "Theme"});
+			for (final String theme : FlogFactory.THEMES) {
+				final HTMLNode option = themesBox.addChild("option", "value", theme, theme);
+				if (flog.strings.containsKey("Theme") && flog.strings.get("Theme").equals(theme)) {
+					option.addAttribute("selected", "selected");
+				}
+			}
+
+			templatesBox.addChild("p").addChild("label", "for", "Theme", FlogHelper.getBaseL10n().getString("ThemeFieldDesc")).addChild("br").addChild(themesBox);
+
 
 			final boolean overrideCSS = flog.booleans.get("OverrideCSS") == null ? false : flog.booleans.get("OverrideCSS");
 			checkBlock = templatesBox.addChild("p");
