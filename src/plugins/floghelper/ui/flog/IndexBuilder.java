@@ -3,6 +3,7 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package plugins.floghelper.ui.flog;
 
+import freenet.client.async.ManifestElement;
 import freenet.clients.http.filter.ContentFilter;
 import freenet.clients.http.filter.FoundURICallback;
 import freenet.clients.http.filter.UnsafeContentTypeException;
@@ -18,6 +19,7 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Vector;
 import plugins.floghelper.contentsyntax.ContentSyntax;
+import plugins.floghelper.data.DataFormatter;
 import plugins.floghelper.fcp.wot.WoTOwnIdentities;
 
 /**
@@ -26,8 +28,13 @@ import plugins.floghelper.fcp.wot.WoTOwnIdentities;
  * @author Artefact2
  */
 public class IndexBuilder {
+	public final static byte[] subStores = new byte[]{ 0x0, 0x1, 0x2,
+		0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf};
+
 	private final PluginStore flog;
 	private final HashMap<String, Object> parsedData;
+	private final Vector<String> pageIDs = new Vector<String>();
+	private final HashMap<Byte, Vector<String>> ourWords = new HashMap<Byte, Vector<String>>();
 	private String baseKey;
 
 	public IndexBuilder(PluginStore flog, HashMap<String, Object> parsedData) {
@@ -38,47 +45,137 @@ public class IndexBuilder {
 		} catch (PluginNotFoundException ex) {
 			// Safe to ignore.
 		}
+
+		for(byte b : subStores) {
+			ourWords.put(b, new Vector<String>());
+		}
+		try {
+			this.getWordsFromPages();
+		} catch (URISyntaxException ex) {
+			Logger.error(this, "", ex);
+		} catch (UnsafeContentTypeException ex) {
+			Logger.error(this, "", ex);
+		} catch (IOException ex) {
+			Logger.error(this, "", ex);
+		}
 	}
 
-	public HashMap<String, Object> getFullIndex() {
+	public HashMap<String, String> getFullIndex() {
 		// Generate main index.xml file
 		// Generate index_*.xml subindexes
+		// Fore more info about the format :
 		// http://wiki.freenetproject.org/XMLSpider
 
-		throw new UnsupportedOperationException();
-	}
+		HashMap<String, String> index = new HashMap<String, String>();
 
-	private HashMap<String, Vector<Integer>> findAllWordPositions(String xhtml, String[] words) {
-		HashMap<String, Vector<Integer>> wordPosition = new HashMap<String, Vector<Integer>>();
-
-		for(String word : words) {
-			Vector<Integer> positions = new Vector<Integer>();
-			int offset = 0;
-			int next;
-			while((next = xhtml.indexOf(word, offset)) > offset) {
-				offset = next;
-				positions.add(offset);
-			}
+		index.put("index.xml", this.getIndexIndex());
+		
+		for(byte sub : IndexBuilder.subStores) {
+			index.put("index_" + Integer.toHexString(sub).toLowerCase() + ".xml", this.getSubIndex(sub));
 		}
 
-		return wordPosition;
+		return index;
 	}
 
-	public HashMap<String, Vector<String>> getWordsFromPages() throws URISyntaxException, UnsafeContentTypeException, IOException {
+	public String getIndexIndex() {
+		StringBuilder index = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
+				"<main_index>\n" +
+				"	<prefix value=\"1\"/>\n" +
+				"	<header>\n" +
+				"		<title>Index of " + DataFormatter.htmlSpecialChars(this.flog.strings.get("Title")) + "</title>\n" +
+				"		<owner>" + this.flog.strings.get("Author") + "</owner>\n" +
+				"	</header>\n" +
+				"	<keywords>\n");
+		for(byte i : IndexBuilder.subStores) {
+			index.append("		<subIndex key=\"" + Integer.toHexString(i).toLowerCase() + "\"/>\n");
+		}
+
+		index.append("	</keywords>\n" +
+				"</main_index>\n");
+
+		return index.toString();
+	}
+
+	public String getSubIndex(Byte sub) {
+		StringBuilder subIndex = new StringBuilder();
+
+		subIndex.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n");
+		subIndex.append("<sub_index>\n");
+		subIndex.append("	<entries value=\"" + this.ourWords.get(sub).size() + "\">\n");
+		subIndex.append("	<header>\n");
+		subIndex.append("		<title>Index of " + DataFormatter.htmlSpecialChars(this.flog.strings.get("Title")) + "</title>\n");
+		subIndex.append("	</header>\n");
+		subIndex.append("	<files>\n");
+		for(int i = 0; i < this.pageIDs.size(); ++i) {
+			final String pageName = this.pageIDs.elementAt(i);
+			subIndex.append("		<file id=\"" + Integer.toString(i) + "\" key=\"" + this.baseKey + pageName + "\" title=\"" +
+					DataFormatter.htmlSpecialChars(this.flog.subStores.get(pageName.replace("Content-", "").replace(".html", "")).strings.get("Title")) + "\"/>\n");
+		}
+		subIndex.append("	</files>\n");
+		subIndex.append("	<keywords>\n");
+
+		for(String s : this.ourWords.get(sub)) {
+			subIndex.append("		<word v=\"" + s + "\">\n");
+
+			for(int i = 0; i < pageIDs.size(); ++i) {
+				final String pageName = this.pageIDs.elementAt(i);
+				try {
+					final String positions = IndexBuilder.findAllWordPositions(DataFormatter.readStringFromStream(((ManifestElement) this.parsedData.get(pageName)).getData().getInputStream()), s);
+					if(positions != null) {
+						subIndex.append("			<file id=\"" + Integer.toString(i) + "\">" + positions + "</file>\n");
+					}
+				} catch (IOException ex) {
+					Logger.error(this, "", ex);
+				}
+			}
+
+			subIndex.append("		</word>\n");
+		}
+
+		subIndex.append("	</keywords>\n");
+		subIndex.append("</sub_index>\n");
+
+		return subIndex.toString();
+	}
+
+	private static String findAllWordPositions(String xhtml, String word) {
+		xhtml = xhtml.toLowerCase();
+		word = word.toLowerCase();
+		if(!xhtml.contains(word)) return null;
+
+		StringBuilder positions = new StringBuilder();
+		int offset = -1;
+		int next;
+		while ((next = xhtml.indexOf(word, offset+1)) > offset) {
+			offset = next;
+			if(positions.length() > 0) positions.append(",");
+			positions.append(offset);
+		}
+
+		return positions.toString();
+	}
+
+	private void getWordsFromPages() throws URISyntaxException, UnsafeContentTypeException, IOException {
 		// Content-XXXXXXX.html pages only, because they contain all the contents
 		// and their respective URIs won't change over time
 
-		HashMap<String, Vector<String>> wordsInContents = new HashMap<String, Vector<String>>();
+		Vector<String> words = new Vector<String>();
 
-		NullFilterCallback nullFC = new NullFilterCallback();
 		for (final PluginStore content : new FlogFactory(flog).getContentsTreeMap(false).values()) {
+			NullFilterCallback nullFC = new NullFilterCallback();
 			ContentFilter.filter(new ArrayBucket(ContentSyntax.parseSomeString(content.strings.get("Content"), 
 					content.strings.get("ContentSyntax")).getBytes("UTF-8")), new NullBucketFactory(),
 					"text/html", new URI("http://whocares.co:12345/"), nullFC, null);
-			wordsInContents.put("Content-" + content.strings.get("ID") + ".html", nullFC.words);
+			final String cURI = "Content-" + content.strings.get("ID") + ".html";
+			this.pageIDs.add(cURI);
+			words.addAll(nullFC.words);
 		}
 
-		return wordsInContents;
+		for(String w : words) {
+			final Vector<String> list = this.ourWords.get(Byte.valueOf(DataFormatter.getMD5(w).substring(0, 1), 16));
+			if(!list.contains(w))
+				list.add(w);
+		}
 	}
 
 	private class NullFilterCallback implements FoundURICallback {
@@ -94,8 +191,10 @@ public class IndexBuilder {
 		}
 
 		public void onText(String arg0, String arg1, URI arg2) {
-			for(String word : arg0.toLowerCase().split(",|\\.|;|:|\\!|\n+|\\s+")) {
-				words.add(word);
+			for(String word : arg0.toLowerCase().split(",|\\.|;|:|\\!|\n+|\\s+|\\[|\\]|\\(|\\)|\\{|\\}")) {
+				if(word.length() < 3) continue;
+				if(!words.contains(word))
+					words.add(word);
 			}
 		}
 	}

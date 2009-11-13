@@ -35,16 +35,10 @@ public class Activelink {
 	 * @return File bytes.
 	 */
 	public static byte[] getByteArrayFromUploadedFile(HTTPUploadedFile activelink) {
-		byte[] bytesAL = new byte[(int) activelink.getData().size()];
+		byte[] bytesAL = null;
 
 		try {
-			BufferedInputStream is = new BufferedInputStream(activelink.getData().getInputStream());
-			int b;
-			int i = 0;
-			while((b = is.read()) != -1) {
-				bytesAL[i] = (byte)b;
-				++i;
-			}
+			bytesAL = DataFormatter.readAllBytesFromStream(activelink.getData().getInputStream(), (int)activelink.getData().size());
 		} catch (IOException ex) {
 			Logger.error(Activelink.class, "Could not read activelink bucket - " + ex.getMessage());
 		}

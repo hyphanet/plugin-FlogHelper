@@ -5,6 +5,11 @@ package plugins.floghelper.data;
 
 import freenet.pluginmanager.PluginStore;
 import freenet.support.Logger;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
@@ -449,5 +454,42 @@ public class DataFormatter {
 	public static String[] getWords(String xHTML) {
 		// TODO use Fred's HTMLFilter
 		return new String[0];
+	}
+
+	/**
+	 * Read an InputStream and return a byte array.
+	 *
+	 * @param e InputStream to read.
+	 * @param size Number of bytes to read.
+	 * @return byte array
+	 * @throws IOException
+	 */
+	public static byte[] readAllBytesFromStream(InputStream e, int size) throws IOException {
+		byte[] data = new byte[size];
+		BufferedInputStream is = new BufferedInputStream(e);
+		int b;
+		int i = 0;
+		while ((b = is.read()) != -1) {
+			data[i] = (byte) b;
+			++i;
+		}
+		return data;
+	}
+
+	/**
+	 * Read an InputStream and return a String.
+	 *
+	 * @param e InputStream to read.
+	 * @return String
+	 * @throws IOException
+	 */
+	public static String readStringFromStream(InputStream e) throws IOException {
+		BufferedReader bsr = new BufferedReader(new InputStreamReader(e));
+		StringBuilder sb = new StringBuilder();
+		String buffer = null;
+		while((buffer = bsr.readLine()) != null) {
+			sb.append(buffer);
+		}
+		return sb.toString();
 	}
 }
