@@ -4,6 +4,9 @@
 package plugins.floghelper.data;
 
 import freenet.pluginmanager.PluginStore;
+import freenet.support.Logger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -411,5 +414,40 @@ public class DataFormatter {
 		}
 
 		return sb.toString();
+	}
+
+	/**
+	 * Get the MD5 of a string as a string.
+	 * 
+	 * @param s String to hash.
+	 * @return MD5 sum of the string.
+	 */
+	public static String getMD5(String s) {
+		StringBuilder md5 = new StringBuilder();
+		try {
+			byte[] md5bytes = MessageDigest.getInstance("MD5").digest(s.getBytes());
+			for(byte b : md5bytes) {
+				String h = Integer.toHexString(0xFF & b);
+				if(h.length() == 1) {
+					md5.append("0");
+				}
+				md5.append(h);
+			}
+		} catch (NoSuchAlgorithmException ex) {
+			Logger.error(DataFormatter.class, "MD5 algorithm not found !");
+		}
+
+		return md5.toString();
+	}
+
+	/**
+	 * Get a list of words inside a xHTML code.
+	 *
+	 * @param xHTML xHTML page/part to parse
+	 * @return Array of words
+	 */
+	public static String[] getWords(String xHTML) {
+		// TODO use Fred's HTMLFilter
+		return new String[0];
 	}
 }
