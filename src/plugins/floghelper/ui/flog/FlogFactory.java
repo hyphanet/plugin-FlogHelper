@@ -242,7 +242,9 @@ public class FlogFactory {
 		mainContent.append("<div class=\"content_container\" id=\"c" + content.strings.get("ID") + "\">");
 		mainContent.append("<div class=\"content_header\">");
 		mainContent.append("<h1>").append(DataFormatter.htmlSpecialChars(content.strings.get("Title"))).append("</h1><p>");
-		mainContent.append("<a href=\"./Content-").append(content.strings.get("ID")).append(".html\">Permanent link</a> | <a href=\"./Content-").append(content.strings.get("ID")).append(".html#comments\">Comments</a> | Tags : ");
+		mainContent.append("<a href=\"./Content-").append(content.strings.get("ID")).append(".html\">Permanent link</a>");
+		//mainContent.append("| <a href=\"./Content-").append(content.strings.get("ID")).append(".html#comments\">Comments</a>");
+		mainContent.append("| Tags : ");
 		boolean first = true;
 		for (String tag : content.stringsArrays.get("Tags")) {
 			if (tag.trim().equals("")) {
