@@ -31,6 +31,7 @@ import java.net.MalformedURLException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.TreeMap;
+import java.util.Vector;
 import plugins.floghelper.FlogHelper;
 import plugins.floghelper.contentsyntax.ContentSyntax;
 import plugins.floghelper.data.DataFormatter;
@@ -63,6 +64,12 @@ public class FlogFactory {
 	public static final boolean DEFAULT_SHOULD_INSERT_STOREDUMP = false;
 
 	/**
+	 * Should we insert a Library index by default ?
+	 * FIXME this is false until embedded Library search works.
+	 */
+	public static final boolean DEFAULT_SHOULD_INSERT_INDEX = false;
+
+	/**
 	 * Seven seems reasonable.
 	 */
 	public static final long DEFAULT_CONTENTS_ON_INDEX = 7;
@@ -86,7 +93,7 @@ public class FlogFactory {
 	/**
 	 * List of primary navigation links.
 	 */
-	private String[] primaryNavigationLinks;
+	private Vector<String[]> primaryNavigationLinks = new Vector<String[]>();
 
 	private final PluginStore flog;
 
@@ -151,12 +158,23 @@ public class FlogFactory {
 	public FlogFactory(PluginStore flog) {
 		this.flog = flog;
 
-		this.primaryNavigationLinks = new String[]{
-					"./index.html", "Index",
-					"./Archives-p1.html", "Archives",
-					"./AtomFeed.xml", "Atom feed",
-					"/?newbookmark=USK@" + WoTOwnIdentities.getRequestURI(this.flog.strings.get("Author")).split("@")[1].split("/")[0] + "/" + this.flog.strings.get("SSKPath") + "/-1/&amp;desc=" + this.flog.strings.get("Title"), "Bookmark this flog"
-				};
+		this.primaryNavigationLinks.add(new String[]{"Index", "./index.html"});
+		this.primaryNavigationLinks.add(new String[]{"Archives", "./Archives-p1.html"});
+		this.primaryNavigationLinks.add(new String[]{"Atom feed", "./AtomFeed.xml"});
+		this.primaryNavigationLinks.add(new String[]{"Bookmark this flog", "/?newbookmark=USK@" + WoTOwnIdentities.getRequestURI(this.flog.strings.get("Author")).split("@")[1].split("/")[0] + "/" + this.flog.strings.get("SSKPath") + "/-1/&amp;desc=" + this.flog.strings.get("Title")});
+
+		if(!(flog.booleans.containsKey("InsertLibraryIndex") && flog.booleans.get("InsertLibraryIndex") == false)) {
+			try {
+				this.primaryNavigationLinks.add(new String[]{"<form enctype=\"multipart/form-data\" action=\"/library/\" method=\"get\" accept-charset=\"utf-8\"><p style=\"margin:0;\">" +
+						"<input name=\"search\" type=\"text\" size=\"8\"/>" +
+						"<input name=\"index\" type=\"hidden\" value=\"USK@" +
+						WoTOwnIdentities.getWoTIdentities("RequestURI").get(this.flog.strings.get("Author")).split("@")[1].split("/")[0] +
+						"/" + flog.strings.get("SSKPath") + "/-1/index.xml\" />" +
+						"<input type=\"submit\" value=\"Search\"/></p></form>", null});
+			} catch (PluginNotFoundException ex) {
+				Logger.error(this, "", ex);
+			}
+		}
 	}
 
 	/**
@@ -168,16 +186,16 @@ public class FlogFactory {
 	public String getPrimaryNavigationLinks(String currentUri) {
 		StringBuilder sb = new StringBuilder();
 
-		for(int i = 0; i < this.primaryNavigationLinks.length; i += 2) {
-			boolean thereIsALink = this.primaryNavigationLinks[i] != null;
+		for(int i = 0; i < this.primaryNavigationLinks.size(); ++i) {
+			boolean thereIsALink = this.primaryNavigationLinks.elementAt(i)[1] != null;
 			// We don't want to cause a NPE, yet we don't want a link if we already are on the page.
-			if(thereIsALink) thereIsALink = ! (currentUri != null && this.primaryNavigationLinks[i].endsWith(currentUri));
+			if(thereIsALink) thereIsALink = ! (currentUri != null && this.primaryNavigationLinks.elementAt(i)[1].endsWith(currentUri));
 
 			sb.append("<li>");
 			if(thereIsALink) {
-				sb.append("<a href=\"").append(this.primaryNavigationLinks[i]).append("\">");
+				sb.append("<a href=\"").append(this.primaryNavigationLinks.elementAt(i)[1]).append("\">");
 			}
-			sb.append(this.primaryNavigationLinks[i+1]);
+			sb.append(this.primaryNavigationLinks.elementAt(i)[0]);
 			if(thereIsALink) {
 				sb.append("</a>");
 			}
@@ -393,6 +411,14 @@ public class FlogFactory {
 				data = BucketTools.makeImmutableBucket(factory, attachement.bytesArrays.get("Content"));
 				name = attachement.strings.get("Filename");
 				fileMap.put(name, new ManifestElement(name, data, DefaultMIMETypes.guessMIMEType(name, true), data.size()));
+			}
+		}
+
+		if(!(flog.booleans.containsKey("InsertLibraryIndex") && flog.booleans.get("InsertLibraryIndex") == false)) {
+			HashMap<String, String> indexes = new IndexBuilder(this.flog, fileMap).getFullIndex();
+			for(String file : indexes.keySet()) {
+				data = BucketTools.makeImmutableBucket(factory, indexes.get(file).getBytes("UTF-8"));
+				fileMap.put(file, new ManifestElement(file, data, DefaultMIMETypes.guessMIMEType(file, true), data.size()));
 			}
 		}
 

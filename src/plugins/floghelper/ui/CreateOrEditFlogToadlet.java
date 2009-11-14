@@ -60,6 +60,7 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			flog.strings.put("SmallDescriptionContentSyntax", request.getPartAsString("SmallDescription_syntaxes", 1000));
 			flog.booleans.put("InsertPluginStoreDump", request.isPartSet("InsertPluginStoreDump"));
 			flog.booleans.put("PublishContentModificationDate", request.isPartSet("PublishContentModificationDate"));
+			flog.booleans.put("InsertLibraryIndex", request.isPartSet("InsertLibraryIndex"));
 			flog.booleans.put("OverrideTemplate", request.isPartSet("OverrideTemplate"));
 			flog.strings.put("OverrideTemplateValue", request.getPartAsString("OverrideTemplateValue", 100000));
 			flog.booleans.put("OverrideCSS", request.isPartSet("OverrideCSS"));
@@ -173,6 +174,13 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			checkBlock.addChild("input", new String[]{"type", "name", "id", insertPluginStoreDump ? "checked" : "class"},
 					new String[]{"checkbox", "InsertPluginStoreDump", "InsertPluginStoreDump", insertPluginStoreDump ? "checked" : ""});
 			checkBlock.addChild("label", "for", "InsertPluginStoreDump", FlogHelper.getBaseL10n().getString("InsertPluginStoreDumpDesc"));
+
+			// FIXME don't show that until embedded Library search works
+			//final boolean insertLibraryIndex = flog.booleans.get("InsertLibraryIndex") == null ? FlogFactory.DEFAULT_SHOULD_INSERT_INDEX : flog.booleans.get("InsertLibraryIndex");
+			//checkBlock = settingsBox.addChild("p");
+			//checkBlock.addChild("input", new String[]{"type", "name", "id", insertLibraryIndex ? "checked" : "class"},
+			//		new String[]{"checkbox", "InsertLibraryIndex", "InsertLibraryIndex", insertLibraryIndex ? "checked" : ""});
+			//checkBlock.addChild("label", "for", "InsertLibraryIndex", FlogHelper.getBaseL10n().getString("InsertLibraryIndexDesc"));
 
 			final boolean publishContentModificationDate = flog.booleans.get("PublishContentModificationDate") == null ? FlogFactory.DEFAULT_SHOULD_PUBLISH_DATES : flog.booleans.get("PublishContentModificationDate");
 			checkBlock = settingsBox.addChild("p");

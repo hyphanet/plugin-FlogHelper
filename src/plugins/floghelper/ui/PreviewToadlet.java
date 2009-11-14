@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.net.URI;
 import plugins.floghelper.FlogHelper;
 import plugins.floghelper.ui.flog.FlogFactory;
+import plugins.floghelper.ui.flog.IndexBuilder;
 
 /**
  * This toadlet does all the "offline" previewing of flogs. The result should be
@@ -87,6 +88,18 @@ public class PreviewToadlet extends FlogHelperToadlet {
 				previewTemplate(factory, pageNode, uri, request, ctx);
 			} else if (file.equals("/" + VIEW_DEFAULT_CSS_URI)) {
 				previewCSS(factory, pageNode, uri, request, ctx);
+			} else if (file.startsWith("/index") && file.endsWith(".xml")) {
+				IndexBuilder builder = new IndexBuilder(flog, new FlogFactory(flog).parseAllFlog());
+				if(file.equals("/index.xml")) {
+					byte[] data = builder.getIndexIndex().getBytes();
+					ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "application/xml", data.length);
+					ctx.writeData(data);
+				} else if(file.matches("^/index_[0-9a-f]\\.xml$")) {
+					byte sub = Byte.valueOf(file.replace("/index_", "").replace(".xml", ""), 16);
+					byte[] data = builder.getSubIndex(sub).getBytes();
+					ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "application/xml", data.length);
+					ctx.writeData(data);
+				}
 			} else {
 				this.sendErrorPage(ctx, 404, "Not found", "Unintelligible URI.");
 			}

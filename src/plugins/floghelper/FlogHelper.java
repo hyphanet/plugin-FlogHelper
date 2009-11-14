@@ -43,11 +43,11 @@ import plugins.floghelper.ui.PreviewToadlet;
  */
 public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginBaseL10n, FredPluginL10n, FredPluginThemed, FredPluginVersioned, FredPluginRealVersioned, FredPluginTalker {
 
-	public static final String PLUGIN_NAME = "FlogHelper";
+	private static String PLUGIN_NAME;
 	/**
 	 * Don't forget to bump this when a new release is up.
 	 */
-	public static final int REVISION = 13;
+	public static final int REVISION = 14;
 	private static PluginRespirator pr;
 	private static PluginL10n l10n;
 	private static PluginStore store;
@@ -115,6 +115,7 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 	public void runPlugin(final PluginRespirator pr) {
 		FlogHelper.pr = pr;
 		FlogHelper.l10n = new PluginL10n(this);
+		FlogHelper.PLUGIN_NAME = FlogHelper.getBaseL10n().getString("FlogHelper");
 		try {
 			FlogHelper.store = FlogHelper.pr.getStore();
 		} catch (DatabaseDisabledException ex) {
@@ -204,6 +205,15 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 	 */
 	public String getVersion() {
 		return FlogHelper.getVersionStatic();
+	}
+
+	/**
+	 * Get the (localized) name of the plugin.
+	 *
+	 * @return Name of the plugin
+	 */
+	public static String getName() {
+		return FlogHelper.PLUGIN_NAME;
 	}
 
 	/**

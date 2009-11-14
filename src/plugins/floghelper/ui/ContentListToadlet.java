@@ -3,6 +3,8 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package plugins.floghelper.ui;
 
+import freenet.clients.http.filter.UnsafeContentTypeException;
+import java.net.URISyntaxException;
 import plugins.floghelper.data.DataFormatter;
 import freenet.client.HighLevelSimpleClient;
 import freenet.clients.http.PageNode;
@@ -16,6 +18,7 @@ import java.net.URI;
 import java.util.Date;
 import plugins.floghelper.FlogHelper;
 import plugins.floghelper.ui.flog.FlogFactory;
+import plugins.floghelper.ui.flog.IndexBuilder;
 
 /**
  * This toadlet shows a list of a given Flog's contents.
