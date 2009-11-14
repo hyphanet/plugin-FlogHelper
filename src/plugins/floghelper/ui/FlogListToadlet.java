@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.net.URI;
 import plugins.floghelper.FlogHelper;
 import plugins.floghelper.data.Activelink;
+import plugins.floghelper.data.Flog;
+import plugins.floghelper.data.pluginstore.PluginStoreFlog;
 import plugins.floghelper.ui.flog.FlogFactory;
 
 /**
@@ -72,18 +74,14 @@ public class FlogListToadlet extends FlogHelperToadlet {
 			tBody.addChild("tr").addChild("td", "colspan", "13", FlogHelper.getBaseL10n().getString("NoFlogsYet"));
 		}
 
-		for (final PluginStore flog : FlogHelper.getStore().subStores.values()) {
-			final String author;
-			if (this.getWoTIdentities().containsKey(flog.strings.get("Author"))) {
-				author = this.getWoTIdentities().get(flog.strings.get("Author"));
-			} else {
-				author = FlogHelper.getBaseL10n().getString("BadAuthorDeletedIdentity");
-			}
+		for (final String subStoreID : FlogHelper.getStore().subStores.keySet()) {
+			final Flog flog = new PluginStoreFlog(subStoreID);
+			final String author = flog.getAuthorName();
 
 			final HTMLNode activelinkP = new HTMLNode("td");
-			if (flog.bytesArrays.get("Activelink") != null) {
+			if (flog.hasActivelink()) {
 				HTMLNode activelinkImg = new HTMLNode("img");
-				final String base64str = Base64.encodeStandard(flog.bytesArrays.get("Activelink"));
+				final String base64str = Base64.encodeStandard(flog.getActivelink());
 				activelinkImg.addAttribute("src", "data:" + Activelink.MIMETYPE + ";base64," + base64str);
 				activelinkImg.addAttribute("width", Integer.toString(Activelink.WIDTH));
 				activelinkImg.addAttribute("height", Integer.toString(Activelink.HEIGHT));
@@ -93,65 +91,65 @@ public class FlogListToadlet extends FlogHelperToadlet {
 			}
 
 			final HTMLNode row = tBody.addChild("tr");
-			row.addChild("td").addChild("pre", DataFormatter.toString(flog.strings.get("ID")));
+			row.addChild("td").addChild("pre", DataFormatter.toString(flog.getID()));
 			row.addChild(activelinkP);
-			row.addChild("td", DataFormatter.toString(DataFormatter.htmlSpecialChars(flog.strings.get("Title"))));
+			row.addChild("td", DataFormatter.toString(DataFormatter.htmlSpecialChars(flog.getTitle())));
 			row.addChild("td", DataFormatter.toString(author));
-			row.addChild("td", DataFormatter.toString(DataFormatter.htmlSpecialChars(flog.strings.get("SmallDescription"))));
-			row.addChild("td", DataFormatter.toString(flog.subStores.size()));
+			row.addChild("td", DataFormatter.toString(DataFormatter.htmlSpecialChars(flog.getShortDescription())));
+			row.addChild("td", DataFormatter.toString(flog.getNumberOfContents()));
 
 			final HTMLNode formDetails = FlogHelper.getPR().addFormChild(row.addChild("td"), FlogHelperToadlet.BASE_URI +
-					ContentListToadlet.MY_URI, "FlogDetails-" + flog.strings.get("ID"));
+					ContentListToadlet.MY_URI, "FlogDetails-" + flog.getID());
 			formDetails.addAttribute("method", "get");
 			formDetails.addChild("input", new String[]{"type", "value"},
 					new String[]{"submit", FlogHelper.getBaseL10n().getString("Details")});
 			formDetails.addChild("input", new String[]{"type", "name", "value"},
-					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.strings.get("ID"))});
+					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.getID())});
 
 			final HTMLNode formPreview = FlogHelper.getPR().addFormChild(row.addChild("td"), FlogHelperToadlet.BASE_URI +
-					PreviewToadlet.MY_URI + flog.strings.get("ID") + "/index.html", "PreviewFlog-" + flog.strings.get("ID"));
+					PreviewToadlet.MY_URI + flog.getID() + "/index.html", "PreviewFlog-" + flog.getID());
 			formPreview.addAttribute("method", "get");
 			formPreview.addChild("input", new String[]{"type", "value", "name"},
 					new String[]{"submit", FlogHelper.getBaseL10n().getString("Preview"), "Preview"});
 
 			final HTMLNode formDelete = FlogHelper.getPR().addFormChild(row.addChild("td"), this.path(),
-					"DeleteFlog-" + flog.strings.get("ID"));
+					"DeleteFlog-" + flog.getID());
 			formDelete.addChild("input", new String[]{"type", "value"},
 					new String[]{"submit", FlogHelper.getBaseL10n().getString("Delete")});
 			formDelete.addChild("input", new String[]{"type", "name", "value"},
-					new String[]{"hidden", "FlogToDelete", DataFormatter.toString(flog.strings.get("ID"))});
+					new String[]{"hidden", "FlogToDelete", DataFormatter.toString(flog.getID())});
 
 			final HTMLNode formEdit = FlogHelper.getPR().addFormChild(row.addChild("td"), FlogHelperToadlet.BASE_URI +
-					CreateOrEditFlogToadlet.MY_URI, "EditFlog-" + flog.strings.get("ID"));
+					CreateOrEditFlogToadlet.MY_URI, "EditFlog-" + flog.getID());
 			formEdit.addAttribute("method", "get");
 			formEdit.addChild("input", new String[]{"type", "value"},
 					new String[]{"submit", FlogHelper.getBaseL10n().getString("Edit")});
 			formEdit.addChild("input", new String[]{"type", "name", "value"},
-					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.strings.get("ID"))});
+					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.getID())});
 
 			final HTMLNode formInsert = FlogHelper.getPR().addFormChild(row.addChild("td"), FlogHelperToadlet.BASE_URI +
-					FlogListToadlet.MY_URI, "InsertFlog-" + flog.strings.get("ID"));
+					FlogListToadlet.MY_URI, "InsertFlog-" + flog.getID());
 			formInsert.addAttribute("method", "post");
 			formInsert.addChild("input", new String[]{"type", "value", "name"},
 					new String[]{"submit", FlogHelper.getBaseL10n().getString("Insert"), "Insert"});
 			formInsert.addChild("input", new String[]{"type", "name", "value"},
-					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.strings.get("ID"))});
+					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.getID())});
 
 			final HTMLNode formAttachements = FlogHelper.getPR().addFormChild(row.addChild("td"), FlogHelperToadlet.BASE_URI +
-					AttachementsToadlet.MY_URI, "Attachements-" + flog.strings.get("ID"));
+					AttachmentsToadlet.MY_URI, "Attachements-" + flog.getID());
 			formAttachements.addAttribute("method", "get");
 			formAttachements.addChild("input", new String[]{"type", "value"},
 					new String[]{"submit", FlogHelper.getBaseL10n().getString("Attachements")});
 			formAttachements.addChild("input", new String[]{"type", "name", "value"},
-					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.strings.get("ID"))});
+					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.getID())});
 
 			final HTMLNode formExport = FlogHelper.getPR().addFormChild(row.addChild("td"), FlogHelperToadlet.BASE_URI +
-					ExportFlogToadlet.MY_URI, "EditFlog-" + flog.strings.get("ID"));
+					ExportFlogToadlet.MY_URI, "EditFlog-" + flog.getID());
 			formExport.addAttribute("method", "get");
 			formExport.addChild("input", new String[]{"type", "value"},
 					new String[]{"submit", FlogHelper.getBaseL10n().getString("Export")});
 			formExport.addChild("input", new String[]{"type", "name", "value"},
-					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.strings.get("ID"))});
+					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.getID())});
 		}
 
 		// This is only debug code to see what is in the PluginStore.
@@ -193,7 +191,7 @@ public class FlogListToadlet extends FlogHelperToadlet {
 			writeHTMLReply(ctx, 200, "OK", null, pageNode.outer.generate());
 		} else if(request.isPartSet("Insert") && request.isPartSet("FlogID")) {
 			try {
-				new FlogFactory(FlogHelper.getStore().subStores.get(request.getPartAsString("FlogID", 7))).insert();
+				new FlogFactory(new PluginStoreFlog(request.getPartAsString("FlogID", 7))).insert();
 			} catch (PluginNotFoundException ex) {
 				// Won't happen
 			} catch (DatabaseDisabledException ex) {

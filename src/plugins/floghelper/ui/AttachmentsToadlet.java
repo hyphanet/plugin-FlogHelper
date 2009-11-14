@@ -17,28 +17,29 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Date;
 import java.util.TreeMap;
+import java.util.Vector;
 import plugins.floghelper.FlogHelper;
 import plugins.floghelper.data.Activelink;
+import plugins.floghelper.data.Attachment;
+import plugins.floghelper.data.Flog;
+import plugins.floghelper.data.pluginstore.PluginStoreAttachment;
+import plugins.floghelper.data.pluginstore.PluginStoreFlog;
 
 /**
  * This toadlet handles Flog's attachments.
  * 
  * @author Artefact2
  */
-public class AttachementsToadlet extends FlogHelperToadlet {
+public class AttachmentsToadlet extends FlogHelperToadlet {
 
 	public static final String MY_URI = "/Attachements/";
 
-	public AttachementsToadlet(HighLevelSimpleClient hlsc) {
+	public AttachmentsToadlet(HighLevelSimpleClient hlsc) {
 		super(hlsc, MY_URI);
 	}
 
 	public void getPageGet(final PageNode pageNode, final URI uri, final HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		final PluginStore flog = FlogHelper.getStore().subStores.get(this.getParameterWhetherItIsPostOrGet(request, "FlogID", 7));
-		if (flog == null) {
-			this.sendErrorPage(ctx, 404, "Not found", "Incorrect or missing FlogID.");
-			return;
-		}
+		final Flog flog = new PluginStoreFlog(this.getParameterWhetherItIsPostOrGet(request, "FlogID", 7));
 
 		final HTMLNode warning = this.getPM().getInfobox("infobox-warning", FlogHelper.getBaseL10n().getString("Warning"), pageNode.content);
 		warning.addChild("p", FlogHelper.getBaseL10n().getString("KeepAttachementsAsSmallAsPossibleLong"));
@@ -53,16 +54,12 @@ public class AttachementsToadlet extends FlogHelperToadlet {
 		inForm.addChild("input", new String[]{"type", "name", "value"},
 					new String[]{"submit", "Yes", FlogHelper.getBaseL10n().getString("Proceed")});
 		inForm.addChild("input", new String[]{"type", "name", "value"},
-					new String[]{"hidden", "FlogID", flog.strings.get("ID")});
+					new String[]{"hidden", "FlogID", flog.getID()});
 
-		if(!flog.subStores.containsKey("Attachements")) {
-			flog.subStores.put("Attachements", new PluginStore());
-		}
-
-		final PluginStore attachements = flog.subStores.get("Attachements");
+		final Vector<Attachment> attachements = flog.getAttachments();
 
 		final HTMLNode table = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("ListOfAttachementsOf").replace("${FlogName}",
-				DataFormatter.htmlSpecialChars(flog.strings.get("Title"))), pageNode.content).addChild("table");
+				DataFormatter.htmlSpecialChars(flog.getTitle())), pageNode.content).addChild("table");
 
 		final HTMLNode tHead = table.addChild("thead");
 		final HTMLNode tFoot = table.addChild("tfoot");
@@ -86,56 +83,49 @@ public class AttachementsToadlet extends FlogHelperToadlet {
 		tHead.addChild(headersRow);
 		tFoot.addChild(headersRow);
 
-		if (attachements.subStores.isEmpty()) {
+		if (attachements.isEmpty()) {
 			tBody.addChild("tr").addChild("td", "colspan", "5", FlogHelper.getBaseL10n().getString("NoAttachementsYet"));
 		}
 
-		TreeMap<Long, PluginStore> sortedAttachments = new TreeMap<Long, PluginStore>();
-		for (final PluginStore attachement : attachements.subStores.values()) {
-			sortedAttachments.put(attachement.longs.get("CreationDate"), attachement);
+		TreeMap<Long, Attachment> sortedAttachments = new TreeMap<Long, Attachment>();
+		for (final Attachment attachement : attachements) {
+			sortedAttachments.put(attachement.getInsertionDate().getTime(), attachement);
 		}
 		
-		for (final PluginStore attachement : sortedAttachments.descendingMap().values()) {
+		for (final Attachment attachement : sortedAttachments.descendingMap().values()) {
 			final HTMLNode row = tBody.addChild("tr");
-			row.addChild("td").addChild("pre", DataFormatter.toString(attachement.strings.get("Filename")));
-			row.addChild("td", DataFormatter.toString(DataFormatter.LocalDateFormatter.format(new Date(attachement.longs.get("CreationDate")))));
-			row.addChild("td", SizeUtil.formatSize(attachement.bytesArrays.get("Content").length, true));
+			row.addChild("td").addChild("pre", DataFormatter.toString(attachement.getName()));
+			row.addChild("td", DataFormatter.toString(DataFormatter.LocalDateFormatter.format(attachement.getInsertionDate())));
+			row.addChild("td", SizeUtil.formatSize(attachement.getData().length, true));
 
 			final HTMLNode formPreview = FlogHelper.getPR().addFormChild(row.addChild("td"), FlogHelperToadlet.BASE_URI +
-					PreviewToadlet.MY_URI + flog.strings.get("ID") + "/" + attachement.strings.get("Filename"), "PreviewAttachement-" + attachement.strings.get("Filename"));
+					PreviewToadlet.MY_URI + flog.getID() + "/" + attachement.getName(), "PreviewAttachement-" + attachement.getName());
 			formPreview.addAttribute("method", "get");
 			formPreview.addChild("input", new String[]{"type", "value"},
 					new String[]{"submit", FlogHelper.getBaseL10n().getString("Preview")});
 
 			final HTMLNode formDelete = FlogHelper.getPR().addFormChild(row.addChild("td"), this.path(),
-					"DeleteAttachement-" + attachement.strings.get("Filename"));
+					"DeleteAttachement-" + attachement.getName());
 			formDelete.addChild("input", new String[]{"type", "value"},
 					new String[]{"submit", FlogHelper.getBaseL10n().getString("Delete")});
 			formDelete.addChild("input", new String[]{"type", "name", "value"},
-					new String[]{"hidden", "AttachementToDelete", DataFormatter.toString(attachement.strings.get("Filename"))});
+					new String[]{"hidden", "AttachementToDelete", DataFormatter.toString(attachement.getName())});
 			formDelete.addChild("input", new String[]{"type", "name", "value"},
-					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.strings.get("ID"))});
+					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.getID())});
 		}
 
 		writeHTMLReply(ctx, 200, "OK", null, pageNode.outer.generate());
 	}
 
 	public void getPagePost(final PageNode pageNode, final URI uri, final HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		final PluginStore flog = FlogHelper.getStore().subStores.get(this.getParameterWhetherItIsPostOrGet(request, "FlogID", 7));
-		if (flog == null) {
-			this.sendErrorPage(ctx, 404, "Not found", "Incorrect or missing FlogID.");
-		}
+		final PluginStoreFlog flog = new PluginStoreFlog(this.getParameterWhetherItIsPostOrGet(request, "FlogID", 7));
 
 		if (request.isPartSet("AttachementFile")) {
 			HTTPUploadedFile newAttachement = request.getUploadedFile("AttachementFile");
 			if(!newAttachement.getFilename().equals("") && newAttachement.getData().size() > 0) {
-				final PluginStore attachement = new PluginStore();
-				final String id = DataFormatter.createSubStoreUniqueID(flog.subStores.get("Attachements"));
-				final String filename = "Att-" + id + "-" + newAttachement.getFilename();
-				attachement.strings.put("Filename", filename);
-				attachement.longs.put("CreationDate", System.currentTimeMillis());
-				attachement.bytesArrays.put("Content", Activelink.getByteArrayFromUploadedFile(newAttachement));
-				flog.subStores.get("Attachements").subStores.put(filename, attachement);
+				final Attachment attachement = new PluginStoreAttachment(flog, "", Activelink.getByteArrayFromUploadedFile(newAttachement));
+				attachement.setName("Att-" + attachement.getID() + "-" + newAttachement.getFilename());
+				flog.putAttachment(attachement);
 				FlogHelper.putStore();
 			}
 		} else {
@@ -146,7 +136,7 @@ public class AttachementsToadlet extends FlogHelperToadlet {
 			if (nameToReallyDelete != null && !nameToReallyDelete.equals("")) {
 				if (request.getPartAsString("Yes", 3).equals("Yes")) {
 
-					flog.subStores.get("Attachements").subStores.remove(nameToReallyDelete);
+					flog.deleteAttachment(nameToReallyDelete);
 					FlogHelper.putStore();
 					this.handleMethodGET(uri, request, ctx);
 					return;
@@ -164,7 +154,7 @@ public class AttachementsToadlet extends FlogHelperToadlet {
 				buttons.addChild("input", new String[]{"type", "name", "value"},
 						new String[]{"hidden", "AttachementToReallyDelete", nameToDelete});
 				buttons.addChild("input", new String[]{"type", "name", "value"},
-						new String[]{"hidden", "FlogID", flog.strings.get("ID")});
+						new String[]{"hidden", "FlogID", flog.getID()});
 				buttons.addChild("input", new String[]{"type", "name", "value"},
 						new String[]{"submit", "Yes", FlogHelper.getBaseL10n().getString("Yes")});
 				buttons.addChild("input", new String[]{"type", "name", "value"},

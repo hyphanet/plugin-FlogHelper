@@ -8,7 +8,6 @@ import freenet.client.HighLevelSimpleClient;
 import freenet.clients.http.PageNode;
 import freenet.clients.http.ToadletContext;
 import freenet.clients.http.ToadletContextClosedException;
-import freenet.pluginmanager.PluginStore;
 import freenet.support.HTMLNode;
 import freenet.support.api.HTTPRequest;
 import java.io.IOException;
@@ -16,7 +15,9 @@ import java.net.URI;
 import java.util.Vector;
 import plugins.floghelper.FlogHelper;
 import plugins.floghelper.contentsyntax.ContentSyntax;
-import plugins.floghelper.ui.flog.FlogFactory;
+import plugins.floghelper.data.Content;
+import plugins.floghelper.data.pluginstore.PluginStoreContent;
+import plugins.floghelper.data.pluginstore.PluginStoreFlog;
 
 /**
  * This toadlet is used for creating/editing contents.
@@ -36,69 +37,59 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 	}
 
 	public void getPagePost(final PageNode pageNode, final URI uri, final HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		final PluginStore flog = FlogHelper.getStore().subStores.get(this.getParameterWhetherItIsPostOrGet(request, "FlogID", 7));
-		if (flog == null) {
-			this.sendErrorPage(ctx, 404, "Not found", "Incorrect or missing FlogID.");
-		}
+		final PluginStoreFlog flog = new PluginStoreFlog(this.getParameterWhetherItIsPostOrGet(request, "FlogID", 7));
 
 		String contentID = this.getParameterWhetherItIsPostOrGet(request, "ContentID", 7);
 
 		if (request.isPartSet("Yes")) {
-			final PluginStore content;
+			Content content;
 
-			if (flog.subStores.containsKey(contentID)) {
-				content = flog.subStores.get(contentID);
-			} else {
-				content = new PluginStore();
-				flog.subStores.put(contentID, content);
+			try {
+				content = flog.getContentByID(contentID);
+			} catch (NullPointerException e) {
+				// Content doesn't existe, hence the NPE
+				// We create a new one
+				content = new PluginStoreContent(flog);
+				flog.putContent(content);
 			}
 
-			content.strings.put("ID", contentID);
-			content.strings.put("Title", request.getPartAsString("Title", 100));
-			content.strings.put("Content", request.getPartAsString("Content", Integer.MAX_VALUE));
-			content.strings.put("ContentSyntax", request.getPartAsString("Content_syntaxes", 1000));
-			content.booleans.put("IsDraft", request.isPartSet("IsDraft"));
-			if (content.longs.get("CreationDate") == null) {
-				content.longs.put("CreationDate", System.currentTimeMillis());
-			}
-			content.longs.put("LastModification", System.currentTimeMillis());
+			content.setTitle(request.getPartAsString("Title", 100));
+			content.setContent(request.getPartAsString("Content", Integer.MAX_VALUE));
+			content.setContentSyntax(request.getPartAsString("Content_syntaxes", 1000));
+			content.setDraft(request.isPartSet("IsDraft"));
 
 			final Vector<String> tags = new Vector<String>();
 			for(String tag : request.getPartAsString("Tags", 1000).split(",")) {
 				tags.add(tag.trim());
 			}
-
-			final String[] sTags = new String[tags.size()];
-			for(int i = 0; i < sTags.length; ++i) {
-				sTags[i] = tags.elementAt(i);
-			}
-			content.stringsArrays.put("Tags", sTags);
+			content.setTags(tags);
 
 			FlogHelper.putStore();
 
 			final HTMLNode infobox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("ContentCreationSuccessful"), pageNode.content);
 			infobox.addChild("p", FlogHelper.getBaseL10n().getString("ContentCreationSuccessfulLong"));
 			final HTMLNode links = infobox.addChild("p");
-			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + ContentListToadlet.MY_URI + "?FlogID=" + flog.strings.get("ID"), FlogHelper.getBaseL10n().getString("ReturnToContentList"));
+			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + ContentListToadlet.MY_URI + "?FlogID=" + flog.getID(), FlogHelper.getBaseL10n().getString("ReturnToContentList"));
 			links.addChild("br");
-			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + PreviewToadlet.MY_URI + flog.strings.get("ID") + "/Content-" + content.strings.get("ID") + ".html", FlogHelper.getBaseL10n().getString("PreviewContent"));
+			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + PreviewToadlet.MY_URI + flog.getID() + "/Content-" + content.getID() + ".html", FlogHelper.getBaseL10n().getString("PreviewContent"));
 		} else if (request.isPartSet("No")) {
 			final HTMLNode infobox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("ContentCreationCancelled"), pageNode.content);
 			infobox.addChild("p", FlogHelper.getBaseL10n().getString("ContentCreationCancelledLong"));
 			final HTMLNode links = infobox.addChild("p");
-			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + ContentListToadlet.MY_URI + "?FlogID=" + flog.strings.get("ID"), FlogHelper.getBaseL10n().getString("ReturnToContentList"));
+			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + ContentListToadlet.MY_URI + "?FlogID=" + flog.getID(), FlogHelper.getBaseL10n().getString("ReturnToContentList"));
 			links.addChild("br");
-			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + CreateOrEditContentToadlet.MY_URI + "?FlogID=" + flog.strings.get("ID"), FlogHelper.getBaseL10n().getString("CreateNewContent"));
+			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + CreateOrEditContentToadlet.MY_URI + "?FlogID=" + flog.getID(), FlogHelper.getBaseL10n().getString("CreateNewContent"));
 		} else {
-			final PluginStore content;
-			if (contentID == null || contentID.equals("") || !flog.subStores.containsKey(contentID)) {
-				contentID = DataFormatter.createSubStoreUniqueID(flog);
-				(content = new PluginStore()).strings.put("ID", contentID);
-			} else {
-				content = flog.subStores.get(contentID);
+			Content content;
+
+			try {
+				content = flog.getContentByID(contentID);
+			} catch (NullPointerException e) {
+				content = new PluginStoreContent(flog);
+				// Don't put it... yet.
 			}
 
-			final HTMLNode form = FlogHelper.getPR().addFormChild(pageNode.content, this.path(), "CreateOrEdit-" + contentID);
+			final HTMLNode form = FlogHelper.getPR().addFormChild(pageNode.content, this.path(), "CreateOrEdit-" + content.getID());
 
 			final HTMLNode generalBox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("GeneralContentData"), form, "GeneralContentData", true);
 			final HTMLNode tagsBox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("Tags"), form, "TagsContentData", true);
@@ -106,17 +97,17 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 			final HTMLNode submitBox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("SaveChanges"), form, "SubmitContentData", true);
 
 			form.addChild("input", new String[]{"type", "name", "value"},
-					new String[]{"hidden", "FlogID", flog.strings.get("ID")});
+					new String[]{"hidden", "FlogID", flog.getID()});
 			form.addChild("input", new String[]{"type", "name", "value"},
-					new String[]{"hidden", "ContentID", contentID});
+					new String[]{"hidden", "ContentID", content.getID()});
 
 			generalBox.addChild("p").addChild("label", "for", "Title", FlogHelper.getBaseL10n().getString("TitleFieldDesc")).addChild("br").addChild("input", new String[]{"type", "size", "name", "value"},
-					new String[]{"text", "50", "Title", DataFormatter.toString(content.strings.get("Title"))});
+					new String[]{"text", "50", "Title", DataFormatter.toString(content.getTitle())});
 
 			final HTMLNode authorsBox = new HTMLNode("select", new String[]{"id", "name"}, new String[]{"Author", "Author"});
 			for (final String identityID : this.getWoTIdentities().keySet()) {
 				final HTMLNode option = authorsBox.addChild("option", "value", identityID, this.getWoTIdentities().get(identityID));
-				if (flog.strings.get("Author").equals(identityID)) {
+				if (flog.getAuthorID().equals(identityID)) {
 					option.addAttribute("selected", "selected");
 				}
 			}
@@ -125,12 +116,11 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 			generalBox.addChild("p").addChild("label", "for", "Author", FlogHelper.getBaseL10n().getString("AuthorFieldDesc")).addChild("br").addChild(authorsBox);
 
 			ContentSyntax.addJavascriptEditbox(generalBox, "Content",
-					content.strings.get("ContentSyntax"), DataFormatter.toString(content.strings.get("Content")),
+					content.getContentSyntax(), DataFormatter.toString(content.getContent()),
 					FlogHelper.getBaseL10n().getString("ContentFieldDesc"));
 
 			final StringBuilder tagz = new StringBuilder();
-			final String[] tags = content.stringsArrays.get("Tags");
-			if(tags != null) {
+			final Vector<String> tags = content.getTags();
 			for (String tag : tags) {
 				if (tagz.length() == 0) {
 					tagz.append(tag);
@@ -138,11 +128,11 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 					tagz.append(", ").append(tag);
 				}
 			}
-			}
+
 			tagsBox.addChild("p").addChild("label", "for", "Tags", FlogHelper.getBaseL10n().getString("TagsFieldDesc")).addChild("br").addChild("input", new String[]{"type", "size", "name", "value"},
 					new String[]{"text", "50", "Tags", tagz.toString()});
 
-			final boolean isDraft = content.booleans.get("IsDraft") == null ? FlogFactory.DEFAULT_DRAFT_STATUS : content.booleans.get("IsDraft");
+			final boolean isDraft = content.isDraft();
 			HTMLNode checkBlock = settingsBox.addChild("p");
 			checkBlock.addChild("input", new String[]{"type", "name", "id", isDraft ? "checked" : "class"},
 					new String[]{"checkbox", "IsDraft", "IsDraft", isDraft ? "checked" : ""});

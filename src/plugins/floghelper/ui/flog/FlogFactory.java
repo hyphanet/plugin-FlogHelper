@@ -17,7 +17,6 @@ import freenet.node.fcp.FCPClient;
 import freenet.node.fcp.FCPServer;
 import freenet.node.fcp.IdentifierCollisionException;
 import freenet.pluginmanager.PluginNotFoundException;
-import freenet.pluginmanager.PluginStore;
 import freenet.support.Logger;
 import freenet.support.api.Bucket;
 import freenet.support.io.BucketTools;
@@ -34,8 +33,10 @@ import java.util.TreeMap;
 import java.util.Vector;
 import plugins.floghelper.FlogHelper;
 import plugins.floghelper.contentsyntax.ContentSyntax;
+import plugins.floghelper.data.Attachment;
+import plugins.floghelper.data.Content;
 import plugins.floghelper.data.DataFormatter;
-import plugins.floghelper.fcp.wot.WoTOwnIdentities;
+import plugins.floghelper.data.Flog;
 
 /**
  * Flog parsing, generates xHTML code and various other flog-related things.
@@ -53,49 +54,11 @@ public class FlogFactory {
 	};
 
 	/**
-	 * By default, we won't publish creation/modification dates of flogs/contents.
-	 */
-	public static boolean DEFAULT_SHOULD_PUBLISH_DATES = false;
-
-	/**
-	 * If we don't publish dates, we don't publish a dump of the store, because it
-	 * contains the dates.
-	 */
-	public static final boolean DEFAULT_SHOULD_INSERT_STOREDUMP = false;
-
-	/**
-	 * Should we insert a Library index by default ?
-	 * FIXME this is false until embedded Library search works.
-	 */
-	public static final boolean DEFAULT_SHOULD_INSERT_INDEX = false;
-
-	/**
-	 * Seven seems reasonable.
-	 */
-	public static final long DEFAULT_CONTENTS_ON_INDEX = 7;
-
-	/**
-	 * We don't want to insert an insane number of pages, so this number
-	 * should be high enough.
-	 */
-	public static final long DEFAULT_CONTENTS_ON_ARCHIVES = 25;
-
-	/**
-	 * Should new contents be drafts by default ?
-	 */
-	public static final boolean DEFAULT_DRAFT_STATUS = false;
-
-	/**
-	 * USK@crypto/__?__/revnumber
-	 */
-	public static final String DEFAULT_SSK_PATH = "flog";
-
-	/**
 	 * List of primary navigation links.
 	 */
 	private Vector<String[]> primaryNavigationLinks = new Vector<String[]>();
 
-	private final PluginStore flog;
+	private final Flog flog;
 
 	/**
 	 * Get a string resource from its path in the jar file.
@@ -127,8 +90,8 @@ public class FlogFactory {
 	 * @return xHTML template
 	 */
 	public String getTemplate() {
-		if(flog.booleans.get("OverrideTemplate") != null && flog.booleans.get("OverrideTemplate") == true) {
-			return flog.strings.get("OverrideTemplateValue");
+		if(flog.overrideTemplate()) {
+			return flog.getTemplateOverride();
 		} else return getResourceAsString("plugins/floghelper/ui/flog/GlobalTemplate.html");
 	}
 
@@ -138,14 +101,10 @@ public class FlogFactory {
 	 * @return CSS sheet
 	 */
 	public String getCSS() {
-		if(flog.booleans.get("OverrideCSS") != null && flog.booleans.get("OverrideCSS") == true) {
-			return flog.strings.get("OverrideCSSValue");
+		if(flog.overrideCSS()) {
+			return flog.getCSSOverride();
 		} else {
-			String theme = THEMES[0];
-			if(flog.strings.containsKey("Theme")) {
-				theme = flog.strings.get("Theme");
-			}
-			return getResourceAsString("plugins/floghelper/ui/flog/" + theme + ".css");
+			return getResourceAsString("plugins/floghelper/ui/flog/" + flog.getTheme() + ".css");
 		}
 
 	}
@@ -155,23 +114,25 @@ public class FlogFactory {
 	 *
 	 * @param flog Flog to use.
 	 */
-	public FlogFactory(PluginStore flog) {
+	public FlogFactory(Flog flog) {
 		this.flog = flog;
 
 		this.primaryNavigationLinks.add(new String[]{"Index", "./index.html"});
 		this.primaryNavigationLinks.add(new String[]{"Archives", "./Archives-p1.html"});
 		this.primaryNavigationLinks.add(new String[]{"Atom feed", "./AtomFeed.xml"});
-		this.primaryNavigationLinks.add(new String[]{"Bookmark this flog", "/?newbookmark=USK@" + WoTOwnIdentities.getRequestURI(this.flog.strings.get("Author")).split("@")[1].split("/")[0] + "/" + this.flog.strings.get("SSKPath") + "/-1/&amp;desc=" + this.flog.strings.get("Title")});
+		try {
+			this.primaryNavigationLinks.add(new String[]{"Bookmark this flog", "/?newbookmark=" + flog.getRequestURI() + "&amp;desc=" + this.flog.getTitle()});
+		} catch (Exception ex) {
+				Logger.error(this, "", ex);
+		}
 
-		if(!(flog.booleans.containsKey("InsertLibraryIndex") && flog.booleans.get("InsertLibraryIndex") == false)) {
+		if(flog.shouldPublishLibraryIndex()) {
 			try {
 				this.primaryNavigationLinks.add(new String[]{"<form enctype=\"multipart/form-data\" action=\"/library/\" method=\"get\" accept-charset=\"utf-8\"><p style=\"margin:0;\">" +
 						"<input name=\"search\" type=\"text\" size=\"8\"/>" +
-						"<input name=\"index\" type=\"hidden\" value=\"USK@" +
-						WoTOwnIdentities.getWoTIdentities("RequestURI").get(this.flog.strings.get("Author")).split("@")[1].split("/")[0] +
-						"/" + flog.strings.get("SSKPath") + "/-1/index.xml\" />" +
+						"<input name=\"index\" type=\"hidden\" value=\"" + flog.getRequestURI() + "index.xml\" />" +
 						"<input type=\"submit\" value=\"Search\"/></p></form>", null});
-			} catch (PluginNotFoundException ex) {
+			} catch (Exception ex) {
 				Logger.error(this, "", ex);
 			}
 		}
@@ -214,11 +175,9 @@ public class FlogFactory {
 	 */
 	public String getTagList(String currentUri) {
 		TreeMap<String, Long> tags = new TreeMap<String, Long>();
-		for(PluginStore content : this.flog.subStores.values()) {
-			if(content.strings.get("ID") == null) continue;
-			if(content.strings.get("ID").length() != 7) continue;
-			if(content.booleans.containsKey("IsDraft") && content.booleans.get("IsDraft") == true) continue;
-			for(String tag : content.stringsArrays.get("Tags")) {
+		for(Content content : this.flog.getContents()) {
+			if(content.isDraft()) continue;
+			for(String tag : content.getTags()) {
 				tags.put(tag, tags.containsKey(tag) ? tags.get(tag) + 1L : 1L);
 			}
 		}
@@ -250,21 +209,18 @@ public class FlogFactory {
 	 * @param content Content to parse.
 	 * @return xHTML code.
 	 */
-	private String getParsedContentBlock(PluginStore content) {
+	private String getParsedContentBlock(Content content) {
 		final StringBuilder mainContent = new StringBuilder();
-		String syntax = content.strings.get("ContentSyntax");
-		if (syntax == null) {
-			syntax = "RawXHTML";
-		}
+		String syntax = content.getContentSyntax();
 
-		mainContent.append("<div class=\"content_container\" id=\"c" + content.strings.get("ID") + "\">");
+		mainContent.append("<div class=\"content_container\" id=\"c" + content.getID() + "\">");
 		mainContent.append("<div class=\"content_header\">");
-		mainContent.append("<h1>").append(DataFormatter.htmlSpecialChars(content.strings.get("Title"))).append("</h1><p>");
-		mainContent.append("<a href=\"./Content-").append(content.strings.get("ID")).append(".html\">Permanent link</a>");
+		mainContent.append("<h1>").append(DataFormatter.htmlSpecialChars(content.getTitle())).append("</h1><p>");
+		mainContent.append("<a href=\"./Content-").append(content.getID()).append(".html\">Permanent link</a>");
 		//mainContent.append("| <a href=\"./Content-").append(content.strings.get("ID")).append(".html#comments\">Comments</a>");
 		mainContent.append("| Tags : ");
 		boolean first = true;
-		for (String tag : content.stringsArrays.get("Tags")) {
+		for (String tag : content.getTags()) {
 			if (tag.trim().equals("")) {
 				continue;
 			}
@@ -280,16 +236,16 @@ public class FlogFactory {
 			mainContent.append("<em>none</em>");
 		}
 
-		if (this.shouldPublishDates()) {
-			if(content.longs.containsKey("LastModification") && Math.abs(content.longs.get("LastModification") - content.longs.get("CreationDate")) > 10000) {
+		if (flog.shouldPublishDates()) {
+			if(Math.abs(content.getContentCreationDate().getTime() - content.getContentModificationDate().getTime()) > 10000) {
 				mainContent.append("<br /><small>Last modification : " +
-						DataFormatter.DefaultDateFormatter.format(new Date(content.longs.get("LastModification")))).append("</small>");
+						DataFormatter.DefaultDateFormatter.format(content.getContentModificationDate())).append("</small>");
 			}
 			mainContent.append("<br /><small>Creation date : ").append(
-					DataFormatter.DefaultDateFormatter.format(new Date(content.longs.get("CreationDate")))).append("</small>");
+					DataFormatter.DefaultDateFormatter.format(content.getContentCreationDate())).append("</small>");
 		}
 		mainContent.append("</p></div><div class=\"content_content\">").
-				append(ContentSyntax.parseSomeString(content.strings.get("Content"), syntax)).append("</div></div>");
+				append(ContentSyntax.parseSomeString(content.getContent(), syntax)).append("</div></div>");
 
 		return mainContent.toString();
 	}
@@ -301,12 +257,12 @@ public class FlogFactory {
 	 * @return xHTML code of the description, or an empty string if the flog doesn't have a desription.
 	 */
 	private String getDescription() {
-		String syntax = flog.strings.get("SmallDescriptionContentSyntax");
+		String syntax = flog.getShortDescriptionSyntax();
 		if (syntax == null) {
 			syntax = "RawXHTML";
 		}
 
-		String rawDescr = flog.strings.get("SmallDescription");
+		String rawDescr = flog.getShortDescription();
 		if(rawDescr.trim().equals("")) return "";
 
 		return ContentSyntax.parseSomeString(rawDescr, syntax);
@@ -320,23 +276,18 @@ public class FlogFactory {
 	 * @return Partially parsed template.
 	 */
 	private String parseInvariantData(String template, String uri) {
-		String authorName = null;
-		try {
-			authorName = WoTOwnIdentities.getWoTIdentities().get(this.flog.strings.get("Author"));
-		} catch (PluginNotFoundException ex) {
-			// Shouldn't happen
-		}
+		String authorName = flog.getAuthorName();
 
 		template = template.replace("{AuthorName}", authorName);
 		template = template.replace("{AuthorNameWithLineBreaks}", DataFormatter.insertIntoString(authorName, "<br />", 18));
-		template = template.replace("{FlogName}", DataFormatter.htmlSpecialChars(this.flog.strings.get("Title")));
+		template = template.replace("{FlogName}", DataFormatter.htmlSpecialChars(this.flog.getTitle()));
 		template = template.replace("{StyleURI}", "./GlobalStyle.css");
 		template = template.replace("{AtomFeedURI}", "./AtomFeed.xml");
 		template = template.replace("{AdditionnalMenuContent}", ""); // FIXME that might have a use later
 		template = template.replace("{FooterContent}", "<!-- Generated by FlogHelper " + FlogHelper.getVersionStatic() + " -->");
 		template = template.replace("{PrimaryNavigationLinks}", getPrimaryNavigationLinks(uri));
 		template = template.replace("{TagsLinks}", this.getTagList(uri));
-		template = template.replace("{ActivelinkIfAny}", this.flog.bytesArrays.containsKey("Activelink") && this.flog.bytesArrays.get("Activelink").length > 0 ? "<p style=\"text-align: center;\"><img src=\"activelink.png\" alt=\"Activelink\" /></p>" : "");
+		template = template.replace("{ActivelinkIfAny}", this.flog.hasActivelink() ? "<p style=\"text-align: center;\"><img src=\"activelink.png\" alt=\"Activelink\" /></p>" : "");
 
 		return template;
 	}
@@ -363,25 +314,20 @@ public class FlogFactory {
 		name = "GlobalStyle.css";
 		fileMap.put(name, new ManifestElement(name, data, DefaultMIMETypes.guessMIMEType(name, true), data.size()));
 
-		TreeMap<Long, PluginStore> contents = this.getContentsTreeMap(false);
+		TreeMap<Long, Content> contents = this.getContentsTreeMap(false);
 		HashMap<String, Long> tagCount = new HashMap<String, Long>();
 
-		for(PluginStore s : contents.values()) {
-			final String cID = s.strings.get("ID");
-			data = BucketTools.makeImmutableBucket(factory, this.getContentPage(cID).getBytes());
-			name = "Content-" + cID + ".html";
+		for(Content c : contents.values()) {
+			data = BucketTools.makeImmutableBucket(factory, this.getContentPage(c.getID()).getBytes());
+			name = "Content-" + c.getID() + ".html";
 			fileMap.put(name, new ManifestElement(name, data, DefaultMIMETypes.guessMIMEType(name, true), data.size()));
 
-			String[] tags = s.stringsArrays.get("Tags");
-			if(tags != null && tags.length > 0) {
-				for(String tag : tags) {
-					tagCount.put(tag, tagCount.containsKey(tag) ? tagCount.get(tag) + 1 : 1);
-				}
+			for(String tag : c.getTags()) {
+				tagCount.put(tag, tagCount.containsKey(tag) ? tagCount.get(tag) + 1 : 1);
 			}
 		}
 
-		final long contentsPerArchivesPage = flog.longs.containsKey("NumberOfContentsOnArchives")
-				? flog.longs.get("NumberOfContentsOnArchives") : FlogFactory.DEFAULT_CONTENTS_ON_ARCHIVES;
+		final long contentsPerArchivesPage = flog.getNumberOfContentsOnArchives();
 
 		for(String tag : tagCount.keySet()) {
 			final long pageMax = (long)Math.ceil((double)tagCount.get(tag) / (double)contentsPerArchivesPage);
@@ -399,22 +345,19 @@ public class FlogFactory {
 				fileMap.put(name, new ManifestElement(name, data, DefaultMIMETypes.guessMIMEType(name, true), data.size()));
 		}
 
-		if(flog.bytesArrays.containsKey("Activelink") && flog.bytesArrays.get("Activelink").length > 0) {
-			data = BucketTools.makeImmutableBucket(factory, flog.bytesArrays.get("Activelink"));
+		if(flog.hasActivelink()) {
+			data = BucketTools.makeImmutableBucket(factory, flog.getActivelink());
 			name = "activelink.png";
 			fileMap.put(name, new ManifestElement(name, data, DefaultMIMETypes.guessMIMEType(name, true), data.size()));
 		}
 
-		if(flog.subStores.get("Attachements") != null) {
-			final PluginStore attachements = flog.subStores.get("Attachements");
-			for(PluginStore attachement : attachements.subStores.values()) {
-				data = BucketTools.makeImmutableBucket(factory, attachement.bytesArrays.get("Content"));
-				name = attachement.strings.get("Filename");
-				fileMap.put(name, new ManifestElement(name, data, DefaultMIMETypes.guessMIMEType(name, true), data.size()));
-			}
+		for(Attachment attachement : flog.getAttachments()) {
+			data = BucketTools.makeImmutableBucket(factory, attachement.getData());
+			name = attachement.getName();
+			fileMap.put(name, new ManifestElement(name, data, DefaultMIMETypes.guessMIMEType(name, true), data.size()));
 		}
 
-		if(!(flog.booleans.containsKey("InsertLibraryIndex") && flog.booleans.get("InsertLibraryIndex") == false)) {
+		if(flog.shouldPublishLibraryIndex()) {
 			HashMap<String, String> indexes = new IndexBuilder(this.flog, fileMap).getFullIndex();
 			for(String file : indexes.keySet()) {
 				data = BucketTools.makeImmutableBucket(factory, indexes.get(file).getBytes("UTF-8"));
@@ -436,9 +379,17 @@ public class FlogFactory {
 		final FCPServer fcp = FlogHelper.getPR().getNode().clientCore.getFCPServer();
 		final HashMap<String, Object> parsedFlog = this.parseAllFlog();
 		final FCPClient client = fcp.getGlobalForeverClient();
-		final FreenetURI uri = new FreenetURI("USK@" + WoTOwnIdentities.getWoTIdentities("InsertURI").get(this.flog.strings.get("Author")).split("@")[1].split("/")[0] + "/" + flog.strings.get("SSKPath") + "/0");
-
-		Logger.error(this, uri.toString());
+		final FreenetURI uri;
+		FreenetURI temp;
+		try {
+			temp = flog.getInsertURI();
+		} catch (Exception ex) {
+			Logger.error(this, "", ex);
+			temp = null;
+		}
+		
+		// This is tricky but it works, we need uri to be final.
+		uri = temp;
 
 		FlogHelper.getPR().getNode().clientCore.queue(new DBJob() {
 
@@ -463,7 +414,7 @@ public class FlogFactory {
 					 * FCPServer server,
 					 * ObjectContainer container
 					 */
-					ClientPutDir cpd = new ClientPutDir(client, uri, "FlogHelper-" + flog.strings.get("ID") + "-" + DataFormatter.getRandomID(14), Integer.MAX_VALUE, RequestStarter.MAXIMUM_PRIORITY_CLASS, ClientRequest.PERSIST_FOREVER, null, false, false, -1, parsedFlog, "index.html", true, false, false, fcp, arg0);
+					ClientPutDir cpd = new ClientPutDir(client, uri, "FlogHelper-" + flog.getID() + "-" + DataFormatter.getRandomID(14), Integer.MAX_VALUE, RequestStarter.MAXIMUM_PRIORITY_CLASS, ClientRequest.PERSIST_FOREVER, null, false, false, -1, parsedFlog, "index.html", true, false, false, fcp, arg0);
 					try {
 						fcp.startBlocking(cpd, arg0, arg1);
 					} catch (DatabaseDisabledException ex) {
@@ -487,12 +438,12 @@ public class FlogFactory {
 	 */
 	public String getContentPage(String contentID) {
 		final String draftWarning;
-		PluginStore content = this.flog.subStores.get(contentID);
+		Content content = this.flog.getContentByID(contentID);
 
 		String genPage = this.parseInvariantData(getTemplate(), null);
-		genPage = genPage.replace("{PageTitle}", DataFormatter.htmlSpecialChars(content.strings.get("Title")));
+		genPage = genPage.replace("{PageTitle}", DataFormatter.htmlSpecialChars(content.getTitle()));
 
-		if(content.booleans.containsKey("IsDraft") && content.booleans.get("IsDraft") == true) {
+		if(content.isDraft()) {
 			draftWarning = "<p style=\"margin-top: 5px; padding: 5px; border: 1px solid red;\">"
 					+ FlogHelper.getBaseL10n().getString("PreviewingDraftContent") + "</p>";
 		} else draftWarning = "";
@@ -509,15 +460,15 @@ public class FlogFactory {
 		String genPage = this.parseInvariantData(getTemplate(), "/index.html");
 		genPage = genPage.replace("{PageTitle}", "Index");
 
-		final TreeMap<Long, PluginStore> contents = this.getContentsTreeMap(false);
-		final Long numberOfContentsToShow = this.flog.longs.get("NumberOfContentsOnIndex");
+		final TreeMap<Long, Content> contents = this.getContentsTreeMap(false);
+		final Long numberOfContentsToShow = this.flog.getNumberOfContentsOnIndex();
 
 		StringBuilder mainContent = new StringBuilder();
 		for (int i = 0; i < numberOfContentsToShow; ++i) {
 			if(contents.isEmpty()) break;
 
-			final PluginStore content = contents.lastEntry().getValue();
-			contents.remove(content.longs.get("CreationDate"));
+			final Content content = contents.lastEntry().getValue();
+			contents.remove(content.getContentCreationDate().getTime());
 
 			mainContent.append(this.getParsedContentBlock(content));
 		}
@@ -535,21 +486,21 @@ public class FlogFactory {
 		String genPage = this.parseInvariantData(getTemplate(), "/Archives-p" + Long.toString(page) + ".html");
 		genPage = genPage.replace("{PageTitle}", "Archives (page " + Long.toString(page) +")");
 
-		final TreeMap<Long, PluginStore> contents = this.getContentsTreeMap(false);
-		final Long numberOfContentsToShow = this.flog.longs.get("NumberOfContentsOnArchives");
+		final TreeMap<Long, Content> contents = this.getContentsTreeMap(false);
+		final Long numberOfContentsToShow = this.flog.getNumberOfContentsOnArchives();
 		final long numberOfContents = contents.size();
 
 		for(int i = 0; i < (page-1)*numberOfContentsToShow; ++i) {
-			final PluginStore content = contents.lastEntry().getValue();
-			contents.remove(content.longs.get("CreationDate"));
+			final Content content = contents.lastEntry().getValue();
+			contents.remove(content.getContentCreationDate().getTime());
 		}
 
 		StringBuilder mainContent = new StringBuilder();
 		for (int i = 0; i < numberOfContentsToShow; ++i) {
 			if(contents.isEmpty()) break;
 
-			final PluginStore content = contents.lastEntry().getValue();
-			contents.remove(content.longs.get("CreationDate"));
+			final Content content = contents.lastEntry().getValue();
+			contents.remove(content.getContentCreationDate().getTime());
 
 			mainContent.append(this.getParsedContentBlock(content));
 		}
@@ -571,21 +522,21 @@ public class FlogFactory {
 		String genPage = this.parseInvariantData(getTemplate(), "/Tag-" + tag + "-p" + Long.toString(page) + ".html");
 		genPage = genPage.replace("{PageTitle}", "Archives having the tag \"" + DataFormatter.htmlSpecialChars(tag) + "\" (page " + Long.toString(page) +")");
 
-		final TreeMap<Long, PluginStore> contents = this.getContentsTreeMapFilteredByTag(tag, false);
-		final Long numberOfContentsToShow = this.flog.longs.get("NumberOfContentsOnArchives");
+		final TreeMap<Long, Content> contents = this.getContentsTreeMapFilteredByTag(tag, false);
+		final Long numberOfContentsToShow = this.flog.getNumberOfContentsOnArchives();
 		final long numberOfContents = contents.size();
 
 		for(int i = 0; i < (page-1)*numberOfContentsToShow; ++i) {
-			final PluginStore content = contents.lastEntry().getValue();
-			contents.remove(content.longs.get("CreationDate"));
+			final Content content = contents.lastEntry().getValue();
+			contents.remove(content.getContentCreationDate().getTime());
 		}
 
 		StringBuilder mainContent = new StringBuilder();
 		for (int i = 0; i < numberOfContentsToShow; ++i) {
 			if(contents.isEmpty()) break;
 
-			final PluginStore content = contents.lastEntry().getValue();
-			contents.remove(content.longs.get("CreationDate"));
+			final Content content = contents.lastEntry().getValue();
+			contents.remove(content.getContentCreationDate().getTime());
 
 			mainContent.append(this.getParsedContentBlock(content));
 		}
@@ -604,16 +555,16 @@ public class FlogFactory {
 		feed.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
 		feed.append("<feed xmlns=\"http://www.w3.org/2005/Atom\">\n");
 		feed.append("	<id>tag:freenet-");
-		feed.append(this.flog.strings.get("ID")).append("-").append(DataFormatter.htmlSpecialChars(this.flog.strings.get("Author")));
+		feed.append(this.flog.getID()).append("-").append(DataFormatter.htmlSpecialChars(this.flog.getAuthorID()));
 		feed.append("</id>\n");
 
 		feed.append("	<title type=\"html\">");
-		feed.append(DataFormatter.htmlSpecialChars(this.flog.strings.get("Title")));
+		feed.append(DataFormatter.htmlSpecialChars(this.flog.getTitle()));
 		feed.append("</title>\n");
 
-		TreeMap<Long, PluginStore> contents = this.getContentsTreeMap(false);
+		TreeMap<Long, Content> contents = this.getContentsTreeMap(false);
 		Date mostRecentlyCreationDate = new Date(contents.lastKey());
-		if(!this.shouldPublishDates()) {
+		if(!flog.shouldPublishDates()) {
 			mostRecentlyCreationDate = DataFormatter.obfuscateDate(mostRecentlyCreationDate);
 		}
 
@@ -621,14 +572,7 @@ public class FlogFactory {
 		feed.append(DataFormatter.RFC3339.format(mostRecentlyCreationDate));
 		feed.append("</updated>\n");
 
-		String author = FlogHelper.getBaseL10n().getString("BadAuthorDeletedIdentity");
-		try {
-			if (WoTOwnIdentities.getWoTIdentities().containsKey(flog.strings.get("Author"))) {
-				author = WoTOwnIdentities.getWoTIdentities().get(flog.strings.get("Author"));
-			}
-		} catch (PluginNotFoundException ex) {
-			// Safe to ignore.
-		}
+		String author = flog.getAuthorName();
 
 		feed.append("	<author><name>");
 		feed.append(DataFormatter.htmlSpecialChars(author));
@@ -644,19 +588,20 @@ public class FlogFactory {
 				"	</subtitle>\n");
 
 		for(Long creationDate : contents.descendingKeySet()) {
-			PluginStore content = contents.get(creationDate);
+			Content content = contents.get(creationDate);
 			feed.append("	<entry>\n");
 			feed.append("		<id>tag:freenet-");
-			feed.append(this.flog.strings.get("ID")).append("-").append(content.strings.get("ID")).append("-").append(DataFormatter.htmlSpecialChars(this.flog.strings.get("Author")));
+			feed.append(this.flog.getID()).append("-").append(content.getID()).append("-").append(DataFormatter.htmlSpecialChars(this.flog.getAuthorID()));
 			feed.append("</id>\n");
 
 			feed.append("		<title type=\"text\">");
-			feed.append(content.strings.get("Title"));
+			feed.append(content.getTitle());
 			feed.append("</title>\n");
 
-			Date modifDate = new Date(content.longs.get("LastModification"));
-			Date creaDate = new Date(creationDate);
-			if(!this.shouldPublishDates()) {
+			Date modifDate = content.getContentModificationDate();
+			Date creaDate = content.getContentCreationDate();
+
+			if(!flog.shouldPublishDates()) {
 				modifDate = DataFormatter.obfuscateDate(modifDate);
 				creaDate = DataFormatter.obfuscateDate(creaDate);
 			}
@@ -672,11 +617,11 @@ public class FlogFactory {
 			feed.append("</name></author>\n");
 			feed.append("		<content type=\"xhtml\">\n" +
 					"			<div xmlns=\"http://www.w3.org/1999/xhtml\">\n");
-			feed.append(ContentSyntax.parseSomeString(content.strings.get("Content"),
-					content.strings.get("ContentSyntax") == null ? "RawXHTML" : content.strings.get("ContentSyntax")));
+			feed.append(ContentSyntax.parseSomeString(content.getContent(),
+					content.getContentSyntax()));
 			feed.append("\n			</div>\n" +
 					"		</content>\n");
-			feed.append("		<link rel=\"alternate\" href=\"./Content-" + content.strings.get("ID") + ".html\" />\n");
+			feed.append("		<link rel=\"alternate\" href=\"./Content-" + content.getID() + ".html\" />\n");
 			feed.append("</entry>\n");
 		}
 
@@ -689,14 +634,12 @@ public class FlogFactory {
 	 *
 	 * @return Tree of all the contents.
 	 */
-	public TreeMap<Long, PluginStore> getContentsTreeMap(boolean includeDrafts) {
-		TreeMap<Long, PluginStore> map = new TreeMap<Long, PluginStore>();
+	public TreeMap<Long, Content> getContentsTreeMap(boolean includeDrafts) {
+		TreeMap<Long, Content> map = new TreeMap<Long, Content>();
 
-		for(String id : this.flog.subStores.keySet()) {
-			if(id.length() != 7) continue;
-			final PluginStore content = this.flog.subStores.get(id);
-			if(!includeDrafts && content.booleans.containsKey("IsDraft") && content.booleans.get("IsDraft") == true) continue;
-			map.put(content.longs.get("CreationDate"), content);
+		for(Content c : this.flog.getContents()) {
+			if(!includeDrafts && c.isDraft()) continue;
+			map.put(c.getContentCreationDate().getTime(), c);
 		}
 
 		return map;
@@ -708,24 +651,15 @@ public class FlogFactory {
 	 * @param tag Tag to match.
 	 * @return Tree of contents tagged with the specified tag.
 	 */
-	private TreeMap<Long, PluginStore> getContentsTreeMapFilteredByTag(String tag, boolean includeDrafts) {
-		TreeMap<Long, PluginStore> map = new TreeMap<Long, PluginStore>();
+	private TreeMap<Long, Content> getContentsTreeMapFilteredByTag(String tag, boolean includeDrafts) {
+		TreeMap<Long, Content> map = new TreeMap<Long, Content>();
 
-		for (String id : this.flog.subStores.keySet()) {
-			final PluginStore content = this.flog.subStores.get(id);
-			if(!includeDrafts && content.booleans.containsKey("IsDraft") && content.booleans.get("IsDraft") == true) continue;
-			if (content.stringsArrays.get("Tags") != null) {
-				boolean isTagInside = false;
-				for (String s : content.stringsArrays.get("Tags")) {
-					if (s.equals(tag)) {
-						isTagInside = true;
-						break;
-					}
-				}
+		for (Content c : this.flog.getContents()) {
+			if (!includeDrafts && c.isDraft()) continue;
+			boolean isTagInside = c.getTags().contains(tag);
 
-				if (isTagInside) {
-					map.put(content.longs.get("CreationDate"), content);
-				}
+			if (isTagInside) {
+				map.put(c.getContentCreationDate().getTime(), c);
 			}
 		}
 
@@ -770,14 +704,5 @@ public class FlogFactory {
 		}
 
 		return sb.toString().replaceAll("\t+", " ... ");
-	}
-
-	/**
-	 * Should we publish creation/modification dates ?
-	 * @return true if we should.
-	 */
-	public boolean shouldPublishDates() {
-		return flog.booleans.get("PublishContentModificationDate") != null &&
-				flog.booleans.get("PublishContentModificationDate") == true;
 	}
 }

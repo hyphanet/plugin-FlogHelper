@@ -3,22 +3,20 @@
  * http://www.gnu.org/ for further details of the GPL. */
 package plugins.floghelper.ui;
 
-import freenet.clients.http.filter.UnsafeContentTypeException;
-import java.net.URISyntaxException;
 import plugins.floghelper.data.DataFormatter;
 import freenet.client.HighLevelSimpleClient;
 import freenet.clients.http.PageNode;
 import freenet.clients.http.ToadletContext;
 import freenet.clients.http.ToadletContextClosedException;
-import freenet.pluginmanager.PluginStore;
 import freenet.support.HTMLNode;
 import freenet.support.api.HTTPRequest;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Date;
 import plugins.floghelper.FlogHelper;
+import plugins.floghelper.data.Content;
+import plugins.floghelper.data.Flog;
+import plugins.floghelper.data.pluginstore.PluginStoreFlog;
 import plugins.floghelper.ui.flog.FlogFactory;
-import plugins.floghelper.ui.flog.IndexBuilder;
 
 /**
  * This toadlet shows a list of a given Flog's contents.
@@ -34,14 +32,10 @@ public class ContentListToadlet extends FlogHelperToadlet {
 	}
 
 	public void getPageGet(final PageNode pageNode, final URI uri, final HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		final PluginStore flog = FlogHelper.getStore().subStores.get(this.getParameterWhetherItIsPostOrGet(request, "FlogID", 7));
-		if (flog == null) {
-			this.sendErrorPage(ctx, 404, "Not found", "Incorrect or missing FlogID.");
-			return;
-		}
+		final Flog flog = new PluginStoreFlog(this.getParameterWhetherItIsPostOrGet(request, "FlogID", 7));
 
 		final HTMLNode table = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("ContentListOf").replace("${FlogName}",
-				DataFormatter.htmlSpecialChars(flog.strings.get("Title"))), pageNode.content).addChild("table");
+				DataFormatter.htmlSpecialChars(flog.getTitle())), pageNode.content).addChild("table");
 
 		final HTMLNode tHead = table.addChild("thead");
 		final HTMLNode tFoot = table.addChild("tfoot");
@@ -61,7 +55,7 @@ public class ContentListToadlet extends FlogHelperToadlet {
 		formCreateNew.addChild("input", new String[]{"type", "value"},
 				new String[]{"submit", FlogHelper.getBaseL10n().getString("CreateContent")});
 		formCreateNew.addChild("input", new String[]{"type", "name", "value"},
-				new String[]{"hidden", "FlogID", DataFormatter.toString(flog.strings.get("ID"))});
+				new String[]{"hidden", "FlogID", DataFormatter.toString(flog.getID())});
 
 		final HTMLNode headersRow = new HTMLNode("tr");
 		headersRow.addChild("th", FlogHelper.getBaseL10n().getString("ID"));
@@ -74,60 +68,56 @@ public class ContentListToadlet extends FlogHelperToadlet {
 		tHead.addChild(headersRow);
 		tFoot.addChild(headersRow);
 
-		if (flog.subStores.isEmpty()) {
+		if (flog.getNumberOfContents() == 0) {
 			tBody.addChild("tr").addChild("td", "colspan", "7", FlogHelper.getBaseL10n().getString("NoContentsYet"));
 		}
 
 		// Let's sort the contents by descending creation date.
-		for (final PluginStore content : new FlogFactory(flog).getContentsTreeMap(true).descendingMap().values()) {
+		for (final Content content : new FlogFactory(flog).getContentsTreeMap(true).descendingMap().values()) {
 			final HTMLNode row = tBody.addChild("tr");
-			row.addChild("td").addChild("pre", DataFormatter.toString(content.strings.get("ID")));
-			row.addChild("td", DataFormatter.toString(DataFormatter.htmlSpecialChars(content.strings.get("Title"))));
-			row.addChild("td", DataFormatter.toString(DataFormatter.LocalDateFormatter.format(new Date(content.longs.get("CreationDate")))));
-			row.addChild("td", DataFormatter.toString(DataFormatter.LocalDateFormatter.format(new Date(content.longs.get("LastModification")))));
+			row.addChild("td").addChild("pre", DataFormatter.toString(content.getID()));
+			row.addChild("td", DataFormatter.toString(DataFormatter.htmlSpecialChars(content.getTitle())));
+			row.addChild("td", DataFormatter.toString(DataFormatter.LocalDateFormatter.format(content.getContentCreationDate())));
+			row.addChild("td", DataFormatter.toString(DataFormatter.LocalDateFormatter.format(content.getContentModificationDate())));
 
 			final HTMLNode formDetails = FlogHelper.getPR().addFormChild(row.addChild("td"), FlogHelperToadlet.BASE_URI +
-					PreviewToadlet.MY_URI + flog.strings.get("ID") + "/Content-" + content.strings.get("ID") + ".html", "ContentDetails-" + content.strings.get("ID"));
+					PreviewToadlet.MY_URI + flog.getID() + "/Content-" + content.getID() + ".html", "ContentDetails-" + content.getID());
 			formDetails.addAttribute("method", "get");
 			formDetails.addChild("input", new String[]{"type", "value"},
 					new String[]{"submit", FlogHelper.getBaseL10n().getString("Preview")});
 
 			final HTMLNode formDelete = FlogHelper.getPR().addFormChild(row.addChild("td"), this.path(),
-					"DeleteContent-" + content.strings.get("ID"));
+					"DeleteContent-" + content.getID());
 			formDelete.addChild("input", new String[]{"type", "value"},
 					new String[]{"submit", FlogHelper.getBaseL10n().getString("Delete")});
 			formDelete.addChild("input", new String[]{"type", "name", "value"},
-					new String[]{"hidden", "ContentToDelete", DataFormatter.toString(content.strings.get("ID"))});
+					new String[]{"hidden", "ContentToDelete", DataFormatter.toString(content.getID())});
 			formDelete.addChild("input", new String[]{"type", "name", "value"},
-					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.strings.get("ID"))});
+					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.getID())});
 
 			final HTMLNode formEdit = FlogHelper.getPR().addFormChild(row.addChild("td"), FlogHelperToadlet.BASE_URI +
-					CreateOrEditContentToadlet.MY_URI, "EditContent-" + content.strings.get("ID"));
+					CreateOrEditContentToadlet.MY_URI, "EditContent-" + content.getID());
 			formEdit.addAttribute("method", "get");
 			formEdit.addChild("input", new String[]{"type", "value"},
 					new String[]{"submit", FlogHelper.getBaseL10n().getString("Edit")});
 			formEdit.addChild("input", new String[]{"type", "name", "value"},
-					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.strings.get("ID"))});
+					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.getID())});
 			formEdit.addChild("input", new String[]{"type", "name", "value"},
-					new String[]{"hidden", "ContentID", DataFormatter.toString(content.strings.get("ID"))});
+					new String[]{"hidden", "ContentID", DataFormatter.toString(content.getID())});
 		}
 
 		writeHTMLReply(ctx, 200, "OK", null, pageNode.outer.generate());
 	}
 
 	public void getPagePost(final PageNode pageNode, final URI uri, final HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		final PluginStore flog = FlogHelper.getStore().subStores.get(this.getParameterWhetherItIsPostOrGet(request, "FlogID", 7));
-		if (flog == null) {
-			this.sendErrorPage(ctx, 404, "Not found", "Incorrect or missing FlogID.");
-		}
+		final PluginStoreFlog flog = new PluginStoreFlog(this.getParameterWhetherItIsPostOrGet(request, "FlogID", 7));
 
 		final String idToDelete = request.getPartAsString("ContentToDelete", 7);
 		final String idToReallyDelete = request.getPartAsString("ContentToReallyDelete", 7);
 
 		if (idToReallyDelete != null && !idToReallyDelete.equals("")) {
 			if (request.getPartAsString("Yes", 3).equals("Yes")) {
-
-				flog.subStores.remove(idToReallyDelete);
+				flog.deleteContent(idToReallyDelete);
 				FlogHelper.putStore();
 				this.handleMethodGET(uri, request, ctx);
 				return;
@@ -145,7 +135,7 @@ public class ContentListToadlet extends FlogHelperToadlet {
 			buttons.addChild("input", new String[]{"type", "name", "value"},
 					new String[]{"hidden", "ContentToReallyDelete", idToDelete});
 			buttons.addChild("input", new String[]{"type", "name", "value"},
-					new String[]{"hidden", "FlogID", flog.strings.get("ID")});
+					new String[]{"hidden", "FlogID", flog.getID()});
 			buttons.addChild("input", new String[]{"type", "name", "value"},
 					new String[]{"submit", "Yes", FlogHelper.getBaseL10n().getString("Yes")});
 			buttons.addChild("input", new String[]{"type", "name", "value"},

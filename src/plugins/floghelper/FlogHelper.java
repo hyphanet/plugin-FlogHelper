@@ -26,7 +26,7 @@ import plugins.floghelper.ui.ContentListToadlet;
 import plugins.floghelper.ui.CreateOrEditContentToadlet;
 import plugins.floghelper.ui.CreateOrEditFlogToadlet;
 import plugins.floghelper.data.DataFormatter;
-import plugins.floghelper.ui.AttachementsToadlet;
+import plugins.floghelper.ui.AttachmentsToadlet;
 import plugins.floghelper.ui.ExportFlogToadlet;
 import plugins.floghelper.ui.FlogHelperToadlet;
 import plugins.floghelper.ui.FlogListToadlet;
@@ -47,7 +47,7 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 	/**
 	 * Don't forget to bump this when a new release is up.
 	 */
-	public static final int REVISION = 14;
+	public static final int REVISION = 15;
 	private static PluginRespirator pr;
 	private static PluginL10n l10n;
 	private static PluginStore store;
@@ -131,7 +131,7 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 		this.myToadlets.add(new ImportFlogToadlet(FlogHelper.pr.getHLSimpleClient()));
 		this.myToadlets.add(new PreviewToadlet(FlogHelper.pr.getHLSimpleClient()));
 		this.myToadlets.add(new JavascriptFactoryToadlet(FlogHelper.pr.getHLSimpleClient()));
-		this.myToadlets.add(new AttachementsToadlet(FlogHelper.pr.getHLSimpleClient()));
+		this.myToadlets.add(new AttachmentsToadlet(FlogHelper.pr.getHLSimpleClient()));
 
 		FlogHelper.pr.getPageMaker().addNavigationCategory(FlogHelperToadlet.BASE_URI + "/",
 				FlogHelper.PLUGIN_NAME, FlogHelper.PLUGIN_NAME, this);

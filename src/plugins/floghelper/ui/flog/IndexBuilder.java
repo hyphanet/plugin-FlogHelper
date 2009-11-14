@@ -18,8 +18,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Vector;
+import java.util.logging.Level;
 import plugins.floghelper.contentsyntax.ContentSyntax;
+import plugins.floghelper.data.Content;
 import plugins.floghelper.data.DataFormatter;
+import plugins.floghelper.data.Flog;
 import plugins.floghelper.fcp.wot.WoTOwnIdentities;
 
 /**
@@ -35,19 +38,19 @@ public class IndexBuilder {
 	public final static byte[] subStores = new byte[]{ 0x0, 0x1, 0x2,
 		0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf};
 
-	private final PluginStore flog;
+	private final Flog flog;
 	private final HashMap<String, Object> parsedData;
 	private final Vector<String> pageIDs = new Vector<String>();
 	private final HashMap<Byte, Vector<String>> ourWords = new HashMap<Byte, Vector<String>>();
 	private String baseKey;
 
-	public IndexBuilder(PluginStore flog, HashMap<String, Object> parsedData) {
+	public IndexBuilder(Flog flog, HashMap<String, Object> parsedData) {
 		this.flog = flog;
 		this.parsedData = parsedData;
 		try {
-			this.baseKey = "USK@" + WoTOwnIdentities.getWoTIdentities("RequestURI").get(this.flog.strings.get("Author")).split("@")[1].split("/")[0] + "/" + flog.strings.get("SSKPath") + "/-1/";
-		} catch (PluginNotFoundException ex) {
-			// Safe to ignore.
+			this.baseKey = this.flog.getRequestURI().toString();
+		} catch (Exception ex) {
+			Logger.error(this, "", ex);
 		}
 
 		for(byte b : subStores) {
@@ -86,8 +89,8 @@ public class IndexBuilder {
 				"<main_index>\n" +
 				"	<prefix value=\"1\"/>\n" +
 				"	<header>\n" +
-				"		<title>Index of " + DataFormatter.htmlSpecialChars(this.flog.strings.get("Title")) + "</title>\n" +
-				"		<owner>" + this.flog.strings.get("Author") + "</owner>\n" +
+				"		<title>Index of " + DataFormatter.htmlSpecialChars(this.flog.getTitle()) + "</title>\n" +
+				"		<owner>" + this.flog.getAuthorName() + "</owner>\n" +
 				"	</header>\n" +
 				"	<keywords>\n");
 		for(byte i : IndexBuilder.subStores) {
@@ -107,13 +110,13 @@ public class IndexBuilder {
 		subIndex.append("<sub_index>\n");
 		subIndex.append("	<entries value=\"" + this.ourWords.get(sub).size() + "\"/>\n");
 		subIndex.append("	<header>\n");
-		subIndex.append("		<title>Index of " + DataFormatter.htmlSpecialChars(this.flog.strings.get("Title")) + "</title>\n");
+		subIndex.append("		<title>Index of " + DataFormatter.htmlSpecialChars(this.flog.getTitle()) + "</title>\n");
 		subIndex.append("	</header>\n");
 		subIndex.append("	<files>\n");
 		for(int i = 0; i < this.pageIDs.size(); ++i) {
 			final String pageName = this.pageIDs.elementAt(i);
 			subIndex.append("		<file id=\"" + Integer.toString(i) + "\" key=\"" + this.baseKey + pageName + "\" title=\"" +
-					DataFormatter.htmlSpecialChars(this.flog.subStores.get(pageName.replace("Content-", "").replace(".html", "")).strings.get("Title")) + "\"/>\n");
+					DataFormatter.htmlSpecialChars(this.flog.getContentByID(pageName.replace("Content-", "").replace(".html", "")).getTitle()) + "\"/>\n");
 		}
 		subIndex.append("	</files>\n");
 		subIndex.append("	<keywords>\n");
@@ -165,12 +168,12 @@ public class IndexBuilder {
 
 		Vector<String> words = new Vector<String>();
 
-		for (final PluginStore content : new FlogFactory(flog).getContentsTreeMap(false).values()) {
+		for (final Content content : new FlogFactory(flog).getContentsTreeMap(false).values()) {
 			NullFilterCallback nullFC = new NullFilterCallback();
-			ContentFilter.filter(new ArrayBucket(ContentSyntax.parseSomeString(content.strings.get("Content"), 
-					content.strings.get("ContentSyntax")).getBytes("UTF-8")), new NullBucketFactory(),
+			ContentFilter.filter(new ArrayBucket(ContentSyntax.parseSomeString(content.getContent(),
+					content.getContentSyntax()).getBytes("UTF-8")), new NullBucketFactory(),
 					"text/html", new URI("http://whocares.co:12345/"), nullFC, null);
-			final String cURI = "Content-" + content.strings.get("ID") + ".html";
+			final String cURI = "Content-" + content.getID() + ".html";
 			this.pageIDs.add(cURI);
 			words.addAll(nullFC.words);
 		}

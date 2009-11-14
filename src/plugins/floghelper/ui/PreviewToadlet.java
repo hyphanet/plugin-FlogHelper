@@ -14,6 +14,9 @@ import freenet.support.api.HTTPRequest;
 import java.io.IOException;
 import java.net.URI;
 import plugins.floghelper.FlogHelper;
+import plugins.floghelper.data.Attachment;
+import plugins.floghelper.data.Flog;
+import plugins.floghelper.data.pluginstore.PluginStoreFlog;
 import plugins.floghelper.ui.flog.FlogFactory;
 import plugins.floghelper.ui.flog.IndexBuilder;
 
@@ -42,7 +45,7 @@ public class PreviewToadlet extends FlogHelperToadlet {
 	@Override
 	public void getPagePost(PageNode pageNode, URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException {
 		final String flogID = uri.getPath().replace(FlogHelperToadlet.BASE_URI + PreviewToadlet.MY_URI, "").split("/")[0];
-		final PluginStore flog = FlogHelper.getStore().subStores.get(flogID);
+		final Flog flog = new PluginStoreFlog(flogID);
 		if (flog == null) {
 			this.sendErrorPage(ctx, 404, "Not found", "Incorrect or missing FlogID.");
 		} else {
@@ -52,11 +55,7 @@ public class PreviewToadlet extends FlogHelperToadlet {
 				writeHTMLReply(ctx, 200, "OK", null, appendPreviewWarning(factory.getIndex()));
 			} else if (file.startsWith("/Content-") && file.endsWith(".html")) {
 				final String contentID = file.replace("/Content-", "").replace(".html", "");
-				if (flog.subStores.containsKey(contentID)) {
-					writeHTMLReply(ctx, 200, "OK", null, appendPreviewWarning(factory.getContentPage(contentID)));
-				} else {
-					this.sendErrorPage(ctx, 404, "Not found", "Incorrect or missing ContentID.");
-				}
+				writeHTMLReply(ctx, 200, "OK", null, appendPreviewWarning(factory.getContentPage(contentID)));
 			} else if (file.startsWith("/Archives-p") && file.endsWith(".html")) {
 				writeHTMLReply(ctx, 200, "OK", null, appendPreviewWarning(factory.getArchives(Long.parseLong(file.replace("/Archives-p", "").replace(".html", "")))));
 			} else if (file.startsWith("/Tag-") && file.endsWith(".html")) {
@@ -72,17 +71,17 @@ public class PreviewToadlet extends FlogHelperToadlet {
 				ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "application/atom+xml", data.length);
 				ctx.writeData(data);
 			} else if (file.equals("/activelink.png")) {
-				byte[] data = flog.bytesArrays.get("Activelink");
+				byte[] data = flog.getActivelink();
 				if (data != null) {
 					ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "image/png", data.length);
 					ctx.writeData(data);
 				}
 			} else if (file.startsWith("/Att-")) {
-				final PluginStore attachement = flog.subStores.get("Attachements").subStores.get(file.substring(1));
+				final Attachment attachement = flog.getAttachmentByName(file.substring(1));
 				if (attachement != null) {
 					final String mimeType = DefaultMIMETypes.guessMIMEType(file, true);
-					ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), mimeType == null ? "application/octet-stream" : mimeType, attachement.bytesArrays.get("Content").length);
-					ctx.writeData(attachement.bytesArrays.get("Content"));
+					ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), mimeType == null ? "application/octet-stream" : mimeType, attachement.getData().length);
+					ctx.writeData(attachement.getData());
 				}
 			} else if (file.equals("/" + VIEW_RAW_DEFAULT_TEMPLATE_URI)) {
 				previewTemplate(factory, pageNode, uri, request, ctx);
