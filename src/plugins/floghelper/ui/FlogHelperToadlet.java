@@ -91,7 +91,7 @@ public abstract class FlogHelperToadlet extends Toadlet {
 	}
 
 	public void handleMethodGET(final URI uri, final HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		final PageNode pageNode = FlogHelper.getPR().getPageMaker().getPageNode(FlogHelper.PLUGIN_NAME, ctx);
+		final PageNode pageNode = FlogHelper.getPR().getPageMaker().getPageNode(FlogHelper.getName(), ctx);
 
 		if (!this.makeGlobalChecks(pageNode, uri, request, ctx)) {
 			return;
@@ -101,7 +101,7 @@ public abstract class FlogHelperToadlet extends Toadlet {
 	}
 
 	public void handleMethodPOST(final URI uri, HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		final PageNode pageNode = FlogHelper.getPR().getPageMaker().getPageNode(FlogHelper.PLUGIN_NAME, ctx);
+		final PageNode pageNode = FlogHelper.getPR().getPageMaker().getPageNode(FlogHelper.getName(), ctx);
 
 		if (!this.makeGlobalChecks(pageNode, uri, request, ctx)) {
 			return;

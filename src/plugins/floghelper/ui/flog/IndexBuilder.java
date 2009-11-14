@@ -28,6 +28,10 @@ import plugins.floghelper.fcp.wot.WoTOwnIdentities;
  * @author Artefact2
  */
 public class IndexBuilder {
+	/**
+	 * Substores to generate, only one digit should be enough
+	 * even for biggest flogs.
+	 */
 	public final static byte[] subStores = new byte[]{ 0x0, 0x1, 0x2,
 		0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf};
 
@@ -101,7 +105,7 @@ public class IndexBuilder {
 
 		subIndex.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n");
 		subIndex.append("<sub_index>\n");
-		subIndex.append("	<entries value=\"" + this.ourWords.get(sub).size() + "\">\n");
+		subIndex.append("	<entries value=\"" + this.ourWords.get(sub).size() + "\"/>\n");
 		subIndex.append("	<header>\n");
 		subIndex.append("		<title>Index of " + DataFormatter.htmlSpecialChars(this.flog.strings.get("Title")) + "</title>\n");
 		subIndex.append("	</header>\n");
