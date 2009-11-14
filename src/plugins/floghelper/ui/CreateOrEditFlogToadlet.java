@@ -172,12 +172,11 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 					new String[]{"checkbox", "InsertPluginStoreDump", "InsertPluginStoreDump", insertPluginStoreDump ? "checked" : ""});
 			checkBlock.addChild("label", "for", "InsertPluginStoreDump", FlogHelper.getBaseL10n().getString("InsertPluginStoreDumpDesc"));
 
-			// FIXME don't show that until embedded Library search works
-			//final boolean insertLibraryIndex = flog.shouldPublishLibraryIndex();
-			//checkBlock = settingsBox.addChild("p");
-			//checkBlock.addChild("input", new String[]{"type", "name", "id", insertLibraryIndex ? "checked" : "class"},
-			//		new String[]{"checkbox", "InsertLibraryIndex", "InsertLibraryIndex", insertLibraryIndex ? "checked" : ""});
-			//checkBlock.addChild("label", "for", "InsertLibraryIndex", FlogHelper.getBaseL10n().getString("InsertLibraryIndexDesc"));
+			final boolean insertLibraryIndex = flog.shouldPublishLibraryIndex();
+			checkBlock = settingsBox.addChild("p");
+			checkBlock.addChild("input", new String[]{"type", "name", "id", insertLibraryIndex ? "checked" : "class"},
+					new String[]{"checkbox", "InsertLibraryIndex", "InsertLibraryIndex", insertLibraryIndex ? "checked" : ""});
+			checkBlock.addChild("label", "for", "InsertLibraryIndex", FlogHelper.getBaseL10n().getString("InsertLibraryIndexDesc"));
 
 			final boolean publishContentModificationDate = flog.shouldPublishDates();
 			checkBlock = settingsBox.addChild("p");

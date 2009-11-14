@@ -26,9 +26,8 @@ public abstract class Flog {
 
 	/**
 	 * Should we insert a Library index by default ?
-	 * FIXME this is false until embedded Library search works.
 	 */
-	public static final boolean DEFAULT_SHOULD_INSERT_INDEX = false;
+	public static final boolean DEFAULT_SHOULD_INSERT_INDEX = true;
 
 	/**
 	 * Seven seems reasonable.

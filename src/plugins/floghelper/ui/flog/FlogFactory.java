@@ -128,9 +128,10 @@ public class FlogFactory {
 
 		if(flog.shouldPublishLibraryIndex()) {
 			try {
-				this.primaryNavigationLinks.add(new String[]{"<form enctype=\"multipart/form-data\" action=\"/library/\" method=\"get\" accept-charset=\"utf-8\"><p style=\"margin:0;\">" +
+				this.primaryNavigationLinks.add(new String[]{"<form enctype=\"multipart/form-data\" action=\"/library/\" method=\"post\" accept-charset=\"utf-8\"><p style=\"margin:0;\">" +
 						"<input name=\"search\" type=\"text\" size=\"8\"/>" +
-						"<input name=\"index\" type=\"hidden\" value=\"" + flog.getRequestURI() + "index.xml\" />" +
+						"<input name=\"index0\" type=\"hidden\" value=\"" + flog.getRequestURI() + "index.xml\" />" +
+						"<input name=\"extraindexcount\" type=\"hidden\" value=\"1\" />" +
 						"<input type=\"submit\" value=\"Search\"/></p></form>", null});
 			} catch (Exception ex) {
 				Logger.error(this, "", ex);
@@ -216,8 +217,8 @@ public class FlogFactory {
 		mainContent.append("<div class=\"content_container\" id=\"c" + content.getID() + "\">");
 		mainContent.append("<div class=\"content_header\">");
 		mainContent.append("<h1>").append(DataFormatter.htmlSpecialChars(content.getTitle())).append("</h1><p>");
-		mainContent.append("<a href=\"./Content-").append(content.getID()).append(".html\">Permanent link</a>");
-		//mainContent.append("| <a href=\"./Content-").append(content.strings.get("ID")).append(".html#comments\">Comments</a>");
+		mainContent.append("<a href=\"./Content-").append(content.getID()).append(".html\">Permanent link</a> ");
+		//mainContent.append("| <a href=\"./Content-").append(content.strings.get("ID")).append(".html#comments\">Comments</a> ");
 		mainContent.append("| Tags : ");
 		boolean first = true;
 		for (String tag : content.getTags()) {
