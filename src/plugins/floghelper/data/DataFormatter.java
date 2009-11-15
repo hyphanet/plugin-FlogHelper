@@ -446,17 +446,6 @@ public class DataFormatter {
 	}
 
 	/**
-	 * Get a list of words inside a xHTML code.
-	 *
-	 * @param xHTML xHTML page/part to parse
-	 * @return Array of words
-	 */
-	public static String[] getWords(String xHTML) {
-		// TODO use Fred's HTMLFilter
-		return new String[0];
-	}
-
-	/**
 	 * Read an InputStream and return a byte array.
 	 *
 	 * @param e InputStream to read.

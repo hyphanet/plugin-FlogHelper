@@ -99,7 +99,8 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 	/**
 	 * This code is executed when the user unloads the plugin.
 	 * We unregister the toadlets.
-	 * FIXME maybe we need to clean other stuff...
+	 * This plugin is threadless so there's nothing to do here except
+	 * unregister the toadlets...
 	 */
 	public void terminate() {
 		FlogHelper.pr.getPageMaker().removeNavigationCategory(FlogHelper.PLUGIN_NAME);
@@ -119,8 +120,8 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 		try {
 			FlogHelper.store = FlogHelper.pr.getStore();
 		} catch (DatabaseDisabledException ex) {
-			// FIXME we need to handle this error gracefully !
-			Logger.error(this.getClass(), "Could not load flogs from db4o - " + ex.getMessage());
+			Logger.error(this, "Could not load flogs from db4o - " + ex.getMessage());
+			FlogHelper.store = null;
 		}
 
 		this.myToadlets.add(new FlogListToadlet(FlogHelper.pr.getHLSimpleClient()));
