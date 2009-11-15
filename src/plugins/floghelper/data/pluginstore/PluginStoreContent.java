@@ -37,7 +37,7 @@ public class PluginStoreContent extends Content {
 		this.content.strings.put("ID", DataFormatter.createSubStoreUniqueID(this.parentFlog.getStore()));
 		this.content.longs.put("CreationDate", System.currentTimeMillis());
 		this.setContent("");
-		this.setContentSyntax("RawXHTML");
+		this.setContentSyntax("YAWKL");
 		this.setDraft(Content.DEFAULT_DRAFT_STATUS);
 		this.setTitle("Unnamed new content");
 		this.setTags(new Vector<String>());

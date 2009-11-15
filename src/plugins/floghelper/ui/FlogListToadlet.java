@@ -91,16 +91,16 @@ public class FlogListToadlet extends FlogHelperToadlet {
 			final HTMLNode row = tBody.addChild("tr");
 			row.addChild("td").addChild("pre", DataFormatter.toString(flog.getID()));
 			row.addChild(activelinkP);
-			row.addChild("td", DataFormatter.toString(DataFormatter.htmlSpecialChars(flog.getTitle())));
+			row.addChild("td", DataFormatter.toString(flog.getTitle()));
 			row.addChild("td", DataFormatter.toString(author));
-			row.addChild("td", DataFormatter.toString(DataFormatter.htmlSpecialChars(flog.getShortDescription())));
+			row.addChild("td", flog.getShortDescription());
 			row.addChild("td", DataFormatter.toString(flog.getNumberOfContents()));
 
 			final HTMLNode formDetails = FlogHelper.getPR().addFormChild(row.addChild("td"), FlogHelperToadlet.BASE_URI +
 					ContentListToadlet.MY_URI, "FlogDetails-" + flog.getID());
 			formDetails.addAttribute("method", "get");
 			formDetails.addChild("input", new String[]{"type", "value"},
-					new String[]{"submit", FlogHelper.getBaseL10n().getString("Details")});
+					new String[]{"submit", FlogHelper.getBaseL10n().getString("Entries")});
 			formDetails.addChild("input", new String[]{"type", "name", "value"},
 					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.getID())});
 

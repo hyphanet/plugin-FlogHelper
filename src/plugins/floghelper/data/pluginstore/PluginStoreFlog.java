@@ -41,7 +41,7 @@ public class PluginStoreFlog extends Flog {
 		this.flog.strings.put("ID", DataFormatter.createSubStoreUniqueID(FlogHelper.getStore()));
 
 		this.setShortDescription("");
-		this.setShortDescriptionSyntax("RawXHTML");
+		this.setShortDescriptionSyntax("YAWKL");
 		this.setTitle("New untitled flog");
 		this.setTheme(FlogFactory.THEMES[0]);
 		this.setAuthorID("");

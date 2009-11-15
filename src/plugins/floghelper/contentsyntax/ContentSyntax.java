@@ -5,6 +5,7 @@ package plugins.floghelper.contentsyntax;
 
 import freenet.support.HTMLNode;
 import freenet.support.Logger;
+import java.util.TreeMap;
 import java.util.Vector;
 import plugins.floghelper.contentsyntax.js.JavascriptFactoryToadlet;
 import plugins.floghelper.ui.FlogHelperToadlet;
@@ -20,8 +21,12 @@ public abstract class ContentSyntax {
 	 * List of currently implemented syntaxes, the names should be equal to
 	 * their respective classnames.
 	 */
-	public enum Syntaxes {
-		YAWKL, RawXHTML
+	public static final TreeMap<String, String> Syntaxes;
+
+	static {
+		Syntaxes = new TreeMap<String, String>();
+		Syntaxes.put("YAWKL", "Simplified markup");
+		Syntaxes.put("RawXHTML", "xHTML");
 	}
 
 	/**
@@ -62,7 +67,7 @@ public abstract class ContentSyntax {
 		s.append("	var buttonsDiv = document.getElementById(\"" + textAreaName + "_buttons\");\n" +
 				"	while(buttonsDiv.hasChildNodes()) { buttonsDiv.removeChild(buttonsDiv.firstChild); }\n");
 
-		for (Syntaxes e : ContentSyntax.Syntaxes.values()) {
+		for (String e : ContentSyntax.Syntaxes.keySet()) {
 			s.append("	if(currentSyntax_" + textAreaName + " == \"" + e.toString() + "\") {\n");
 
 			int i = 0;
@@ -119,8 +124,8 @@ public abstract class ContentSyntax {
 		final HTMLNode syntaxesList = parentForm.addChild(
 				"select", new String[]{"id", "name", "onchange"}, new String[]{textAreaName + "_syntaxes", textAreaName + "_syntaxes",
 					"refreshSyntaxButtons_" + textAreaName + "();"});
-		for (Syntaxes e : ContentSyntax.Syntaxes.values()) {
-			HTMLNode syntaxListElement = syntaxesList.addChild("option", "value", e.toString(), e.toString());
+		for (String e : ContentSyntax.Syntaxes.keySet()) {
+			HTMLNode syntaxListElement = syntaxesList.addChild("option", "value", e.toString(), Syntaxes.get(e));
 			if (defaultSelectedValue != null && defaultSelectedValue.equals(e.toString())) {
 				syntaxListElement.addAttribute("selected", "selected");
 			}
