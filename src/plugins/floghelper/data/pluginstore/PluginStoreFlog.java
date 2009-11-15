@@ -274,8 +274,10 @@ public class PluginStoreFlog extends Flog {
 	public Vector<Attachment> getAttachments() {
 		Vector<Attachment> attachments = new Vector<Attachment>();
 
-		for(PluginStore s : this.flog.subStores.get("Attachements").subStores.values()) {
-			attachments.add(new PluginStoreAttachment(this, s.strings.get("Filename")));
+		if(this.flog.subStores.containsKey("Attachements")) {
+			for(PluginStore s : this.flog.subStores.get("Attachements").subStores.values()) {
+				attachments.add(new PluginStoreAttachment(this, s.strings.get("Filename")));
+			}
 		}
 
 		return attachments;
