@@ -8,21 +8,18 @@ import freenet.client.HighLevelSimpleClient;
 import freenet.clients.http.PageNode;
 import freenet.clients.http.ToadletContext;
 import freenet.clients.http.ToadletContextClosedException;
-import freenet.pluginmanager.PluginStore;
 import freenet.support.HTMLNode;
 import freenet.support.SizeUtil;
 import freenet.support.api.HTTPRequest;
 import freenet.support.api.HTTPUploadedFile;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Date;
 import java.util.TreeMap;
 import java.util.Vector;
 import plugins.floghelper.FlogHelper;
 import plugins.floghelper.data.Activelink;
 import plugins.floghelper.data.Attachment;
 import plugins.floghelper.data.Flog;
-import plugins.floghelper.data.pluginstore.PluginStoreAttachment;
 import plugins.floghelper.data.pluginstore.PluginStoreFlog;
 
 /**
@@ -118,12 +115,12 @@ public class AttachmentsToadlet extends FlogHelperToadlet {
 	}
 
 	public void getPagePost(final PageNode pageNode, final URI uri, final HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		final PluginStoreFlog flog = new PluginStoreFlog(this.getParameterWhetherItIsPostOrGet(request, "FlogID", 7));
+		final Flog flog = new PluginStoreFlog(this.getParameterWhetherItIsPostOrGet(request, "FlogID", 7));
 
 		if (request.isPartSet("AttachementFile")) {
 			HTTPUploadedFile newAttachement = request.getUploadedFile("AttachementFile");
 			if(!newAttachement.getFilename().equals("") && newAttachement.getData().size() > 0) {
-				final Attachment attachement = new PluginStoreAttachment(flog, "", Activelink.getByteArrayFromUploadedFile(newAttachement));
+				final Attachment attachement = flog.newAttachment("", Activelink.getByteArrayFromUploadedFile(newAttachement));
 				attachement.setName("Att-" + attachement.getID() + "-" + newAttachement.getFilename());
 				flog.putAttachment(attachement);
 				FlogHelper.putStore();

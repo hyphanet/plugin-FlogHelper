@@ -66,5 +66,4 @@ public class PluginStoreAttachment extends Attachment {
 	public byte[] getData() {
 		return attachment.bytesArrays.get("Content");
 	}
-
 }

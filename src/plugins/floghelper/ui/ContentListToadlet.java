@@ -110,7 +110,7 @@ public class ContentListToadlet extends FlogHelperToadlet {
 	}
 
 	public void getPagePost(final PageNode pageNode, final URI uri, final HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		final PluginStoreFlog flog = new PluginStoreFlog(this.getParameterWhetherItIsPostOrGet(request, "FlogID", 7));
+		final Flog flog = new PluginStoreFlog(this.getParameterWhetherItIsPostOrGet(request, "FlogID", 7));
 
 		final String idToDelete = request.getPartAsString("ContentToDelete", 7);
 		final String idToReallyDelete = request.getPartAsString("ContentToReallyDelete", 7);

@@ -8,7 +8,6 @@ import freenet.client.HighLevelSimpleClient;
 import freenet.clients.http.PageNode;
 import freenet.clients.http.ToadletContext;
 import freenet.clients.http.ToadletContextClosedException;
-import freenet.pluginmanager.PluginStore;
 import freenet.support.HTMLNode;
 import freenet.support.api.HTTPRequest;
 import freenet.support.api.HTTPUploadedFile;
@@ -20,6 +19,7 @@ import javax.imageio.ImageIO;
 import plugins.floghelper.FlogHelper;
 import plugins.floghelper.contentsyntax.ContentSyntax;
 import plugins.floghelper.data.Activelink;
+import plugins.floghelper.data.Flog;
 import plugins.floghelper.data.pluginstore.PluginStoreFlog;
 import plugins.floghelper.ui.flog.FlogFactory;
 
@@ -44,13 +44,13 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 		String flogID = this.getParameterWhetherItIsPostOrGet(request, "FlogID", 7);
 
 		if (request.isPartSet("Yes")) {
-			PluginStoreFlog flog;
+			Flog flog;
 
 			try {
 				flog = new PluginStoreFlog(flogID);
 			} catch (NullPointerException e) {
 				flog = new PluginStoreFlog();
-				FlogHelper.getStore().subStores.put(flog.getID(), flog.getStore());
+				flog.putFlog();
 			}
 
 			flog.setTitle(request.getPartAsString("Title", 100));
@@ -121,7 +121,7 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			links.addChild("br");
 			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + CreateOrEditFlogToadlet.MY_URI, FlogHelper.getBaseL10n().getString("CreateNewFlog"));
 		} else {
-			PluginStoreFlog flog;
+			Flog flog;
 
 			try {
 				flog = new PluginStoreFlog(flogID);

@@ -47,6 +47,16 @@ public class PluginStoreFlog extends Flog {
 		this.setAuthorID("");
 	}
 
+	public static Vector<PluginStoreFlog> getFlogs() {
+		Vector<PluginStoreFlog> flogs = new Vector<PluginStoreFlog>();
+
+		for(String flogID : FlogHelper.getStore().subStores.keySet()) {
+			flogs.add(new PluginStoreFlog(flogID));
+		}
+
+		return flogs;
+	}
+
 	public PluginStore getStore() {
 		return this.flog;
 	}
@@ -305,5 +315,17 @@ public class PluginStoreFlog extends Flog {
 
 	public void shouldPublishStoreDump(boolean b) {
 		this.flog.booleans.put("InsertPluginStoreDump", b);
+	}
+
+	public void putFlog() {
+		FlogHelper.getStore().subStores.put(this.getID(), this.getStore());
+	}
+
+	public Content newContent() {
+		return new PluginStoreContent(this);
+	}
+
+	public Attachment newAttachment(String attachmentName, byte[] data) {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 }

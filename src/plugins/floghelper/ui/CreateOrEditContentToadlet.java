@@ -16,7 +16,7 @@ import java.util.Vector;
 import plugins.floghelper.FlogHelper;
 import plugins.floghelper.contentsyntax.ContentSyntax;
 import plugins.floghelper.data.Content;
-import plugins.floghelper.data.pluginstore.PluginStoreContent;
+import plugins.floghelper.data.Flog;
 import plugins.floghelper.data.pluginstore.PluginStoreFlog;
 
 /**
@@ -37,7 +37,7 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 	}
 
 	public void getPagePost(final PageNode pageNode, final URI uri, final HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		final PluginStoreFlog flog = new PluginStoreFlog(this.getParameterWhetherItIsPostOrGet(request, "FlogID", 7));
+		final Flog flog = new PluginStoreFlog(this.getParameterWhetherItIsPostOrGet(request, "FlogID", 7));
 
 		String contentID = this.getParameterWhetherItIsPostOrGet(request, "ContentID", 7);
 
@@ -49,7 +49,7 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 			} catch (NullPointerException e) {
 				// Content doesn't existe, hence the NPE
 				// We create a new one
-				content = new PluginStoreContent(flog);
+				content = flog.newContent();
 				flog.putContent(content);
 			}
 
@@ -85,7 +85,7 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 			try {
 				content = flog.getContentByID(contentID);
 			} catch (NullPointerException e) {
-				content = new PluginStoreContent(flog);
+				content = flog.newContent();
 				// Don't put it... yet.
 			}
 

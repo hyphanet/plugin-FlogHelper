@@ -57,12 +57,14 @@ public abstract class Flog {
 	abstract public Content getContentByID(String s);
 	abstract public void putContent(Content c);
 	abstract public void deleteContent(String contentID);
+	abstract public Content newContent();
 
 	abstract public long getNumberOfAttachments();
 	abstract public Vector<Attachment> getAttachments();
 	abstract public Attachment getAttachmentByName(String s);
 	abstract public void putAttachment(Attachment c);
 	abstract public void deleteAttachment(String attachmentName);
+	abstract public Attachment newAttachment(String attachmentName, byte[] data);
 
 	abstract public String getShortDescription();
 	abstract public void   setShortDescription(String s);
@@ -102,4 +104,6 @@ public abstract class Flog {
 
 	abstract public FreenetURI getRequestURI() throws Exception;
 	abstract public FreenetURI getInsertURI() throws Exception;
+
+	abstract public void putFlog();
 }

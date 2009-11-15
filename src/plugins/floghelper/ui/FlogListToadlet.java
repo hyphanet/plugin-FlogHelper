@@ -10,7 +10,6 @@ import freenet.client.HighLevelSimpleClient;
 import freenet.clients.http.PageNode;
 import freenet.clients.http.ToadletContext;
 import freenet.clients.http.ToadletContextClosedException;
-import freenet.pluginmanager.PluginStore;
 import freenet.support.Base64;
 import freenet.support.HTMLNode;
 import freenet.support.api.HTTPRequest;
@@ -74,8 +73,7 @@ public class FlogListToadlet extends FlogHelperToadlet {
 			tBody.addChild("tr").addChild("td", "colspan", "13", FlogHelper.getBaseL10n().getString("NoFlogsYet"));
 		}
 
-		for (final String subStoreID : FlogHelper.getStore().subStores.keySet()) {
-			final Flog flog = new PluginStoreFlog(subStoreID);
+		for (final Flog flog : PluginStoreFlog.getFlogs()) {
 			final String author = flog.getAuthorName();
 
 			final HTMLNode activelinkP = new HTMLNode("td");
