@@ -104,6 +104,7 @@ public abstract class Flog {
 
 	abstract public FreenetURI getRequestURI() throws Exception;
 	abstract public FreenetURI getInsertURI() throws Exception;
+	abstract public long getLatestUSKEdition();
 
 	abstract public void putFlog();
 }

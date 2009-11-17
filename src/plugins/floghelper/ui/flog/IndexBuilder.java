@@ -8,8 +8,6 @@ import freenet.clients.http.filter.ContentFilter;
 import freenet.clients.http.filter.FoundURICallback;
 import freenet.clients.http.filter.UnsafeContentTypeException;
 import freenet.keys.FreenetURI;
-import freenet.pluginmanager.PluginNotFoundException;
-import freenet.pluginmanager.PluginStore;
 import freenet.support.Logger;
 import freenet.support.io.ArrayBucket;
 import freenet.support.io.NullBucketFactory;
@@ -18,12 +16,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Vector;
-import java.util.logging.Level;
 import plugins.floghelper.contentsyntax.ContentSyntax;
 import plugins.floghelper.data.Content;
 import plugins.floghelper.data.DataFormatter;
 import plugins.floghelper.data.Flog;
-import plugins.floghelper.fcp.wot.WoTOwnIdentities;
 
 /**
  * Generate an index which can be used with the Library plugin.

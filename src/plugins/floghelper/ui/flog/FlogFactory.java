@@ -37,6 +37,7 @@ import plugins.floghelper.data.Attachment;
 import plugins.floghelper.data.Content;
 import plugins.floghelper.data.DataFormatter;
 import plugins.floghelper.data.Flog;
+import plugins.floghelper.fcp.wot.WoTContexts;
 
 /**
  * Flog parsing, generates xHTML code and various other flog-related things.
@@ -418,7 +419,11 @@ public class FlogFactory {
 					ClientPutDir cpd = new ClientPutDir(client, uri, "FlogHelper-" + flog.getID() + "-" + DataFormatter.getRandomID(14), Integer.MAX_VALUE, RequestStarter.MAXIMUM_PRIORITY_CLASS, ClientRequest.PERSIST_FOREVER, null, false, false, -1, parsedFlog, "index.html", true, false, false, fcp, arg0);
 					try {
 						fcp.startBlocking(cpd, arg0, arg1);
-					} catch (DatabaseDisabledException ex) {
+						WoTContexts.addContext(flog.getAuthorID());
+
+						// FIXME do this when callback is called !
+						WoTContexts.addProperty(flog.getAuthorID(), "Flog." + flog.getSSKPath(), Long.toString(flog.getLatestUSKEdition()));
+					} catch (Exception ex) {
 						// Ignore
 					}
 				} catch (IdentifierCollisionException ex) {

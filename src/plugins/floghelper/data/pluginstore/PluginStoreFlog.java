@@ -260,7 +260,7 @@ public class PluginStoreFlog extends Flog {
 	}
 
 	public FreenetURI getRequestURI() throws MalformedURLException, PluginNotFoundException {
-		return new FreenetURI("USK@" + WoTOwnIdentities.getWoTIdentities("RequestURI").get(this.getAuthorID()).split("@")[1].split("/")[0] + "/" + this.getSSKPath() + "/-1/");
+		return new FreenetURI("USK@" + WoTOwnIdentities.getWoTIdentities("RequestURI").get(this.getAuthorID()).split("@")[1].split("/")[0] + "/" + this.getSSKPath() + "/" + Long.toString(this.getLatestUSKEdition()) + "/");
 	}
 
 	public FreenetURI getInsertURI() throws PluginNotFoundException, MalformedURLException {
@@ -328,6 +328,10 @@ public class PluginStoreFlog extends Flog {
 	}
 
 	public Attachment newAttachment(String attachmentName, byte[] data) {
-		throw new UnsupportedOperationException("Not supported yet.");
+		return new PluginStoreAttachment(this, attachmentName, data);
+	}
+
+	public long getLatestUSKEdition() {
+		return -1; // FIXME
 	}
 }
