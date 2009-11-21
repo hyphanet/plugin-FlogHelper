@@ -25,6 +25,7 @@ import freenet.clients.http.ToadletContext;
 import freenet.clients.http.ToadletContextClosedException;
 import freenet.support.Base64;
 import freenet.support.HTMLNode;
+import freenet.support.Logger;
 import freenet.support.api.HTTPRequest;
 import java.io.IOException;
 import java.net.URI;
@@ -104,7 +105,11 @@ public class FlogListToadlet extends FlogHelperToadlet {
 			final HTMLNode row = tBody.addChild("tr");
 			row.addChild("td").addChild("pre", DataFormatter.toString(flog.getID()));
 			row.addChild(activelinkP);
-			row.addChild("td", DataFormatter.toString(flog.getTitle()));
+			try {
+				row.addChild("td").addChild("a", "href", "/" + flog.getRequestURI(), DataFormatter.toString(flog.getTitle()));
+			} catch (Exception ex) {
+				Logger.error(this, "", ex);
+			}
 			row.addChild("td", DataFormatter.toString(author));
 			row.addChild("td", flog.getShortDescription());
 			row.addChild("td", DataFormatter.toString(flog.getNumberOfContents()));

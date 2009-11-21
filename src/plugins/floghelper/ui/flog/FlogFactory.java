@@ -604,7 +604,7 @@ public class FlogFactory {
 		feed.append("</name></author>\n");
 
 		feed.append("	<link rel=\"self\" href=\"./AtomFeed.xml\" />\n");
-		feed.append("	<generator version=\"r" + FlogHelper.REVISION + "\">FlogHelper</generator>\n");
+		feed.append("	<generator version=\"" + FlogHelper.getVersionStatic() + "\">FlogHelper</generator>\n");
 
 		feed.append("	<subtitle type=\"xhtml\">\n" +
 				"		<div xmlns=\"http://www.w3.org/1999/xhtml\">\n");
