@@ -20,7 +20,6 @@ import freenet.client.HighLevelSimpleClient;
 import freenet.clients.http.PageNode;
 import freenet.clients.http.ToadletContext;
 import freenet.clients.http.ToadletContextClosedException;
-import freenet.pluginmanager.PluginStore;
 import freenet.support.HTMLNode;
 import freenet.support.MultiValueTable;
 import freenet.support.api.HTTPRequest;
@@ -28,6 +27,8 @@ import java.io.IOException;
 import java.net.URI;
 import plugins.floghelper.FlogHelper;
 import plugins.floghelper.data.DataFormatter;
+import plugins.floghelper.data.Flog;
+import plugins.floghelper.data.pluginstore.PluginStoreFlog;
 
 /**
  * This toadlet let the user export flogs.
@@ -47,18 +48,14 @@ public class ExportFlogToadlet extends FlogHelperToadlet {
 	}
 
 	public void getPagePost(final PageNode pageNode, final URI uri, HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		final PluginStore flog = FlogHelper.getStore().subStores.get(this.getParameterWhetherItIsPostOrGet(request, "FlogID", 7));
-		if (flog == null) {
-			this.sendErrorPage(ctx, 404, "Not found", "Incorrect or missing FlogID.");
-			return;
-		}
+		final Flog flog = new PluginStoreFlog(this.getParameterWhetherItIsPostOrGet(request, "FlogID", 7));
 
 		if (request.isPartSet("Download")) {
 			MultiValueTable<String, String> headers = new MultiValueTable<String, String>();
-			headers.put("Content-Disposition", "attachment; filename=\"" + "Flog-" + flog.strings.get("ID") + ".backup.db4o" + '"');
+			headers.put("Content-Disposition", "attachment; filename=\"" + "Flog-" + flog.getID() + ".backup.db4o" + '"');
 			headers.put("Cache-Control", "private");
 			headers.put("Content-Transfer-Encoding", "binary");
-			byte[] data = flog.exportStore();
+			byte[] data = flog.exportFlog();
 			ctx.sendReplyHeaders(200, "OK", headers, "application/octet-stream", data.length);
 			ctx.writeData(data);
 		} else {
@@ -71,7 +68,7 @@ public class ExportFlogToadlet extends FlogHelperToadlet {
 			dlForm.addChild("input", new String[]{"type", "name", "value"},
 					new String[]{"submit", "Download", FlogHelper.getBaseL10n().getString("DownloadFlogBackupLong")});
 			dlForm.addChild("input", new String[]{"type", "name", "value"},
-					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.strings.get("ID"))});
+					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.getID())});
 			writeHTMLReply(ctx, 200, "OK", null, pageNode.outer.generate());
 		}
 	}

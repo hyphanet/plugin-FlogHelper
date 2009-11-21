@@ -58,6 +58,11 @@ public abstract class Flog {
 	 */
 	public static final String DEFAULT_SSK_PATH = "flog";
 
+	/**
+	 * Filename of the inserted Flog backup.
+	 */
+	public static final String STORE_DUMP_NAME = "flog.db4o";
+
 	abstract public String getID();
 	abstract public String getTitle();
 	abstract public void   setTitle(String s);
@@ -120,4 +125,6 @@ public abstract class Flog {
 	abstract public long getLatestUSKEdition();
 
 	abstract public void putFlog();
+
+	abstract public byte[] exportFlog();
 }

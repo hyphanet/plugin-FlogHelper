@@ -380,6 +380,12 @@ public class FlogFactory {
 			}
 		}
 
+		if(flog.shouldPublishStoreDump()) {
+			data = BucketTools.makeImmutableBucket(factory, flog.exportFlog());
+			name = Flog.STORE_DUMP_NAME;
+			fileMap.put(name, new ManifestElement(name, data, DefaultMIMETypes.guessMIMEType(name, true), data.size()));
+		}
+
 		return fileMap;
 	}
 

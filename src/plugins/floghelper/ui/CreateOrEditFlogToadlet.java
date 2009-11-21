@@ -182,7 +182,7 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			checkBlock = settingsBox.addChild("p");
 			checkBlock.addChild("input", new String[]{"type", "name", "id", insertPluginStoreDump ? "checked" : "class"},
 					new String[]{"checkbox", "InsertPluginStoreDump", "InsertPluginStoreDump", insertPluginStoreDump ? "checked" : ""});
-			checkBlock.addChild("label", "for", "InsertPluginStoreDump", FlogHelper.getBaseL10n().getString("InsertPluginStoreDumpDesc"));
+			checkBlock.addChild("label", "for", "InsertPluginStoreDump", FlogHelper.getBaseL10n().getString("InsertPluginStoreDumpDesc").replace("${Filename}", Flog.STORE_DUMP_NAME));
 
 			final boolean insertLibraryIndex = flog.shouldPublishLibraryIndex();
 			checkBlock = settingsBox.addChild("p");
