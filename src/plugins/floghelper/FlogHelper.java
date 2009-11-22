@@ -57,10 +57,6 @@ import plugins.floghelper.ui.PreviewToadlet;
 public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginBaseL10n, FredPluginL10n, FredPluginThemed, FredPluginVersioned, FredPluginRealVersioned, FredPluginTalker {
 
 	private static String PLUGIN_NAME;
-	/**
-	 * Don't forget to bump this when a new release is up.
-	 */
-	public static final int REVISION = 15;
 	private static PluginRespirator pr;
 	private static PluginL10n l10n;
 	private static PluginStore store;
@@ -218,7 +214,7 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 	 * @return Formatted version.
 	 */
 	public String getVersion() {
-		return FlogHelper.getVersionStatic();
+		return Version.getVersion();
 	}
 
 	/**
@@ -231,20 +227,11 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 	}
 
 	/**
-	 * Get the formatted version of this plugin, for example "r0012" if revision 12.
-	 * @return Formatted version.
-	 */
-	public static String getVersionStatic() {
-		String rev = DataFormatter.formatIntLength(FlogHelper.REVISION, 4, false);
-		return "r" + rev + "-" + Version.getRevision();
-	}
-
-	/**
 	 * Get the revision of this plugin.
 	 * @return Revision
 	 */
 	public long getRealVersion() {
-		return FlogHelper.REVISION;
+		return Version.REVISION;
 	}
 
 	/**

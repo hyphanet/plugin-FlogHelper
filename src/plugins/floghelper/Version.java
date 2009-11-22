@@ -27,7 +27,24 @@ public class Version {
 	 */
 	private static final String gitRevision = "@custom@";
 
+	/**
+	 * Don't forget to bump this when a new release is up.
+	 */
+	public static final long REVISION = 16;
+
+	public static final long MAJOR = 0;
+	public static final long MINOR = 0;
+	public static final long RELEASE = 1;
+
 	public static String getRevision() {
 		return Version.gitRevision;
+	}
+
+	/**
+	 * Get the formatted version of this plugin.
+	 * @return Formatted version.
+	 */
+	public static String getVersion() {
+		return Long.toString(MAJOR)+ "." + Long.toString(MINOR) + "." + Long.toString(RELEASE) + "-" + gitRevision;
 	}
 }
