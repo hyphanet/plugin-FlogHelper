@@ -147,6 +147,9 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 
 			final boolean isDraft = content.isDraft();
 			HTMLNode checkBlock = settingsBox.addChild("p");
+			if(isDraft) {
+				checkBlock.addAttribute("style", "background-color: yellow;");
+			}
 			checkBlock.addChild("input", new String[]{"type", "name", "id", isDraft ? "checked" : "class"},
 					new String[]{"checkbox", "IsDraft", "IsDraft", isDraft ? "checked" : ""});
 			checkBlock.addChild("label", "for", "IsDraft", FlogHelper.getBaseL10n().getString("IsDraftDesc"));

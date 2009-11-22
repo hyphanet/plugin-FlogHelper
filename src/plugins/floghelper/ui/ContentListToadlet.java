@@ -88,6 +88,11 @@ public class ContentListToadlet extends FlogHelperToadlet {
 		// Let's sort the contents by descending creation date.
 		for (final Content content : new FlogFactory(flog).getContentsTreeMap(true).descendingMap().values()) {
 			final HTMLNode row = tBody.addChild("tr");
+
+			if(content.isDraft()) {
+				row.addAttribute("style", "background-color: yellow;");
+			}
+
 			row.addChild("td").addChild("pre", DataFormatter.toString(content.getID()));
 			row.addChild("td", DataFormatter.toString(DataFormatter.htmlSpecialChars(content.getTitle())));
 			row.addChild("td", DataFormatter.toString(DataFormatter.LocalDateFormatter.format(content.getContentCreationDate())));
