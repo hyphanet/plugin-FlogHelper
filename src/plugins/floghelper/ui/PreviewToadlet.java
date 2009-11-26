@@ -90,11 +90,11 @@ public class PreviewToadlet extends FlogHelperToadlet {
 					ctx.writeData(data);
 				}
 			} else if (file.startsWith("/Att-")) {
-				final Attachment attachement = flog.getAttachmentByName(file.substring(1));
-				if (attachement != null) {
+				final Attachment attachment = flog.getAttachmentByName(file.substring(1));
+				if (attachment != null) {
 					final String mimeType = DefaultMIMETypes.guessMIMEType(file, true);
-					ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), mimeType == null ? "application/octet-stream" : mimeType, attachement.getData().length);
-					ctx.writeData(attachement.getData());
+					ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), mimeType == null ? "application/octet-stream" : mimeType, attachment.getData().length);
+					ctx.writeData(attachment.getData());
 				}
 			} else if (file.equals("/" + VIEW_RAW_DEFAULT_TEMPLATE_URI)) {
 				previewTemplate(factory, pageNode, uri, request, ctx);

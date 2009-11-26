@@ -152,12 +152,12 @@ public class FlogListToadlet extends FlogHelperToadlet {
 			formInsert.addChild("input", new String[]{"type", "name", "value"},
 					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.getID())});
 
-			final HTMLNode formAttachements = FlogHelper.getPR().addFormChild(row.addChild("td"), FlogHelperToadlet.BASE_URI +
-					AttachmentsToadlet.MY_URI, "Attachements-" + flog.getID());
-			formAttachements.addAttribute("method", "get");
-			formAttachements.addChild("input", new String[]{"type", "value"},
-					new String[]{"submit", FlogHelper.getBaseL10n().getString("Attachements")});
-			formAttachements.addChild("input", new String[]{"type", "name", "value"},
+			final HTMLNode formAttachments = FlogHelper.getPR().addFormChild(row.addChild("td"), FlogHelperToadlet.BASE_URI +
+					AttachmentsToadlet.MY_URI, "Attachments-" + flog.getID());
+			formAttachments.addAttribute("method", "get");
+			formAttachments.addChild("input", new String[]{"type", "value"},
+					new String[]{"submit", FlogHelper.getBaseL10n().getString("Attachments")});
+			formAttachments.addChild("input", new String[]{"type", "name", "value"},
 					new String[]{"hidden", "FlogID", DataFormatter.toString(flog.getID())});
 
 			final HTMLNode formExport = FlogHelper.getPR().addFormChild(row.addChild("td"), FlogHelperToadlet.BASE_URI +

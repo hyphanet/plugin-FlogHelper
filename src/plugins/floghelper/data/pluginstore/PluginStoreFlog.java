@@ -281,14 +281,14 @@ public class PluginStoreFlog extends Flog {
 	}
 
 	public long getNumberOfAttachments() {
-		return this.flog.subStores.get("Attachements").subStores.size();
+		return this.flog.subStores.get("Attachments").subStores.size();
 	}
 
 	public Vector<Attachment> getAttachments() {
 		Vector<Attachment> attachments = new Vector<Attachment>();
 
-		if(this.flog.subStores.containsKey("Attachements")) {
-			for(PluginStore s : this.flog.subStores.get("Attachements").subStores.values()) {
+		if(this.flog.subStores.containsKey("Attachments")) {
+			for(PluginStore s : this.flog.subStores.get("Attachments").subStores.values()) {
 				attachments.add(new PluginStoreAttachment(this, s.strings.get("Filename")));
 			}
 		}
@@ -306,11 +306,11 @@ public class PluginStoreFlog extends Flog {
 		}
 
 		PluginStoreAttachment psA = (PluginStoreAttachment) c;
-		this.flog.subStores.get("Attachements").subStores.put(psA.getName(), psA.getStore());
+		this.flog.subStores.get("Attachments").subStores.put(psA.getName(), psA.getStore());
 	}
 
 	public void deleteAttachment(String attachmentID) {
-		this.flog.subStores.get("Attachements").subStores.remove(attachmentID);
+		this.flog.subStores.get("Attachments").subStores.remove(attachmentID);
 	}
 
 	public boolean hasActivelink() {

@@ -369,9 +369,9 @@ public class FlogFactory {
 			fileMap.put(name, new ManifestElement(name, data, "image/png", data.size()));
 		}
 
-		for(Attachment attachement : flog.getAttachments()) {
-			data = BucketTools.makeImmutableBucket(factory, attachement.getData());
-			name = attachement.getName();
+		for(Attachment attachment : flog.getAttachments()) {
+			data = BucketTools.makeImmutableBucket(factory, attachment.getData());
+			name = attachment.getName();
 			fileMap.put(name, new ManifestElement(name, data, DefaultMIMETypes.guessMIMEType(name, true), data.size()));
 		}
 

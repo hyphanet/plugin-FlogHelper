@@ -35,18 +35,22 @@ public class PluginStoreAttachment extends Attachment {
 	public PluginStoreAttachment(PluginStoreFlog flog, String attachmentID) {
 		this.parentFlog = flog;
 		
-		if(!this.parentFlog.getStore().subStores.get("Attachements").subStores.containsKey(attachmentID)) {
+		if(!this.parentFlog.getStore().subStores.get("Attachments").subStores.containsKey(attachmentID)) {
 			throw new NullPointerException("Attachment doesn't exist!");
 		}
 		
-		this.attachment = this.parentFlog.getStore().subStores.get("Attachements").subStores.get(attachmentID);
+		this.attachment = this.parentFlog.getStore().subStores.get("Attachments").subStores.get(attachmentID);
 	}
 
 	public PluginStoreAttachment(PluginStoreFlog flog, String name, byte[] data) {
 		this.attachment = new PluginStore();
 		this.parentFlog = flog;
 
-		this.attachment.strings.put("ID", DataFormatter.createSubStoreUniqueID(this.parentFlog.getStore().subStores.get("Attachements")));
+		if(!this.parentFlog.getStore().subStores.containsKey("Attachments")) {
+			this.parentFlog.getStore().subStores.put("Attachments", new PluginStore());
+		}
+
+		this.attachment.strings.put("ID", DataFormatter.createSubStoreUniqueID(this.parentFlog.getStore().subStores.get("Attachments")));
 		this.setName(name);
 		this.attachment.bytesArrays.put("Content", data);
 		this.attachment.longs.put("CreationDate", System.currentTimeMillis());
