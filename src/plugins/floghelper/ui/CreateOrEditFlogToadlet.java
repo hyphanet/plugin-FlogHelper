@@ -59,9 +59,9 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 		if (request.isPartSet("Yes")) {
 			Flog flog;
 
-			try {
+			if(PluginStoreFlog.hasFlog(flogID)) {
 				flog = new PluginStoreFlog(flogID);
-			} catch (NullPointerException e) {
+			} else {
 				flog = new PluginStoreFlog();
 				flog.putFlog();
 			}
@@ -69,15 +69,15 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			flog.setTitle(request.getPartAsString("Title", 100));
 			flog.setAuthorID(request.getPartAsString("Author", 1000));
 			flog.setTheme(request.getPartAsString("Theme", 250));
-			flog.setShortDescription(request.getPartAsString("SmallDescription", 100000));
+			flog.setShortDescription(request.getPartAsString("SmallDescription", Integer.MAX_VALUE));
 			flog.setShortDescriptionSyntax(request.getPartAsString("SmallDescription_syntaxes", 1000));
 			flog.shouldPublishStoreDump(request.isPartSet("InsertPluginStoreDump"));
 			flog.shouldPublishDates(request.isPartSet("PublishContentModificationDate"));
 			flog.shouldPublishLibraryIndex(request.isPartSet("InsertLibraryIndex"));
 			flog.overrideTemplate(request.isPartSet("OverrideTemplate"));
-			flog.setTemplateOverride(request.getPartAsString("OverrideTemplateValue", 100000));
+			flog.setTemplateOverride(request.getPartAsString("OverrideTemplateValue", Integer.MAX_VALUE));
 			flog.overrideCSS(request.isPartSet("OverrideCSS"));
-			flog.setCSSOverride(request.getPartAsString("OverrideCSSValue", 100000));
+			flog.setCSSOverride(request.getPartAsString("OverrideCSSValue", Integer.MAX_VALUE));
 			flog.setNumberOfContentsOnIndex(DataFormatter.tryParseLong(request.getPartAsString("NumberOfContentsOnIndex", 10), flog.getNumberOfContentsOnIndex()));
 			flog.setNumberOfContentsOnArchives(DataFormatter.tryParseLong(request.getPartAsString("NumberOfContentsOnArchives", 10), flog.getNumberOfContentsOnArchives()));
 
@@ -135,9 +135,9 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 		} else {
 			Flog flog;
 
-			try {
+			if(PluginStoreFlog.hasFlog(flogID)) {
 				flog = new PluginStoreFlog(flogID);
-			} catch (NullPointerException e) {
+			} else {
 				flog = new PluginStoreFlog();
 			}
 
@@ -152,8 +152,8 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			form.addChild("input", new String[]{"type", "name", "value"},
 					new String[]{"hidden", "FlogID", flog.getID()});
 
-			generalBox.addChild("p").addChild("label", "for", "Title", FlogHelper.getBaseL10n().getString("TitleFieldDesc")).addChild("br").addChild("input", new String[]{"type", "size", "name", "value"},
-					new String[]{"text", "50", "Title", DataFormatter.toString(flog.getTitle())});
+			generalBox.addChild("p").addChild("label", "for", "Title", FlogHelper.getBaseL10n().getString("TitleFieldDesc")).addChild("br").addChild("input", new String[]{"type", "size", "name", "value", "maxlength"},
+					new String[]{"text", "50", "Title", DataFormatter.toString(flog.getTitle()), "100"});
 
 			final HTMLNode authorsBox = new HTMLNode("select", new String[]{"id", "name"}, new String[]{"Author", "Author"});
 			for (final String identityID : this.getWoTIdentities().keySet()) {
@@ -203,8 +203,8 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 					.addChild("input", new String[]{"type", "size", "name", "value"},
 					new String[]{"text", "4", "NumberOfContentsOnArchives", Long.toString(flog.getNumberOfContentsOnArchives())});
 			settingsBox.addChild("p").addChild("label", "for", "SSKPath", FlogHelper.getBaseL10n().getString("SSKPathDesc")).addChild("br")
-					.addChild("input", new String[]{"type", "size", "name", "value"},
-					new String[]{"text", "20", "SSKPath", flog.getSSKPath()});
+					.addChild("input", new String[]{"type", "size", "name", "value", "maxlength"},
+					new String[]{"text", "20", "SSKPath", flog.getSSKPath(), "30"});
 
 			final boolean overrideTemplate = flog.overrideTemplate();
 			checkBlock = templatesBox.addChild("p");

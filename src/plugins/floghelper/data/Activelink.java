@@ -18,7 +18,7 @@ package plugins.floghelper.data;
 
 import freenet.support.Logger;
 import freenet.support.api.HTTPUploadedFile;
-import java.io.BufferedInputStream;
+import freenet.support.io.BucketTools;
 import java.io.IOException;
 
 /**
@@ -51,7 +51,7 @@ public class Activelink {
 		byte[] bytesAL = null;
 
 		try {
-			bytesAL = DataFormatter.readAllBytesFromStream(activelink.getData().getInputStream(), (int)activelink.getData().size());
+			bytesAL = BucketTools.toByteArray(activelink.getData());
 		} catch (IOException ex) {
 			Logger.error(Activelink.class, "Could not read activelink bucket - " + ex.getMessage());
 		}

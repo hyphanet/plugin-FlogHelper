@@ -351,4 +351,12 @@ public class PluginStoreFlog extends Flog {
 	public byte[] exportFlog() {
 		return this.getStore().exportStore();
 	}
+
+	public static boolean hasFlog(String flogID) {
+		return FlogHelper.getStore().subStores.containsKey(flogID);
+	}
+
+	public boolean hasContent(String contentID) {
+		return this.getStore().subStores.containsKey(contentID);
+	}
 }

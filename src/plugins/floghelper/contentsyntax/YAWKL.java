@@ -34,19 +34,19 @@ public class YAWKL extends ContentSyntax {
 				Pattern.DOTALL | Pattern.CASE_INSENSITIVE,
 				"<strong>$1</strong>", true));
 		this.syntaxElements.add(new SyntaxElement(FlogHelper.getBaseL10n().getString("Italic"), "''", "''",
-				SyntaxElement.begin + "(.+?)" + SyntaxElement.end,
+				"&#39;&#39;(.+?)&#39;&#39;",
 				Pattern.DOTALL | Pattern.CASE_INSENSITIVE,
 				"<em>$1</em>", true));
 		this.syntaxElements.add(new SyntaxElement(FlogHelper.getBaseL10n().getString("Underline"), "__", "__",
 				SyntaxElement.begin + "(.+?)" + SyntaxElement.end,
 				Pattern.DOTALL | Pattern.CASE_INSENSITIVE,
-				"<span stylep=\"text-decoration: underline;\">$1</span>", true));
+				"<span style=\"text-decoration: underline;\">$1</span>", true));
 		this.syntaxElements.add(new SyntaxElement(FlogHelper.getBaseL10n().getString("Strike"), "---", "---",
 				SyntaxElement.begin + "(.+?)" + SyntaxElement.end,
 				Pattern.DOTALL | Pattern.CASE_INSENSITIVE,
 				"<span style=\"text-decoration: line-through;\">$1</span>", true));
 
-		this.syntaxElements.add(new SyntaxElement(FlogHelper.getBaseL10n().getString("Subscript"), "___[[", "]]",
+		this.syntaxElements.add(new SyntaxElement(FlogHelper.getBaseL10n().getString("Subscript"), "_[[", "]]",
 				SyntaxElement.begin + "(.+?)" + SyntaxElement.end,
 				Pattern.DOTALL | Pattern.CASE_INSENSITIVE,
 				"<sub>$1</sub>", true));

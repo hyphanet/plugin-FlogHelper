@@ -30,6 +30,7 @@ import freenet.support.api.HTTPRequest;
 import java.io.IOException;
 import java.net.URI;
 import plugins.floghelper.FlogHelper;
+import plugins.floghelper.contentsyntax.ContentSyntax;
 import plugins.floghelper.data.Activelink;
 import plugins.floghelper.data.Flog;
 import plugins.floghelper.data.pluginstore.PluginStoreFlog;
@@ -106,12 +107,12 @@ public class FlogListToadlet extends FlogHelperToadlet {
 			row.addChild("td").addChild("pre", DataFormatter.toString(flog.getID()));
 			row.addChild(activelinkP);
 			try {
-				row.addChild("td").addChild("a", "href", "/" + flog.getRequestURI(), DataFormatter.toString(flog.getTitle()));
+				row.addChild("td").addChild("a", "href", "/" + flog.getRequestURI(), DataFormatter.htmlSpecialChars(DataFormatter.toString(flog.getTitle())));
 			} catch (Exception ex) {
 				Logger.error(this, "", ex);
 			}
 			row.addChild("td", DataFormatter.toString(author));
-			row.addChild("td", flog.getShortDescription());
+			row.addChild("td").addChild("%", ContentSyntax.parseSomeString(flog.getShortDescription(), flog.getShortDescriptionSyntax()));
 			row.addChild("td", DataFormatter.toString(flog.getNumberOfContents()));
 
 			final HTMLNode formDetails = FlogHelper.getPR().addFormChild(row.addChild("td"), FlogHelperToadlet.BASE_URI +

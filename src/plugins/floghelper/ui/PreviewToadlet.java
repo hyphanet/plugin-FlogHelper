@@ -76,11 +76,11 @@ public class PreviewToadlet extends FlogHelperToadlet {
 				final String tag = file.replaceAll("^/Tag-(.+?)-p([0-9]+)\\.html$", "$1");
 				writeHTMLReply(ctx, 200, "OK", null, appendPreviewWarning(factory.getTagsPage(tag, page)));
 			} else if (file.equals("/GlobalStyle.css")) {
-				byte[] data = new FlogFactory(flog).getCSS().getBytes();
+				byte[] data = new FlogFactory(flog).getCSS().getBytes("UTF-8");
 				ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "text/css", data.length);
 				ctx.writeData(data);
 			} else if (file.equals("/AtomFeed.xml")) {
-				byte[] data = new FlogFactory(flog).getAtomFeed().getBytes();
+				byte[] data = new FlogFactory(flog).getAtomFeed().getBytes("UTF-8");
 				ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "application/atom+xml", data.length);
 				ctx.writeData(data);
 			} else if (file.equals("/activelink.png")) {
@@ -103,12 +103,12 @@ public class PreviewToadlet extends FlogHelperToadlet {
 			} else if (file.startsWith("/index") && file.endsWith(".xml")) {
 				IndexBuilder builder = new IndexBuilder(flog, new FlogFactory(flog).parseAllFlog());
 				if(file.equals("/index.xml")) {
-					byte[] data = builder.getIndexIndex().getBytes();
+					byte[] data = builder.getIndexIndex().getBytes("UTF-8");
 					ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "application/xml", data.length);
 					ctx.writeData(data);
 				} else if(file.matches("^/index_[0-9a-f]\\.xml$")) {
 					byte sub = Byte.valueOf(file.replace("/index_", "").replace(".xml", ""), 16);
-					byte[] data = builder.getSubIndex(sub).getBytes();
+					byte[] data = builder.getSubIndex(sub).getBytes("UTF-8");
 					ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "application/xml", data.length);
 					ctx.writeData(data);
 				}
@@ -119,13 +119,13 @@ public class PreviewToadlet extends FlogHelperToadlet {
 	}
 
 	public static void previewTemplate(FlogFactory factory, PageNode pageNode, URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		byte[] data = factory.getTemplate().getBytes();
+		byte[] data = factory.getTemplate().getBytes("UTF-8");
 		ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "text/plain", data.length);
 		ctx.writeData(data);
 	}
 
 	public static void previewCSS(FlogFactory factory, PageNode pageNode, URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		byte[] data = factory.getCSS().getBytes();
+		byte[] data = factory.getCSS().getBytes("UTF-8");
 		ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "text/plain", data.length);
 		ctx.writeData(data);
 	}

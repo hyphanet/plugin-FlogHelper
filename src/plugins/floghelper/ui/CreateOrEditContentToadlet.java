@@ -57,10 +57,10 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 		if (request.isPartSet("Yes")) {
 			Content content;
 
-			try {
+			if(flog.hasContent(contentID)) {
 				content = flog.getContentByID(contentID);
-			} catch (NullPointerException e) {
-				// Content doesn't existe, hence the NPE
+			} else {
+				// Content doesn't exist yet
 				// We create a new one
 				content = flog.newContent();
 				flog.putContent(content);
@@ -95,9 +95,9 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 		} else {
 			Content content;
 
-			try {
+			if(flog.hasContent(contentID)) {
 				content = flog.getContentByID(contentID);
-			} catch (NullPointerException e) {
+			} else {
 				content = flog.newContent();
 				// Don't put it... yet.
 			}
@@ -114,8 +114,8 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 			form.addChild("input", new String[]{"type", "name", "value"},
 					new String[]{"hidden", "ContentID", content.getID()});
 
-			generalBox.addChild("p").addChild("label", "for", "Title", FlogHelper.getBaseL10n().getString("TitleFieldDesc")).addChild("br").addChild("input", new String[]{"type", "size", "name", "value"},
-					new String[]{"text", "50", "Title", DataFormatter.toString(content.getTitle())});
+			generalBox.addChild("p").addChild("label", "for", "Title", FlogHelper.getBaseL10n().getString("TitleFieldDesc")).addChild("br").addChild("input", new String[]{"type", "size", "name", "value", "maxlength"},
+					new String[]{"text", "50", "Title", DataFormatter.toString(content.getTitle()), "100"});
 
 			final HTMLNode authorsBox = new HTMLNode("select", new String[]{"id", "name"}, new String[]{"Author", "Author"});
 			for (final String identityID : this.getWoTIdentities().keySet()) {
@@ -142,8 +142,8 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 				}
 			}
 
-			tagsBox.addChild("p").addChild("label", "for", "Tags", FlogHelper.getBaseL10n().getString("TagsFieldDesc")).addChild("br").addChild("input", new String[]{"type", "size", "name", "value"},
-					new String[]{"text", "50", "Tags", tagz.toString()});
+			tagsBox.addChild("p").addChild("label", "for", "Tags", FlogHelper.getBaseL10n().getString("TagsFieldDesc")).addChild("br").addChild("input", new String[]{"type", "size", "name", "value", "maxlength"},
+					new String[]{"text", "50", "Tags", tagz.toString(), "1000"});
 
 			final boolean isDraft = content.isDraft();
 			HTMLNode checkBlock = settingsBox.addChild("p");

@@ -34,11 +34,11 @@ import freenet.support.Logger;
 import freenet.support.SimpleFieldSet;
 import freenet.support.api.Bucket;
 import java.util.Vector;
+import java.util.logging.Level;
 import plugins.floghelper.contentsyntax.js.JavascriptFactoryToadlet;
 import plugins.floghelper.ui.ContentListToadlet;
 import plugins.floghelper.ui.CreateOrEditContentToadlet;
 import plugins.floghelper.ui.CreateOrEditFlogToadlet;
-import plugins.floghelper.data.DataFormatter;
 import plugins.floghelper.ui.AttachmentsToadlet;
 import plugins.floghelper.ui.ExportFlogToadlet;
 import plugins.floghelper.ui.FlogHelperToadlet;
@@ -112,10 +112,7 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 	 * unregister the toadlets...
 	 */
 	public void terminate() {
-		FlogHelper.pr.getPageMaker().removeNavigationCategory(FlogHelper.PLUGIN_NAME);
-		for(FlogHelperToadlet e : this.myToadlets) {
-			FlogHelper.pr.getToadletContainer().unregister(e);
-		}
+		this.unregisterToadlets();
 	}
 
 	/**
@@ -130,8 +127,24 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 			FlogHelper.store = FlogHelper.pr.getStore();
 		} catch (DatabaseDisabledException ex) {
 			Logger.error(this, "Could not load flogs from db4o - " + ex.getMessage());
-			FlogHelper.store = null;
+			// We wait until we have a database to register toadlets
+			while(!FlogHelper.pr.getNode().hasDatabase()) {
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException ex1) {
+
+				}
+			}
+		} finally {
+			this.registerToadlets();
 		}
+	}
+
+	/**
+	 * Register toadlets in the main menu.
+	 */
+	private void registerToadlets() {
+		this.myToadlets.clear();
 
 		this.myToadlets.add(new FlogListToadlet(FlogHelper.pr.getHLSimpleClient()));
 		this.myToadlets.add(new CreateOrEditFlogToadlet(FlogHelper.pr.getHLSimpleClient()));
@@ -155,6 +168,16 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 			FlogHelperToadlet e = this.myToadlets.elementAt(i);
 			FlogHelper.pr.getToadletContainer().register(e, FlogHelper.PLUGIN_NAME,
 				e.path(), true, true);
+		}
+	}
+
+	/**
+	 * Unregister all the registered toadlets in the main menu.
+	 */
+	private void unregisterToadlets() {
+		FlogHelper.pr.getPageMaker().removeNavigationCategory(FlogHelper.PLUGIN_NAME);
+		for(FlogHelperToadlet e : this.myToadlets) {
+			FlogHelper.pr.getToadletContainer().unregister(e);
 		}
 	}
 

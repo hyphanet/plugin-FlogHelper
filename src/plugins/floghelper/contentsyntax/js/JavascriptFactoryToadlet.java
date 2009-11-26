@@ -72,7 +72,7 @@ public class JavascriptFactoryToadlet extends FlogHelperToadlet {
 					"}\n";
 		}
 
-		byte[] data = jsCode.getBytes();
+		byte[] data = jsCode.getBytes("UTF-8");
 		ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "text/javascript", data.length);
 		ctx.writeData(data);
 	}

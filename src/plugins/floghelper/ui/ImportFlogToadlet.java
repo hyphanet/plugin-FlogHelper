@@ -24,6 +24,7 @@ import freenet.pluginmanager.PluginStore;
 import freenet.support.HTMLNode;
 import freenet.support.api.HTTPRequest;
 import freenet.support.api.HTTPUploadedFile;
+import freenet.support.io.BucketTools;
 import java.io.IOException;
 import java.net.URI;
 import plugins.floghelper.FlogHelper;
@@ -49,8 +50,7 @@ public class ImportFlogToadlet extends FlogHelperToadlet {
 	public void getPagePost(final PageNode pageNode, final URI uri, HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException {
 		if (request.isPartSet("Import")) {
 			HTTPUploadedFile i = request.getUploadedFile("ImportDb");
-			byte[] buf = new byte[(int) i.getData().size()];
-			i.getData().getInputStream().read(buf, 0, buf.length);
+			byte[] buf = BucketTools.toByteArray(i.getData());
 			PluginStore importedFlog = PluginStore.importStore(buf);
 			String newID = DataFormatter.createUniqueFlogID();
 			importedFlog.strings.put("ID", newID);

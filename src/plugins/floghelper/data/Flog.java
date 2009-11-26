@@ -76,6 +76,7 @@ public abstract class Flog {
 	abstract public void putContent(Content c);
 	abstract public void deleteContent(String contentID);
 	abstract public Content newContent();
+	abstract public boolean hasContent(String contentID);
 
 	abstract public long getNumberOfAttachments();
 	abstract public Vector<Attachment> getAttachments();
