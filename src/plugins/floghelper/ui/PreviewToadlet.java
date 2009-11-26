@@ -101,7 +101,7 @@ public class PreviewToadlet extends FlogHelperToadlet {
 			} else if (file.equals("/" + VIEW_DEFAULT_CSS_URI)) {
 				previewCSS(factory, pageNode, uri, request, ctx);
 			} else if (file.startsWith("/index") && file.endsWith(".xml")) {
-				IndexBuilder builder = new IndexBuilder(flog, new FlogFactory(flog).parseAllFlog());
+				IndexBuilder builder = new IndexBuilder(flog);
 				if(file.equals("/index.xml")) {
 					byte[] data = builder.getIndexIndex().getBytes("UTF-8");
 					ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "application/xml", data.length);

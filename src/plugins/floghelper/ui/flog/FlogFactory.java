@@ -376,7 +376,7 @@ public class FlogFactory {
 		}
 
 		if(flog.shouldPublishLibraryIndex()) {
-			HashMap<String, String> indexes = new IndexBuilder(this.flog, fileMap).getFullIndex();
+			HashMap<String, String> indexes = new IndexBuilder(this.flog).getFullIndex();
 			for(String file : indexes.keySet()) {
 				data = BucketTools.makeImmutableBucket(factory, indexes.get(file).getBytes("UTF-8"));
 				fileMap.put(file, new ManifestElement(file, data, DefaultMIMETypes.guessMIMEType(file, true), data.size()));

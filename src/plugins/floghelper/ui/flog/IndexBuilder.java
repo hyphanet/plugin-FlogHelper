@@ -16,11 +16,11 @@
  */
 package plugins.floghelper.ui.flog;
 
-import freenet.client.async.ManifestElement;
 import freenet.clients.http.filter.ContentFilter;
 import freenet.clients.http.filter.FoundURICallback;
 import freenet.clients.http.filter.UnsafeContentTypeException;
 import freenet.keys.FreenetURI;
+import freenet.support.HTMLEncoder;
 import freenet.support.Logger;
 import freenet.support.io.ArrayBucket;
 import freenet.support.io.NullBucketFactory;
@@ -48,14 +48,13 @@ public class IndexBuilder {
 		0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf};
 
 	private final Flog flog;
-	private final HashMap<String, Object> parsedData;
 	private final Vector<String> pageIDs = new Vector<String>();
-	private final HashMap<Byte, Vector<String>> ourWords = new HashMap<Byte, Vector<String>>();
+	private final HashMap<String, HashMap<Integer, Vector<Long>>> ourWords = new HashMap<String, HashMap<Integer, Vector<Long>>>();
+	private final HashMap<Byte, Vector<String>> wordsByMD5 = new HashMap<Byte, Vector<String>>();
 	private String baseKey;
 
-	public IndexBuilder(Flog flog, HashMap<String, Object> parsedData) {
+	public IndexBuilder(Flog flog) {
 		this.flog = flog;
-		this.parsedData = parsedData;
 		try {
 			this.baseKey = this.flog.getRequestURI().toString();
 		} catch (Exception ex) {
@@ -63,7 +62,7 @@ public class IndexBuilder {
 		}
 
 		for(byte b : subStores) {
-			ourWords.put(b, new Vector<String>());
+			this.wordsByMD5.put(b, new Vector<String>());
 		}
 		try {
 			this.getWordsFromPages();
@@ -82,6 +81,10 @@ public class IndexBuilder {
 		// Fore more info about the format :
 		// http://wiki.freenetproject.org/XMLSpider
 
+		// Word -> (FileID, Positions)
+		// FileID -> Filename
+		// FirstMD5 -> Words
+
 		HashMap<String, String> index = new HashMap<String, String>();
 
 		index.put("index.xml", this.getIndexIndex());
@@ -98,7 +101,7 @@ public class IndexBuilder {
 				"<main_index>\n" +
 				"	<prefix value=\"1\"/>\n" +
 				"	<header>\n" +
-				"		<title>Index of " + DataFormatter.htmlSpecialChars(this.flog.getTitle()) + "</title>\n" +
+				"		<title>Index of " + HTMLEncoder.encodeXML(this.flog.getTitle()) + "</title>\n" +
 				"		<owner>" + this.flog.getAuthorName() + "</owner>\n" +
 				"	</header>\n" +
 				"	<keywords>\n");
@@ -117,32 +120,38 @@ public class IndexBuilder {
 
 		subIndex.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n");
 		subIndex.append("<sub_index>\n");
-		subIndex.append("	<entries value=\"" + this.ourWords.get(sub).size() + "\"/>\n");
+		subIndex.append("	<entries value=\"" + this.wordsByMD5.get(sub).size() + "\"/>\n");
 		subIndex.append("	<header>\n");
-		subIndex.append("		<title>Index of " + DataFormatter.htmlSpecialChars(this.flog.getTitle()) + "</title>\n");
+		subIndex.append("		<title>Index of " + HTMLEncoder.encodeXML(this.flog.getTitle()) + "</title>\n");
 		subIndex.append("	</header>\n");
 		subIndex.append("	<files>\n");
 		for(int i = 0; i < this.pageIDs.size(); ++i) {
 			final String pageName = this.pageIDs.elementAt(i);
 			subIndex.append("		<file id=\"" + Integer.toString(i) + "\" key=\"" + this.baseKey + pageName + "\" title=\"" +
-					DataFormatter.htmlSpecialChars(this.flog.getContentByID(pageName.replace("Content-", "").replace(".html", "")).getTitle()) + "\"/>\n");
+					HTMLEncoder.encodeXML(this.flog.getContentByID(pageName.replace("Content-", "").replace(".html", "")).getTitle()) + "\"/>\n");
 		}
 		subIndex.append("	</files>\n");
 		subIndex.append("	<keywords>\n");
 
-		for(String s : this.ourWords.get(sub)) {
-			subIndex.append("		<word v=\"" + s + "\">\n");
+		for(String w : this.wordsByMD5.get(sub)) {
+			subIndex.append("		<word v=\"" + HTMLEncoder.encodeXML(w) + "\">\n");
 
 			for(int i = 0; i < pageIDs.size(); ++i) {
-				final String pageName = this.pageIDs.elementAt(i);
-				try {
-					final String positions = IndexBuilder.findAllWordPositions(DataFormatter.readStringFromStream(((ManifestElement) this.parsedData.get(pageName)).getData().getInputStream()), s);
-					if(positions != null) {
-						subIndex.append("			<file id=\"" + Integer.toString(i) + "\">" + positions + "</file>\n");
-					}
-				} catch (IOException ex) {
-					Logger.error(this, "", ex);
+				if(!this.ourWords.get(w).containsKey(i)) {
+					continue;
 				}
+				StringBuilder positions = new StringBuilder();
+				boolean first = true;
+				for(Long pos : this.ourWords.get(w).get(i)) {
+					if(first) {
+						first = false;
+					}
+					else {
+						positions.append(",");
+					}
+					positions.append(Long.toString(pos));
+				}
+				subIndex.append("			<file id=\"" + Integer.toString(i) + "\">" + positions.toString() + "</file>\n");
 			}
 
 			subIndex.append("		</word>\n");
@@ -154,28 +163,9 @@ public class IndexBuilder {
 		return subIndex.toString();
 	}
 
-	private static String findAllWordPositions(String xhtml, String word) {
-		xhtml = xhtml.toLowerCase();
-		word = word.toLowerCase();
-		if(!xhtml.contains(word)) return null;
-
-		StringBuilder positions = new StringBuilder();
-		int offset = -1;
-		int next;
-		while ((next = xhtml.indexOf(word, offset+1)) > offset) {
-			offset = next;
-			if(positions.length() > 0) positions.append(",");
-			positions.append(offset);
-		}
-
-		return positions.toString();
-	}
-
 	private void getWordsFromPages() throws URISyntaxException, UnsafeContentTypeException, IOException {
 		// Content-XXXXXXX.html pages only, because they contain all the contents
 		// and their respective URIs won't change over time
-
-		Vector<String> words = new Vector<String>();
 
 		for (final Content content : new FlogFactory(flog).getContentsTreeMap(false).values()) {
 			NullFilterCallback nullFC = new NullFilterCallback();
@@ -184,19 +174,35 @@ public class IndexBuilder {
 					"text/html", new URI("http://whocares.co:12345/"), nullFC, null);
 			final String cURI = "Content-" + content.getID() + ".html";
 			this.pageIDs.add(cURI);
-			words.addAll(nullFC.words);
-		}
+			final int pageID = this.pageIDs.indexOf(cURI);
+			for(String w : nullFC.words.keySet()) {
+				if(!this.ourWords.containsKey(w)) {
+					this.ourWords.put(w, new HashMap<Integer, Vector<Long>>());
+				}
+				final HashMap<Integer, Vector<Long>> container = this.ourWords.get(w);
+				if(!container.containsKey(pageID)) {
+					container.put(pageID, new Vector<Long>());
+				}
+				final Vector<Long> subContainer = container.get(pageID);
+				for(Long position : nullFC.words.get(w)) {
+					if(!subContainer.contains(position)) {
+						subContainer.add(position);
+					}
+				}
 
-		for(String w : words) {
-			final Vector<String> list = this.ourWords.get(Byte.valueOf(DataFormatter.getMD5(w).substring(0, 1), 16));
-			if(!list.contains(w))
-				list.add(w);
+				final Byte firstMD5 = Byte.valueOf(DataFormatter.getMD5(w).substring(0, 1), 16);
+				final Vector<String> md5Container = this.wordsByMD5.get(firstMD5);
+				if(!md5Container.contains(w)) {
+					md5Container.add(w);
+				}
+			}
 		}
 	}
 
 	private class NullFilterCallback implements FoundURICallback {
 
-		private final Vector<String> words = new Vector<String>();
+		private final HashMap<String, Vector<Long>> words = new HashMap<String, Vector<Long>>();
+		private long position = 0;
 
 		public void foundURI(FreenetURI arg0) {
 			// Doesn't matter
@@ -209,8 +215,12 @@ public class IndexBuilder {
 		public void onText(String arg0, String arg1, URI arg2) {
 			for(String word : arg0.toLowerCase().split(",|\\.|;|:|\\!|\n+|\\s+|\\[|\\]|\\(|\\)|\\{|\\}")) {
 				if(word.length() < 3) continue;
-				if(!words.contains(word))
-					words.add(word);
+				if(!words.containsKey(word)) {
+					words.put(word, new Vector<Long>());
+				}
+				words.get(word).add(position);
+
+				this.position++;
 			}
 		}
 	}

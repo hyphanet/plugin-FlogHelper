@@ -345,7 +345,7 @@ public class PluginStoreFlog extends Flog {
 	}
 
 	public long getLatestUSKEdition() {
-		return -1; // FIXME
+		return 0; // FIXME
 	}
 
 	public byte[] exportFlog() {
