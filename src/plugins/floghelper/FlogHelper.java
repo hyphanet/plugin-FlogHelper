@@ -16,10 +16,14 @@
  */
 package plugins.floghelper;
 
+import com.db4o.ObjectContainer;
 import freenet.client.async.DatabaseDisabledException;
+import freenet.client.async.USKManager;
 import freenet.clients.http.PageMaker.THEME;
+import freenet.keys.USK;
 import freenet.l10n.BaseL10n;
 import freenet.l10n.PluginL10n;
+import freenet.node.RequestClient;
 import freenet.pluginmanager.FredPlugin;
 import freenet.pluginmanager.FredPluginThreadless;
 import freenet.pluginmanager.PluginRespirator;
@@ -34,8 +38,9 @@ import freenet.support.Logger;
 import freenet.support.SimpleFieldSet;
 import freenet.support.api.Bucket;
 import java.util.Vector;
-import java.util.logging.Level;
 import plugins.floghelper.contentsyntax.js.JavascriptFactoryToadlet;
+import plugins.floghelper.data.Flog;
+import plugins.floghelper.data.pluginstore.PluginStoreFlog;
 import plugins.floghelper.ui.ContentListToadlet;
 import plugins.floghelper.ui.CreateOrEditContentToadlet;
 import plugins.floghelper.ui.CreateOrEditFlogToadlet;
@@ -60,6 +65,7 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 	private static PluginRespirator pr;
 	private static PluginL10n l10n;
 	private static PluginStore store;
+	private static USKManager uskManager;
 	/**
 	 * Every toadlet should be in this vector, a loop registers them with the node.
 	 */
@@ -113,6 +119,13 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 	 */
 	public void terminate() {
 		this.unregisterToadlets();
+		for(Flog f : PluginStoreFlog.getFlogs()) {
+				try {
+					FlogHelper.uskManager.unsubscribe(USK.create(f.getRequestURI()), f.getUSKCallback());
+				} catch (Exception ex) {
+					Logger.error(this, "", ex);
+				}
+			}
 	}
 
 	/**
@@ -123,6 +136,7 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 		FlogHelper.pr = pr;
 		FlogHelper.l10n = new PluginL10n(this);
 		FlogHelper.PLUGIN_NAME = FlogHelper.getBaseL10n().getString("FlogHelper");
+		FlogHelper.uskManager = FlogHelper.getPR().getNode().clientCore.uskManager;
 		try {
 			FlogHelper.store = FlogHelper.pr.getStore();
 		} catch (DatabaseDisabledException ex) {
@@ -137,6 +151,20 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 			}
 		} finally {
 			this.registerToadlets();
+			for(Flog f : PluginStoreFlog.getFlogs()) {
+				try {
+					FlogHelper.uskManager.subscribe(USK.create(f.getRequestURI()), f.getUSKCallback(), true, new RequestClient() {
+						public boolean persistent() {
+							return false;
+						}
+
+						public void removeFrom(ObjectContainer arg0) {
+						}
+					});
+				} catch (Exception ex) {
+					Logger.error(this, "", ex);
+				}
+			}
 		}
 	}
 
@@ -276,5 +304,9 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 	 */
 	public String getString(String arg0) {
 		return FlogHelper.getBaseL10n().getString(arg0);
+	}
+
+	public static USKManager getUSKManager() {
+		return FlogHelper.uskManager;
 	}
 }

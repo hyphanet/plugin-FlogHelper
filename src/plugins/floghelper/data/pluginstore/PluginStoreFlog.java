@@ -345,7 +345,11 @@ public class PluginStoreFlog extends Flog {
 	}
 
 	public long getLatestUSKEdition() {
-		return 0; // FIXME
+		if(!this.flog.longs.containsKey("USKLatestEdition")) {
+			this.flog.longs.put("USKLatestEdition", 0L);
+		}
+
+		return this.flog.longs.get("USKLatestEdition");
 	}
 
 	public byte[] exportFlog() {
@@ -358,5 +362,10 @@ public class PluginStoreFlog extends Flog {
 
 	public boolean hasContent(String contentID) {
 		return this.getStore().subStores.containsKey(contentID);
+	}
+
+	public void setLatestUSKEdition(long edition) {
+		this.flog.longs.put("USKLatestEdition", edition);
+		FlogHelper.putStore();
 	}
 }

@@ -16,7 +16,12 @@
  */
 package plugins.floghelper.data;
 
+import com.db4o.ObjectContainer;
+import freenet.client.async.ClientContext;
+import freenet.client.async.USKCallback;
 import freenet.keys.FreenetURI;
+import freenet.keys.USK;
+import freenet.node.RequestStarter;
 import java.util.Vector;
 
 /**
@@ -62,6 +67,8 @@ public abstract class Flog {
 	 * Filename of the inserted Flog backup.
 	 */
 	public static final String STORE_DUMP_NAME = "flog.db4o";
+
+	private USKCallback uskCallback = null;
 
 	abstract public String getID();
 	abstract public String getTitle();
@@ -124,6 +131,27 @@ public abstract class Flog {
 	abstract public FreenetURI getRequestURI() throws Exception;
 	abstract public FreenetURI getInsertURI() throws Exception;
 	abstract public long getLatestUSKEdition();
+	abstract public void setLatestUSKEdition(long edition);
+
+	public USKCallback getUSKCallback() {
+		if(this.uskCallback == null) {
+			uskCallback = new USKCallback() {
+
+				public void onFoundEdition(long arg0, USK arg1, ObjectContainer arg2, ClientContext arg3, boolean arg4, short arg5, byte[] arg6, boolean arg7, boolean arg8) {
+					setLatestUSKEdition(arg0);
+				}
+
+				public short getPollingPriorityNormal() {
+					return RequestStarter.UPDATE_PRIORITY_CLASS;
+				}
+
+				public short getPollingPriorityProgress() {
+					return RequestStarter.UPDATE_PRIORITY_CLASS;
+				}
+			};
+		}
+		return this.uskCallback;
+	}
 
 	abstract public void putFlog();
 

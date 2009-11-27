@@ -16,12 +16,16 @@
  */
 package plugins.floghelper.ui;
 
+import com.db4o.ObjectContainer;
 import plugins.floghelper.data.DataFormatter;
 import freenet.client.HighLevelSimpleClient;
 import freenet.clients.http.PageNode;
 import freenet.clients.http.ToadletContext;
 import freenet.clients.http.ToadletContextClosedException;
+import freenet.keys.USK;
+import freenet.node.RequestClient;
 import freenet.support.HTMLNode;
+import freenet.support.Logger;
 import freenet.support.api.HTTPRequest;
 import freenet.support.api.HTTPUploadedFile;
 import freenet.support.io.Closer;
@@ -64,6 +68,18 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			} else {
 				flog = new PluginStoreFlog();
 				flog.putFlog();
+				try {
+					FlogHelper.getUSKManager().subscribe(USK.create(flog.getRequestURI()), flog.getUSKCallback(), true, new RequestClient() {
+						public boolean persistent() {
+							return false;
+						}
+
+						public void removeFrom(ObjectContainer arg0) {
+						}
+					});
+				} catch (Exception ex) {
+					Logger.error(this, "", ex);
+				}
 			}
 
 			flog.setTitle(request.getPartAsString("Title", 100));
