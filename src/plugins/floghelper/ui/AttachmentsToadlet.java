@@ -102,7 +102,9 @@ public class AttachmentsToadlet extends FlogHelperToadlet {
 			sortedAttachments.put(attachment.getInsertionDate().getTime(), attachment);
 		}
 		
-		for (final Attachment attachment : sortedAttachments.descendingMap().values()) {
+		Attachment[] alist = sortedAttachments.values().toArray(new Attachment[sortedAttachments.size()]);
+		for (int i=alist.length-1;i>=0;i--) {
+			Attachment attachment = alist[i];
 			final HTMLNode row = tBody.addChild("tr");
 			row.addChild("td").addChild("pre", DataFormatter.toString(attachment.getName()));
 			row.addChild("td", DataFormatter.toString(DataFormatter.LocalDateFormatter.format(attachment.getInsertionDate())));

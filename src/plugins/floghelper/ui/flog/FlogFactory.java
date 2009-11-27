@@ -519,7 +519,7 @@ public class FlogFactory {
 		final long numberOfContents = contents.size();
 
 		for(int i = 0; i < (page-1)*numberOfContentsToShow; ++i) {
-			final Content content = contents.lastEntry().getValue();
+			final Content content = contents.get(contents.lastKey());
 			contents.remove(content.getContentCreationDate().getTime());
 		}
 
@@ -527,7 +527,7 @@ public class FlogFactory {
 		for (int i = 0; i < numberOfContentsToShow; ++i) {
 			if(contents.isEmpty()) break;
 
-			final Content content = contents.lastEntry().getValue();
+			final Content content = contents.get(contents.lastKey());
 			contents.remove(content.getContentCreationDate().getTime());
 
 			mainContent.append(this.getParsedContentBlock(content));
@@ -555,7 +555,7 @@ public class FlogFactory {
 		final long numberOfContents = contents.size();
 
 		for(int i = 0; i < (page-1)*numberOfContentsToShow; ++i) {
-			final Content content = contents.lastEntry().getValue();
+			final Content content = contents.get(contents.lastKey());
 			contents.remove(content.getContentCreationDate().getTime());
 		}
 
@@ -563,7 +563,7 @@ public class FlogFactory {
 		for (int i = 0; i < numberOfContentsToShow; ++i) {
 			if(contents.isEmpty()) break;
 
-			final Content content = contents.lastEntry().getValue();
+			final Content content = contents.get(contents.lastKey());
 			contents.remove(content.getContentCreationDate().getTime());
 
 			mainContent.append(this.getParsedContentBlock(content));
@@ -615,7 +615,9 @@ public class FlogFactory {
 		feed.append("\n		</div>\n" +
 				"	</subtitle>\n");
 
-		for(Long creationDate : contents.descendingKeySet()) {
+		Long[] l = contents.keySet().toArray(new Long[contents.size()]);
+		for(int i=l.length-1;i>=0;i--) {
+			Long creationDate = l[i];
 			Content content = contents.get(creationDate);
 			feed.append("	<entry>\n");
 			feed.append("		<id>tag:freenet-");

@@ -25,6 +25,8 @@ import freenet.support.HTMLNode;
 import freenet.support.api.HTTPRequest;
 import java.io.IOException;
 import java.net.URI;
+import java.util.TreeMap;
+
 import plugins.floghelper.FlogHelper;
 import plugins.floghelper.data.Content;
 import plugins.floghelper.data.Flog;
@@ -86,7 +88,11 @@ public class ContentListToadlet extends FlogHelperToadlet {
 		}
 
 		// Let's sort the contents by descending creation date.
-		for (final Content content : new FlogFactory(flog).getContentsTreeMap(true).descendingMap().values()) {
+		TreeMap<Long, Content> contents = new FlogFactory(flog).getContentsTreeMap(true);
+		Content[] c = new Content[contents.size()];
+		c = contents.values().toArray(c);
+		for(int i=c.length-1;i>=0;i--) {
+			final Content content = c[i];
 			final HTMLNode row = tBody.addChild("tr");
 
 			if(content.isDraft()) {
