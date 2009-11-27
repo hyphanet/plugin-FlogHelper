@@ -495,7 +495,7 @@ public class FlogFactory {
 		for (int i = 0; i < numberOfContentsToShow; ++i) {
 			if(contents.isEmpty()) break;
 
-			final Content content = contents.lastEntry().getValue();
+			final Content content = contents.get(contents.lastKey());
 			contents.remove(content.getContentCreationDate().getTime());
 
 			mainContent.append(this.getParsedContentBlock(content));
