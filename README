@@ -6,8 +6,9 @@ It's currently under developement.
 Key features :
 * Easy to use by newbies, secure
 * WoT integration (for comments & author identity)
+* Embedded search box
 * Freetalk integration (for comments)
 * Store flog data in node.db4o 
 
 Todo list :
-* Freetalk !
+https://bugs.freenetproject.org/roadmap_page.php (only the FlogHelper parts)
