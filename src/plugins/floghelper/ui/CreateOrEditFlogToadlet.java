@@ -164,7 +164,6 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			final HTMLNode generalBox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("GeneralFlogData"), form, "GeneralFlogData", true);
 			final HTMLNode activelinkBox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("Activelink"), form, "ActivelinkFlogData", true);
 			final HTMLNode settingsBox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("FlogSettings"), form, "SettingsFlogData", true);
-			final HTMLNode templatesBox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("Templates"), form, "TemplatesFlogData", true);
 			final HTMLNode submitBox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("SaveChanges"), form, "SubmitFlogData", true);
 
 			form.addChild("input", new String[]{"type", "name", "value"},
@@ -235,6 +234,9 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 					.addChild("input", new String[]{"type", "size", "name", "value", "maxlength"},
 					new String[]{"text", "20", "SSKPath", flog.getSSKPath(), "30"});
 
+			if(ctx.getContainer().isAdvancedModeEnabled()) {
+			final HTMLNode templatesBox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("Templates"), form, "TemplatesFlogData", true);
+
 			final boolean overrideTemplate = flog.overrideTemplate();
 			checkBlock = templatesBox.addChild("p");
 			checkBlock.addChild("input", new String[]{"type", "name", "id", overrideTemplate ? "checked" : "class"},
@@ -268,6 +270,7 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			checkBlock.addChild("br");
 			checkBlock.addChild("a", "href", FlogHelperToadlet.BASE_URI + PreviewToadlet.MY_URI + flog.getID() + "/" + PreviewToadlet.VIEW_DEFAULT_CSS_URI,
 					FlogHelper.getBaseL10n().getString("SeeTheDefaultCSS"));
+			}
 
 
 			final HTMLNode buttons = submitBox.addChild("p");
