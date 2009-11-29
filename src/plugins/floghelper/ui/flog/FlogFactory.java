@@ -442,9 +442,6 @@ public class FlogFactory {
 					try {
 						fcp.startBlocking(cpd, arg0, arg1);
 						WoTContexts.addContext(flog.getAuthorID());
-
-						// FIXME do this when callback is called !
-						WoTContexts.addProperty(flog.getAuthorID(), "Flog." + flog.getSSKPath(), Long.toString(flog.getLatestUSKEdition()));
 					} catch (Exception ex) {
 						// Ignore
 					}

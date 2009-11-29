@@ -22,7 +22,9 @@ import freenet.client.async.USKCallback;
 import freenet.keys.FreenetURI;
 import freenet.keys.USK;
 import freenet.node.RequestStarter;
+import freenet.pluginmanager.PluginNotFoundException;
 import java.util.Vector;
+import plugins.floghelper.fcp.wot.WoTContexts;
 
 /**
  * Abstract flog representation.
@@ -139,6 +141,13 @@ public abstract class Flog {
 
 				public void onFoundEdition(long arg0, USK arg1, ObjectContainer arg2, ClientContext arg3, boolean arg4, short arg5, byte[] arg6, boolean arg7, boolean arg8) {
 					setLatestUSKEdition(arg0);
+					try {
+						WoTContexts.addProperty(getAuthorID(), "Flog." + getID() + ".Path", getSSKPath());
+						WoTContexts.addProperty(getAuthorID(), "Flog." + getID() + ".LatestEdition", Long.toString(getLatestUSKEdition()));
+					} catch (PluginNotFoundException ex) {
+						// Too bad.
+						// We'll update it next time then.
+					}
 				}
 
 				public short getPollingPriorityNormal() {
