@@ -132,11 +132,11 @@ public class FlogFactory {
 	public FlogFactory(Flog flog) {
 		this.flog = flog;
 
-		this.primaryNavigationLinks.add(new String[]{"Index", "./index.html"});
-		this.primaryNavigationLinks.add(new String[]{"Archives", "./Archives-p1.html"});
-		this.primaryNavigationLinks.add(new String[]{"Atom feed", "./AtomFeed.xml"});
+		this.primaryNavigationLinks.add(new String[]{flog.getBaseL10n().getString("Flog.Index"), "./index.html"});
+		this.primaryNavigationLinks.add(new String[]{flog.getBaseL10n().getString("Flog.Archives"), "./Archives-p1.html"});
+		this.primaryNavigationLinks.add(new String[]{flog.getBaseL10n().getString("Flog.AtomFeed"), "./AtomFeed.xml"});
 		try {
-			this.primaryNavigationLinks.add(new String[]{"Bookmark this flog", "/?newbookmark=" + flog.getRequestURI() + "&amp;desc=" + this.flog.getTitle()});
+			this.primaryNavigationLinks.add(new String[]{flog.getBaseL10n().getString("Flog.BookmarkThisFlog"), "/?newbookmark=" + flog.getRequestURI() + "&amp;desc=" + this.flog.getTitle()});
 		} catch (Exception ex) {
 				Logger.error(this, "", ex);
 		}
@@ -147,7 +147,7 @@ public class FlogFactory {
 						"<input name=\"search\" type=\"text\" size=\"8\"/>" +
 						"<input name=\"index0\" type=\"hidden\" value=\"" + flog.getRequestURI() + "index.xml\" />" +
 						"<input name=\"extraindexcount\" type=\"hidden\" value=\"1\" />" +
-						"<input type=\"submit\" value=\"Search\"/></p></form>", null});
+						"<input type=\"submit\" value=\"" + flog.getBaseL10n().getString("Flog.Search") + "\"/></p></form>", null});
 			} catch (Exception ex) {
 				Logger.error(this, "", ex);
 			}
@@ -232,9 +232,9 @@ public class FlogFactory {
 		mainContent.append("<div class=\"content_container\" id=\"c" + content.getID() + "\">");
 		mainContent.append("<div class=\"content_header\">");
 		mainContent.append("<h1>").append(DataFormatter.htmlSpecialChars(content.getTitle())).append("</h1><p>");
-		mainContent.append("<a href=\"./Content-").append(content.getID()).append(".html\">Permanent link</a> ");
+		mainContent.append("<a href=\"./Content-").append(content.getID()).append(".html\">" + flog.getBaseL10n().getString("Flog.PermanentLink") + "</a> ");
 		//mainContent.append("| <a href=\"./Content-").append(content.strings.get("ID")).append(".html#comments\">Comments</a> ");
-		mainContent.append("| Tags : ");
+		mainContent.append("| " + flog.getBaseL10n().getString("Flog.Tags2") + " ");
 		boolean first = true;
 		for (String tag : content.getTags()) {
 			if (tag.trim().equals("")) {
@@ -249,15 +249,15 @@ public class FlogFactory {
 		}
 
 		if (first) {
-			mainContent.append("<em>none</em>");
+			mainContent.append("<em>" + flog.getBaseL10n().getString("Flog.TagsNone") + "</em>");
 		}
 
 		if (flog.shouldPublishDates()) {
 			if(Math.abs(content.getContentCreationDate().getTime() - content.getContentModificationDate().getTime()) > 10000) {
-				mainContent.append("<br /><small>Last modification : " +
+				mainContent.append("<br /><small>" + flog.getBaseL10n().getString("Flog.LastModification") + " " +
 						DataFormatter.DefaultDateFormatter.format(content.getContentModificationDate())).append("</small>");
 			}
-			mainContent.append("<br /><small>Creation date : ").append(
+			mainContent.append("<br /><small>" + flog.getBaseL10n().getString("Flog.CreationDate") + " ").append(
 					DataFormatter.DefaultDateFormatter.format(content.getContentCreationDate())).append("</small>");
 		}
 		mainContent.append("</p></div><div class=\"content_content\">").
@@ -297,6 +297,7 @@ public class FlogFactory {
 		template = template.replace("{AuthorName}", authorName);
 		template = template.replace("{AuthorNameWithLineBreaks}", DataFormatter.insertIntoString(authorName, "<br />", 18));
 		template = template.replace("{FlogName}", DataFormatter.htmlSpecialChars(this.flog.getTitle()));
+		template = template.replace("{FlogLang}", flog.getLang().shortCode);
 		template = template.replace("{StyleURI}", "./GlobalStyle.css");
 		template = template.replace("{AtomFeedURI}", "./AtomFeed.xml");
 		template = template.replace("{AdditionalMenuContent}", ""); // FIXME that might have a use later
@@ -304,6 +305,9 @@ public class FlogFactory {
 		template = template.replace("{PrimaryNavigationLinks}", getPrimaryNavigationLinks(uri));
 		template = template.replace("{TagsLinks}", this.getTagList(uri));
 		template = template.replace("{ActivelinkIfAny}", this.flog.hasActivelink() ? "<p style=\"text-align: center;\"><img src=\"activelink.png\" alt=\"Activelink\" /></p>" : "");
+		template = template.replace("{l10n:AboutTheAuthor}", flog.getBaseL10n().getString("Flog.AboutTheAuthor"));
+		template = template.replace("{l10n:Navigation}", flog.getBaseL10n().getString("Flog.Navigation"));
+		template = template.replace("{l10n:Tags}", flog.getBaseL10n().getString("Flog.Tags"));
 
 		return template;
 	}
@@ -509,7 +513,7 @@ public class FlogFactory {
 	 */
 	public String getArchives(long page) {
 		String genPage = this.parseInvariantData(getTemplate(), "/Archives-p" + Long.toString(page) + ".html");
-		genPage = genPage.replace("{PageTitle}", "Archives (page " + Long.toString(page) +")");
+		genPage = genPage.replace("{PageTitle}", flog.getBaseL10n().getString("Flog.ArchivesPageN", "N", Long.toString(page)));
 
 		final TreeMap<Long, Content> contents = this.getContentsTreeMap(false);
 		final Long numberOfContentsToShow = this.flog.getNumberOfContentsOnArchives();
@@ -530,7 +534,7 @@ public class FlogFactory {
 			mainContent.append(this.getParsedContentBlock(content));
 		}
 
-		final String pages = "<p class=\"pagination\">Page : " + this.makePagination(numberOfContents, numberOfContentsToShow, page, "./Archives-p{Page}.html") + "</p>";
+		final String pages = "<p class=\"pagination\">" + flog.getBaseL10n().getString("Flog.Pages") + " " + this.makePagination(numberOfContents, numberOfContentsToShow, page, "./Archives-p{Page}.html") + "</p>";
 
 		return genPage.replace("{MainContent}", pages + mainContent.toString() + pages);
 	}
@@ -545,7 +549,7 @@ public class FlogFactory {
 	 */
 	public String getTagsPage(String tag, long page) {
 		String genPage = this.parseInvariantData(getTemplate(), "/Tag-" + tag + "-p" + Long.toString(page) + ".html");
-		genPage = genPage.replace("{PageTitle}", "Archives having the tag \"" + DataFormatter.htmlSpecialChars(tag) + "\" (page " + Long.toString(page) +")");
+		genPage = genPage.replace("{PageTitle}", flog.getBaseL10n().getString("Flog.ArchivesTaggedWithTagPageN", new String[]{"Tag", "N"}, new String[]{DataFormatter.htmlSpecialChars(tag), Long.toString(page)}));
 
 		final TreeMap<Long, Content> contents = this.getContentsTreeMapFilteredByTag(tag, false);
 		final Long numberOfContentsToShow = this.flog.getNumberOfContentsOnArchives();
@@ -566,7 +570,7 @@ public class FlogFactory {
 			mainContent.append(this.getParsedContentBlock(content));
 		}
 
-		final String pages = "<p class=\"pagination\">Page : " + this.makePagination(numberOfContents, numberOfContentsToShow, page, "./Tag-" + tag + "-p{Page}.html") + "</p>";
+		final String pages = "<p class=\"pagination\">" + flog.getBaseL10n().getString("Flog.Pages") + " " + this.makePagination(numberOfContents, numberOfContentsToShow, page, "./Tag-" + tag + "-p{Page}.html") + "</p>";
 
 		return genPage.replace("{MainContent}", pages + mainContent.toString() + pages);
 	}
@@ -711,11 +715,11 @@ public class FlogFactory {
 
 		if(page == pageMin) {
 			sb.append("&lt; Previous");
-		} else sb.append("<a href=\"").append(pageUri.replace("{Page}", Long.toString(page - 1L))).append("\">&lt; Previous</a>");
+		} else sb.append("<a href=\"").append(pageUri.replace("{Page}", Long.toString(page - 1L))).append("\">&lt; " + flog.getBaseL10n().getString("Flog.PreviousPage") + "</a>");
 		sb.append(" | ");
 		if(page == pageMax) {
 			sb.append("Next &gt;");
-		} else sb.append("<a href=\"").append(pageUri.replace("{Page}", Long.toString(page + 1L))).append("\">Next &gt;</a>");
+		} else sb.append("<a href=\"").append(pageUri.replace("{Page}", Long.toString(page + 1L))).append("\">" + flog.getBaseL10n().getString("Flog.NextPage") + " &gt;</a>");
 		sb.append(" | ");
 
 		for(long i = pageMin; i <= pageMax; ++i) {

@@ -21,9 +21,14 @@ import freenet.client.async.ClientContext;
 import freenet.client.async.USKCallback;
 import freenet.keys.FreenetURI;
 import freenet.keys.USK;
+import freenet.l10n.BaseL10n;
+import freenet.l10n.BaseL10n.LANGUAGE;
+import freenet.l10n.PluginL10n;
 import freenet.node.RequestStarter;
+import freenet.pluginmanager.FredPluginBaseL10n;
 import freenet.pluginmanager.PluginNotFoundException;
 import java.util.Vector;
+import plugins.floghelper.FlogHelper;
 import plugins.floghelper.fcp.wot.WoTContexts;
 
 /**
@@ -71,6 +76,7 @@ public abstract class Flog {
 	public static final String STORE_DUMP_NAME = "flog.db4o";
 
 	private USKCallback uskCallback = null;
+	private BaseL10n myBaseL10n = null;
 
 	abstract public String getID();
 	abstract public String getTitle();
@@ -78,6 +84,43 @@ public abstract class Flog {
 	abstract public String getAuthorID();
 	abstract public void   setAuthorID(String s);
 	abstract public String getAuthorName();
+
+	abstract public LANGUAGE getLang();
+	abstract protected void setLangInner(LANGUAGE l);
+	public void setLang(LANGUAGE l) {
+		this.setLangInner(l);
+		this.getBaseL10n().setLanguage(l);
+	}
+	public BaseL10n getBaseL10n() {
+		if (this.myBaseL10n == null) {
+			this.myBaseL10n = new PluginL10n(new FredPluginBaseL10n() {
+
+				public void setLanguage(LANGUAGE arg0) {
+					// Doesn't make any sense here, because
+					// it would override the user setting, who might
+					// write a flog in another language than the node's.
+				}
+
+				public String getL10nFilesBasePath() {
+					return FlogHelper.l10nFilesBasePath;
+				}
+
+				public String getL10nFilesMask() {
+					return FlogHelper.l10nFilesMask;
+				}
+
+				public String getL10nOverrideFilesMask() {
+					return FlogHelper.l10nOverrideFilesMask;
+				}
+
+				public ClassLoader getPluginClassLoader() {
+					return FlogHelper.class.getClassLoader();
+				}
+			}, this.getLang()).getBase();
+		}
+
+		return this.myBaseL10n;
+	}
 
 	abstract public long getNumberOfContents();
 	abstract public Vector<Content> getContents();

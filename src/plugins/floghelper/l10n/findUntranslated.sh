@@ -15,7 +15,7 @@ for x in `find .. -iname "*.java"`
 do
 	# Let's identify all the calls to getBaseL10n().getString("") and put them in a temp file
 	# You might want to change this if you use another localization system.
-	cat $x | grep "getBaseL10n().getString(\"" | sed -s "s/^.*getBaseL10n()\.getString(\"\(.\+\)\").*$/\1/" | sed -s "s/\".*$//" | uniq | sort >> .temp
+	cat $x | grep "getBaseL10n().getString(\"" | sed -s "s/^.*getBaseL10n()\.getString(\"\(.\+\)\".*$/\1/" | sed -s "s/\".*$//" | uniq | sort >> .temp
 done
 
 echo -n > .temp2

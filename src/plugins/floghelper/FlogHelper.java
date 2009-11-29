@@ -61,6 +61,9 @@ import plugins.floghelper.ui.PreviewToadlet;
  */
 public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginBaseL10n, FredPluginL10n, FredPluginThemed, FredPluginVersioned, FredPluginRealVersioned, FredPluginTalker {
 
+	public static final String l10nFilesBasePath = "plugins/floghelper/l10n/";
+	public static final String l10nFilesMask = "UI_${lang}.l10n";
+	public static final String l10nOverrideFilesMask = "FlogHelper_UI_${lang}.override.l10n";
 	private static String PLUGIN_NAME;
 	private static PluginRespirator pr;
 	private static PluginL10n l10n;
@@ -230,7 +233,7 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 	 * @return Path of our L10n files.
 	 */
 	public String getL10nFilesBasePath() {
-		return "plugins/floghelper/l10n/";
+		return FlogHelper.l10nFilesBasePath;
 	}
 
 	/**
@@ -238,7 +241,7 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 	 * @return Mask of the L10n files.
 	 */
 	public String getL10nFilesMask() {
-		return "UI_${lang}.l10n";
+		return FlogHelper.l10nFilesMask;
 	}
 
 	/**
@@ -248,7 +251,7 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 	 * @return Mask of the override L10n files.
 	 */
 	public String getL10nOverrideFilesMask() {
-		return "FlogHelper_UI_${lang}.override.l10n";
+		return FlogHelper.l10nOverrideFilesMask;
 	}
 
 	/**

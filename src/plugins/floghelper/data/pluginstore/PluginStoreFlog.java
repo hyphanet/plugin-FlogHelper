@@ -17,6 +17,7 @@
 package plugins.floghelper.data.pluginstore;
 
 import freenet.keys.FreenetURI;
+import freenet.l10n.BaseL10n.LANGUAGE;
 import freenet.pluginmanager.PluginNotFoundException;
 import freenet.pluginmanager.PluginStore;
 import freenet.support.Logger;
@@ -367,5 +368,20 @@ public class PluginStoreFlog extends Flog {
 	public void setLatestUSKEdition(long edition) {
 		this.flog.longs.put("USKLatestEdition", edition);
 		FlogHelper.putStore();
+	}
+
+	public LANGUAGE getLang() {
+		String shortCode = null;
+		if(this.getStore().strings.containsKey("Lang")) {
+			shortCode = this.getStore().strings.get("Lang");
+		} else {
+			shortCode = "en";
+		}
+
+		return LANGUAGE.mapToLanguage(shortCode);
+	}
+
+	protected void setLangInner(LANGUAGE l) {
+		this.getStore().strings.put("Lang", l.shortCode);
 	}
 }

@@ -23,6 +23,7 @@ import freenet.clients.http.PageNode;
 import freenet.clients.http.ToadletContext;
 import freenet.clients.http.ToadletContextClosedException;
 import freenet.keys.USK;
+import freenet.l10n.BaseL10n.LANGUAGE;
 import freenet.node.RequestClient;
 import freenet.support.HTMLNode;
 import freenet.support.Logger;
@@ -85,6 +86,7 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			flog.setTitle(request.getPartAsString("Title", 100));
 			flog.setAuthorID(request.getPartAsString("Author", 1000));
 			flog.setTheme(request.getPartAsString("Theme", 250));
+			flog.setLang(LANGUAGE.mapToLanguage(request.getPartAsString("Lang", 5)));
 			flog.setShortDescription(request.getPartAsString("SmallDescription", Integer.MAX_VALUE));
 			flog.setShortDescriptionSyntax(request.getPartAsString("SmallDescription_syntaxes", 1000));
 			flog.shouldPublishStoreDump(request.isPartSet("InsertPluginStoreDump"));
@@ -180,6 +182,17 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			}
 
 			generalBox.addChild("p").addChild("label", "for", "Author", FlogHelper.getBaseL10n().getString("AuthorFieldDesc")).addChild("br").addChild(authorsBox);
+
+			final HTMLNode langBox = new HTMLNode("select", new String[]{"id", "name"}, new String[]{"Lang", "Lang"});
+			for (final LANGUAGE l : LANGUAGE.values()) {
+				final HTMLNode option = langBox.addChild("option", "value", l.shortCode, l.fullName);
+				if (flog.getLang().shortCode.equals(l.shortCode)) {
+					option.addAttribute("selected", "selected");
+				}
+			}
+
+			generalBox.addChild("p").addChild("label", "for", "Lang", FlogHelper.getBaseL10n().getString("LangFieldDesc")).addChild("br").addChild(langBox);
+
 
 			// Most browsers probably won't care about the accept="image/png" attribute
 			// But we put it anyway... because it's semantic

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{FlogLang}" lang="{FlogLang}">
 	<head>
 		<title>{PageTitle} - {FlogName}</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<meta name="author" content="{AuthorName}" />
+		<meta http-equiv="Content-Language" content="{FlogLang}" />
 		<link rel="start" title="Index" href="index.html" />
 		<link rel="stylesheet" media="screen" type="text/css" title="Default theme" href="{StyleURI}" />
 		<link rel="alternate" type="application/atom+xml" title="Latest contents (Atom)" href="{AtomFeedURI}" />
@@ -16,18 +17,18 @@
 		</div>
 		<div id="globmenu">
 			<div class="submenu">
-				<h4>About the author</h4>
+				<h4>{l10n:AboutTheAuthor}</h4>
 				<p style="text-align: center; font-family: monospace;">{AuthorNameWithLineBreaks}</p>
 				{ActivelinkIfAny}
 			</div>
 			<div class="submenu">
-				<h4>Navigation</h4>
+				<h4>{l10n:Navigation}</h4>
 				<ul>
 					{PrimaryNavigationLinks}
 				</ul>
 			</div>
 			<div class="submenu">
-				<h4>Tags</h4>
+				<h4>{l10n:Tags}</h4>
 				<ul>
 					{TagsLinks}
 				</ul>
