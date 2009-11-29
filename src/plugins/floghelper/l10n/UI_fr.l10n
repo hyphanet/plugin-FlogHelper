@@ -79,6 +79,7 @@ H6=T6
 ID=ID 
 ImportFlogDesc=Importer un flog depuis un fichier :
 ImportFlog=Importer un flog
+ImportFlogWarning=Attention ! N'importez pas de flog si vous ne savez pas EXACTEMENT ce qu'il contient ; il peut contenir du code xHTML dangereux (mettant en danger votre anonymat) qui ne sera pas filtré !
 Import=Importer 
 InsertInProgress=Insertion en cours
 Insert=Insérer 

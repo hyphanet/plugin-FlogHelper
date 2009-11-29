@@ -62,6 +62,8 @@ public class ImportFlogToadlet extends FlogHelperToadlet {
 			links.addChild("br");
 			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + ContentListToadlet.MY_URI + "?FlogID=" + newID, FlogHelper.getBaseL10n().getString("ViewFlogDetails"));
 		} else {
+			HTMLNode caveat = this.getPM().getInfobox("infobox-warning", FlogHelper.getBaseL10n().getString("Warning"), pageNode.content);
+			caveat.addChild("p", FlogHelper.getBaseL10n().getString("ImportFlogWarning"));
 			HTMLNode importBox = this.getPM().getInfobox("infobox-minor", FlogHelper.getBaseL10n().getString("ImportFlog"), pageNode.content);
 			HTMLNode ulForm = ctx.addFormChild(importBox, this.path(), "ImportFlog").addChild("p");
 			ulForm.addChild("label", "for", "ImportDb", FlogHelper.getBaseL10n().getString("ImportFlogDesc")).addChild("br").addChild("input", new String[]{"type", "name"},

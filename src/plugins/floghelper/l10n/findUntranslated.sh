@@ -1,7 +1,7 @@
 #!/bin/sh
-
 # The first argument is the l10n file to use.
 # We assume l10n files are SimpleFieldSets.
+# @author Artefact2
 
 if [ "$1" = "" ]
 then

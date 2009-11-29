@@ -79,6 +79,7 @@ H6=H6
 ID=ID
 ImportFlogDesc=Import a flog from a file :
 ImportFlog=Import flog
+ImportFlogWarning=Beware ! Don't import a flog if you don't EXACTLY know what's inside ; it may contain dangerous xHTML code that will jeopardize your anonymity that won't be filtered !
 Import=Import
 InsertInProgress=Insert in progress
 Insert=Insert
