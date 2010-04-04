@@ -439,10 +439,13 @@ public class FlogFactory {
 					 * boolean global,
 					 * boolean earlyEncode,
 					 * boolean canWriteClientCache,
+					 * boolean forkOnCacheable,
+					 * int extraInsertsSingleBlock,
+					 * int extraInsertsSplitfileHeaderBlock
 					 * FCPServer server,
 					 * ObjectContainer container
 					 */
-					ClientPutDir cpd = new ClientPutDir(client, uri, "FlogHelper-" + flog.getID() + "-" + DataFormatter.getRandomID(14), Integer.MAX_VALUE, RequestStarter.IMMEDIATE_SPLITFILE_PRIORITY_CLASS, ClientRequest.PERSIST_FOREVER, null, false, false, -1, parsedFlog, "index.html", true, false, false, fcp, arg0);
+					ClientPutDir cpd = new ClientPutDir(client, uri, "FlogHelper-" + flog.getID() + "-" + DataFormatter.getRandomID(14), Integer.MAX_VALUE, RequestStarter.IMMEDIATE_SPLITFILE_PRIORITY_CLASS, ClientRequest.PERSIST_FOREVER, null, false, false, -1, parsedFlog, "index.html", true, false, false, false, 0, 0, fcp, arg0);
 					try {
 						fcp.startBlocking(cpd, arg0, arg1);
 						WoTContexts.addContext(flog.getAuthorID());
