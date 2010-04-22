@@ -159,7 +159,7 @@ public class YAWKL extends ContentSyntax {
 		// Don't allow xHTML tags.
 		s = DataFormatter.htmlSpecialChars(s);
 
-		s = "<p>" + s + "</p>";
+		s = "<p>\n" + s + "\n</p>";
 
 		s = super.parseSomeString(s);
 
