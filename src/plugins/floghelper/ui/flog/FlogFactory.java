@@ -199,21 +199,25 @@ public class FlogFactory {
 		}
 
 		StringBuilder sb = new StringBuilder();
-		for(String tag : tags.keySet()) {
-			if(tag.trim().equals("")) continue;
-			boolean thereIsALink = ! (currentUri != null && currentUri.equals("/Tag-" + tag + "-p1.html"));
+		if(tags.size() != 0) {
+			sb.append("<ul>\n");
+			for(String tag : tags.keySet()) {
+				if(tag.trim().equals("")) continue;
+				boolean thereIsALink = ! (currentUri != null && currentUri.equals("/Tag-" + tag + "-p1.html"));
 
-			sb.append("<li>");
-			if(thereIsALink) {
-				sb.append("<a href=\"./Tag-" + tag + "-p1.html\">");
+				sb.append("<li>");
+				if(thereIsALink) {
+					sb.append("<a href=\"./Tag-" + tag + "-p1.html\">");
+				}
+				sb.append(DataFormatter.htmlSpecialChars(tag));
+				if(thereIsALink) {
+					sb.append("</a>");
+				}
+				sb.append(" (").append(tags.get(tag)).append(")");
+				sb.append("</li>");
+				sb.append("\n\t\t\t\t\t");
 			}
-			sb.append(DataFormatter.htmlSpecialChars(tag));
-			if(thereIsALink) {
-				sb.append("</a>");
-			}
-			sb.append(" (").append(tags.get(tag)).append(")");
-			sb.append("</li>");
-			sb.append("\n\t\t\t\t\t");
+			sb.append("</ul>\n");
 		}
 
 		return sb.toString();
