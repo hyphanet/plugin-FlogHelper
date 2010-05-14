@@ -171,7 +171,7 @@ public class IndexBuilder {
 			NullFilterCallback nullFC = new NullFilterCallback();
 			ContentFilter.filter(new ArrayBucket(ContentSyntax.parseSomeString(content.getContent(),
 					content.getContentSyntax()).getBytes("UTF-8")), new NullBucketFactory(),
-					"text/html", new URI("http://whocares.co:12345/"), nullFC, null);
+					"text/html", new URI("http://whocares.co:12345/"), nullFC, null, null);
 			final String cURI = "Content-" + content.getID() + ".html";
 			this.pageIDs.add(cURI);
 			final int pageID = this.pageIDs.indexOf(cURI);
