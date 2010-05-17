@@ -144,7 +144,7 @@ public abstract class ContentSyntax {
 			}
 		}
 
-		parentForm.addChild("br").addChild("span", new String[]{"id", "style"}, new String[]{textAreaName + "_buttons", "display: inline-block; width: 650px;"}, "&nbsp;");
+		parentForm.addChild("br").addChild("span", new String[]{"id", "style"}, new String[]{textAreaName + "_buttons", "display: inline-block; width: 650px;"}, " ");
 		parentForm.addChild("br");
 		parentForm.addChild("textarea", new String[]{"rows", "cols", "name", "id"},
 				new String[]{"12", "80", textAreaName, textAreaName}, defaultContent);
