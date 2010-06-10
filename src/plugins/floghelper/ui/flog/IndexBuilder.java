@@ -16,9 +16,9 @@
  */
 package plugins.floghelper.ui.flog;
 
-import freenet.clients.http.filter.ContentFilter;
-import freenet.clients.http.filter.FoundURICallback;
-import freenet.clients.http.filter.UnsafeContentTypeException;
+import freenet.client.filter.ContentFilter;
+import freenet.client.filter.FoundURICallback;
+import freenet.client.filter.UnsafeContentTypeException;
 import freenet.keys.FreenetURI;
 import freenet.support.HTMLEncoder;
 import freenet.support.Logger;
@@ -170,7 +170,7 @@ public class IndexBuilder {
 		for (final Content content : new FlogFactory(flog).getContentsTreeMap(false).values()) {
 			NullFilterCallback nullFC = new NullFilterCallback();
 			ContentFilter.filter(new ArrayBucket(ContentSyntax.parseSomeString(content.getContent(),
-					content.getContentSyntax()).getBytes("UTF-8")), new NullBucketFactory(),
+					content.getContentSyntax()).getBytes("UTF-8")), new NullBucketFactory().makeBucket(0),
 					"text/html", new URI("http://whocares.co:12345/"), nullFC, null, null);
 			final String cURI = "Content-" + content.getID() + ".html";
 			this.pageIDs.add(cURI);
