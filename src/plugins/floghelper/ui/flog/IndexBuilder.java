@@ -23,8 +23,10 @@ import freenet.keys.FreenetURI;
 import freenet.support.HTMLEncoder;
 import freenet.support.Logger;
 import freenet.support.io.ArrayBucket;
-import freenet.support.io.NullBucketFactory;
+import freenet.support.io.NullBucket;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -166,12 +168,23 @@ public class IndexBuilder {
 	private void getWordsFromPages() throws URISyntaxException, UnsafeContentTypeException, IOException {
 		// Content-XXXXXXX.html pages only, because they contain all the contents
 		// and their respective URIs won't change over time
-
+		InputStream filterInput = null;
+		OutputStream filterOutput = null;
+		ArrayBucket input = null;
+		NullBucket output = null;
 		for (final Content content : new FlogFactory(flog).getContentsTreeMap(false).values()) {
 			NullFilterCallback nullFC = new NullFilterCallback();
-			ContentFilter.filter(new ArrayBucket(ContentSyntax.parseSomeString(content.getContent(),
-					content.getContentSyntax()).getBytes("UTF-8")), new NullBucketFactory().makeBucket(0),
+			input = new ArrayBucket(ContentSyntax.parseSomeString(content.getContent(),
+					content.getContentSyntax()).getBytes("UTF-8"));
+			output = new NullBucket();
+			filterInput = input.getInputStream();
+			filterOutput = output.getOutputStream();
+			ContentFilter.filter(filterInput, filterOutput,
 					"text/html", new URI("http://whocares.co:12345/"), nullFC, null, null);
+			filterInput.close();
+			filterOutput.close();
+			input.free();
+			output.free();
 			final String cURI = "Content-" + content.getID() + ".html";
 			this.pageIDs.add(cURI);
 			final int pageID = this.pageIDs.indexOf(cURI);
