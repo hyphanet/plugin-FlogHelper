@@ -58,64 +58,67 @@ public class PreviewToadlet extends FlogHelperToadlet {
 	@Override
 	public void getPagePost(PageNode pageNode, URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException {
 		final String flogID = uri.getPath().replace(FlogHelperToadlet.BASE_URI + PreviewToadlet.MY_URI, "").split("/")[0];
-		final Flog flog = new PluginStoreFlog(flogID);
-		if (flog == null) {
-			this.sendErrorPage(ctx, 404, "Not found", "Incorrect or missing FlogID.");
+		Flog flog;
+		if (PluginStoreFlog.hasFlog(flogID)) {
+			flog = new PluginStoreFlog(flogID);
 		} else {
-			final FlogFactory factory = new FlogFactory(flog);
-			final String file = uri.getPath().replace(FlogHelperToadlet.BASE_URI + PreviewToadlet.MY_URI, "").replace(flogID, "");
-			if (file.equals("/") || file.equals("/index.html")) {
-				writeHTMLReply(ctx, 200, "OK", null, appendPreviewWarning(factory.getIndex()));
-			} else if (file.startsWith("/Content-") && file.endsWith(".html")) {
-				final String contentID = file.replace("/Content-", "").replace(".html", "");
-				writeHTMLReply(ctx, 200, "OK", null, appendPreviewWarning(factory.getContentPage(contentID)));
-			} else if (file.startsWith("/Archives-p") && file.endsWith(".html")) {
-				writeHTMLReply(ctx, 200, "OK", null, appendPreviewWarning(factory.getArchives(Long.parseLong(file.replace("/Archives-p", "").replace(".html", "")))));
-			} else if (file.startsWith("/Tag-") && file.endsWith(".html")) {
-				final long page = Long.parseLong(file.replaceAll("^/Tag-(.+?)-p([0-9]+)\\.html$", "$2"));
-				final String tag = file.replaceAll("^/Tag-(.+?)-p([0-9]+)\\.html$", "$1");
-				writeHTMLReply(ctx, 200, "OK", null, appendPreviewWarning(factory.getTagsPage(tag, page)));
-			} else if (file.equals("/GlobalStyle.css")) {
-				byte[] data = new FlogFactory(flog).getCSS().getBytes("UTF-8");
-				ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "text/css", data.length);
-				ctx.writeData(data);
-			} else if (file.equals("/AtomFeed.xml")) {
-				byte[] data = new FlogFactory(flog).getAtomFeed().getBytes("UTF-8");
-				ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "application/atom+xml", data.length);
-				ctx.writeData(data);
-			} else if (file.equals("/activelink.png")) {
-				byte[] data = flog.getActivelink();
-				if (data != null) {
-					ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "image/png", data.length);
-					ctx.writeData(data);
-				}
-			} else if (file.startsWith("/Att-")) {
-				final Attachment attachment = flog.getAttachmentByName(file.substring(1));
-				if (attachment != null) {
-					final String mimeType = DefaultMIMETypes.guessMIMEType(file, true);
-					ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), mimeType == null ? "application/octet-stream" : mimeType, attachment.getData().length);
-					ctx.writeData(attachment.getData());
-				}
-			} else if (file.equals("/" + VIEW_RAW_DEFAULT_TEMPLATE_URI)) {
-				previewTemplate(factory, pageNode, uri, request, ctx);
-			} else if (file.equals("/" + VIEW_DEFAULT_CSS_URI)) {
-				previewCSS(factory, pageNode, uri, request, ctx);
-			} else if (file.startsWith("/index") && file.endsWith(".xml")) {
-				IndexBuilder builder = new IndexBuilder(flog);
-				if(file.equals("/index.xml")) {
-					byte[] data = builder.getIndexIndex().getBytes("UTF-8");
-					ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "application/xml", data.length);
-					ctx.writeData(data);
-				} else if(file.matches("^/index_[0-9a-f]\\.xml$")) {
-					byte sub = Byte.valueOf(file.replace("/index_", "").replace(".xml", ""), 16);
-					byte[] data = builder.getSubIndex(sub).getBytes("UTF-8");
-					ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "application/xml", data.length);
-					ctx.writeData(data);
-				}
-			} else {
-				this.sendErrorPage(ctx, 404, "Not found", "Unintelligible URI.");
-			}
+			flog = new PluginStoreFlog();
 		}
+
+		final FlogFactory factory = new FlogFactory(flog);
+		final String file = uri.getPath().replace(FlogHelperToadlet.BASE_URI + PreviewToadlet.MY_URI, "").replace(flogID, "");
+		if (file.equals("/") || file.equals("/index.html")) {
+			writeHTMLReply(ctx, 200, "OK", null, appendPreviewWarning(factory.getIndex()));
+		} else if (file.startsWith("/Content-") && file.endsWith(".html")) {
+			final String contentID = file.replace("/Content-", "").replace(".html", "");
+			writeHTMLReply(ctx, 200, "OK", null, appendPreviewWarning(factory.getContentPage(contentID)));
+		} else if (file.startsWith("/Archives-p") && file.endsWith(".html")) {
+			writeHTMLReply(ctx, 200, "OK", null, appendPreviewWarning(factory.getArchives(Long.parseLong(file.replace("/Archives-p", "").replace(".html", "")))));
+		} else if (file.startsWith("/Tag-") && file.endsWith(".html")) {
+			final long page = Long.parseLong(file.replaceAll("^/Tag-(.+?)-p([0-9]+)\\.html$", "$2"));
+			final String tag = file.replaceAll("^/Tag-(.+?)-p([0-9]+)\\.html$", "$1");
+			writeHTMLReply(ctx, 200, "OK", null, appendPreviewWarning(factory.getTagsPage(tag, page)));
+		} else if (file.equals("/GlobalStyle.css")) {
+			byte[] data = new FlogFactory(flog).getCSS().getBytes("UTF-8");
+			ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "text/css", data.length);
+			ctx.writeData(data);
+		} else if (file.equals("/AtomFeed.xml")) {
+			byte[] data = new FlogFactory(flog).getAtomFeed().getBytes("UTF-8");
+			ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "application/atom+xml", data.length);
+			ctx.writeData(data);
+		} else if (file.equals("/activelink.png")) {
+			byte[] data = flog.getActivelink();
+			if (data != null) {
+				ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "image/png", data.length);
+				ctx.writeData(data);
+			}
+		} else if (file.startsWith("/Att-")) {
+			final Attachment attachment = flog.getAttachmentByName(file.substring(1));
+			if (attachment != null) {
+				final String mimeType = DefaultMIMETypes.guessMIMEType(file, true);
+				ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), mimeType == null ? "application/octet-stream" : mimeType, attachment.getData().length);
+				ctx.writeData(attachment.getData());
+			}
+		} else if (file.equals("/" + VIEW_RAW_DEFAULT_TEMPLATE_URI)) {
+			previewTemplate(factory, pageNode, uri, request, ctx);
+		} else if (file.equals("/" + VIEW_DEFAULT_CSS_URI)) {
+			previewCSS(factory, pageNode, uri, request, ctx);
+		} else if (file.startsWith("/index") && file.endsWith(".xml")) {
+			IndexBuilder builder = new IndexBuilder(flog);
+			if (file.equals("/index.xml")) {
+				byte[] data = builder.getIndexIndex().getBytes("UTF-8");
+				ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "application/xml", data.length);
+				ctx.writeData(data);
+			} else if (file.matches("^/index_[0-9a-f]\\.xml$")) {
+				byte sub = Byte.valueOf(file.replace("/index_", "").replace(".xml", ""), 16);
+				byte[] data = builder.getSubIndex(sub).getBytes("UTF-8");
+				ctx.sendReplyHeaders(200, "OK", new MultiValueTable<String, String>(), "application/xml", data.length);
+				ctx.writeData(data);
+			}
+		} else {
+			this.sendErrorPage(ctx, 404, "Not found", "Unintelligible URI.");
+		}
+
 	}
 
 	public static void previewTemplate(FlogFactory factory, PageNode pageNode, URI uri, HTTPRequest request, ToadletContext ctx) throws ToadletContextClosedException, IOException {
