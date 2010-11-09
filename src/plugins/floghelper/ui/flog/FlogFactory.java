@@ -599,6 +599,8 @@ public class FlogFactory {
 		feed.append("</title>\n");
 
 		TreeMap<Long, Content> contents = this.getContentsTreeMap(false);
+		if(contents.size() == 0) return "";
+
 		Date mostRecentlyCreationDate = new Date(contents.lastKey());
 		if(!flog.shouldPublishDates()) {
 			mostRecentlyCreationDate = DataFormatter.obfuscateDate(mostRecentlyCreationDate);
@@ -720,11 +722,11 @@ public class FlogFactory {
 
 		StringBuilder sb = new StringBuilder();
 
-		if(page == pageMin) {
+		if(page <= pageMin) {
 			sb.append("&lt; Previous");
 		} else sb.append("<a href=\"").append(pageUri.replace("{Page}", Long.toString(page - 1L))).append("\">&lt; " + flog.getBaseL10n().getString("Flog.PreviousPage") + "</a>");
 		sb.append(" | ");
-		if(page == pageMax) {
+		if(page >= pageMax) {
 			sb.append("Next &gt;");
 		} else sb.append("<a href=\"").append(pageUri.replace("{Page}", Long.toString(page + 1L))).append("\">" + flog.getBaseL10n().getString("Flog.NextPage") + " &gt;</a>");
 		sb.append(" | ");
