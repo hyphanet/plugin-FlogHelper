@@ -68,7 +68,7 @@
 
 	<target name="dist" depends="compile">
 		<mkdir dir="${dist}"/>
-		<jar jarfile="${dist}/FlogHelper.jar" basedir="${build}">
+		<jar jarfile="${dist}/FlogHelper.jar" basedir="${build}" excludes="${version.src}">
 			<manifest>
 				<attribute name="Plugin-Main-Class" value="plugins.floghelper.FlogHelper"/>
 				<section name="common">
