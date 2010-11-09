@@ -55,6 +55,8 @@ public class ImportFlogToadlet extends FlogHelperToadlet {
 			String newID = DataFormatter.createUniqueFlogID();
 			importedFlog.strings.put("ID", newID);
 			FlogHelper.getStore().subStores.put(newID, importedFlog);
+			FlogHelper.putStore();
+
 			final HTMLNode infobox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("FlogImportSuccessful"), pageNode.content);
 			infobox.addChild("p", FlogHelper.getBaseL10n().getString("FlogImportSuccessfulLong"));
 			final HTMLNode links = infobox.addChild("p");
