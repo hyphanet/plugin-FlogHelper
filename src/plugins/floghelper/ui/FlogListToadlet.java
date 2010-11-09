@@ -207,21 +207,30 @@ public class FlogListToadlet extends FlogHelperToadlet {
 
 			writeHTMLReply(ctx, 200, "OK", null, pageNode.outer.generate());
 		} else if(request.isPartSet("Insert") && request.isPartSet("FlogID")) {
-			try {
-				new FlogFactory(new PluginStoreFlog(request.getPartAsString("FlogID", 7))).insert();
-			} catch (PluginNotFoundException ex) {
-				// Won't happen
-			} catch (DatabaseDisabledException ex) {
-				// Won't happen
+			final FlogFactory fFactory = new FlogFactory(new PluginStoreFlog(request.getPartAsString("FlogID", 7)));
+			if(fFactory.getContentsTreeMap(false).size() == 0) {
+				HTMLNode infobox = this.getPM().getInfobox("infobox-error", FlogHelper.getBaseL10n().getString("RefusingToInsertEmplyFlog"), pageNode.content);
+
+				infobox.addChild("p", FlogHelper.getBaseL10n().getString("RefusingToInsertEmplyFlogLong"));
+				HTMLNode links = infobox.addChild("p");
+				links.addChild("a", "href", FlogHelperToadlet.BASE_URI + FlogListToadlet.MY_URI, FlogHelper.getBaseL10n().getString("ReturnToFlogList"));
+			} else {
+				try {
+					fFactory.insert();
+				} catch (PluginNotFoundException ex) {
+					// Won't happen
+				} catch (DatabaseDisabledException ex) {
+					// Won't happen
+				}
+
+				HTMLNode infobox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("InsertInProgress"), pageNode.content);
+
+				infobox.addChild("p", FlogHelper.getBaseL10n().getString("FlogIsInsertingLong"));
+				HTMLNode links = infobox.addChild("p");
+				links.addChild("strong").addChild("a", "href", "/uploads/", FlogHelper.getBaseL10n().getString("GoToInsertsPage"));
+				links.addChild("br");
+				links.addChild("a", "href", FlogHelperToadlet.BASE_URI + FlogListToadlet.MY_URI, FlogHelper.getBaseL10n().getString("ReturnToFlogList"));
 			}
-
-			HTMLNode infobox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("InsertInProgress"), pageNode.content);
-
-			infobox.addChild("p", FlogHelper.getBaseL10n().getString("FlogIsInsertingLong"));
-			HTMLNode links = infobox.addChild("p");
-			links.addChild("strong").addChild("a", "href", "/uploads/", FlogHelper.getBaseL10n().getString("GoToInsertsPage"));
-			links.addChild("br");
-			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + FlogListToadlet.MY_URI, FlogHelper.getBaseL10n().getString("ReturnToFlogList"));
 
 			writeHTMLReply(ctx, 200, "OK", null, pageNode.outer.generate());
 		}
