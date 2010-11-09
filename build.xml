@@ -37,10 +37,10 @@
 	<target name="setver" if="version.present">
 		<!-- Update the Version.java file in ${build}-->
 		<copy file="${src}/${version.src}" tofile="${build}/${version.src}" overwrite="true" />
-		<delete file="${build}/${version.build}"/>
 		<replace file="${build}/${version.src}">
 			<replacefilter token="@custom@" value="${git.revision}"/>
 		</replace>
+		<javac srcdir="${build}" includes="${version.src}" destdir="${build}" debug="on" optimize="on" source="1.5" />
 		<echo message="Updated build version to ${git.revision} in ${build}/${version.src}"/>
 	</target>
 
@@ -49,7 +49,7 @@
 
 		<tstamp/>
 
-		<javac srcdir="${src}" destdir="${build}" debug="on" optimize="on" source="1.5">
+		<javac srcdir="${src}" destdir="${build}" excludes="${version.src}" debug="on" optimize="on" source="1.5">
 			<sourcepath>
 				<pathelement path="${build}"/>
 			</sourcepath>
@@ -57,7 +57,6 @@
 				<pathelement location="${freenetjar}"/>
 				<pathelement location="${freenet-extjar}"/>
 			</classpath>
-			<exclude name="${version.src}" />
 		</javac>
 		<copy todir="${build}">
 			<fileset dir="${src}">
