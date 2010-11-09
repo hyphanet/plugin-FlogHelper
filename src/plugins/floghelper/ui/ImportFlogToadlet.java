@@ -48,7 +48,7 @@ public class ImportFlogToadlet extends FlogHelperToadlet {
 	}
 
 	public void getPagePost(final PageNode pageNode, final URI uri, HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		if (request.isPartSet("Import")) {
+		if (request.isPartSet("Import") && request.getUploadedFile("ImportDb").getData().size() > 0) {
 			HTTPUploadedFile i = request.getUploadedFile("ImportDb");
 			byte[] buf = BucketTools.toByteArray(i.getData());
 			PluginStore importedFlog = PluginStore.importStore(buf);
