@@ -181,15 +181,16 @@ public abstract class Flog {
 	public USKCallback getUSKCallback() {
 		if(this.uskCallback == null) {
 			uskCallback = new USKCallback() {
-
 				public void onFoundEdition(long arg0, USK arg1, ObjectContainer arg2, ClientContext arg3, boolean arg4, short arg5, byte[] arg6, boolean arg7, boolean arg8) {
-					setLatestUSKEdition(arg0);
-					try {
-						WoTContexts.addProperty(getAuthorID(), "Flog." + getID() + ".Path", getSSKPath());
-						WoTContexts.addProperty(getAuthorID(), "Flog." + getID() + ".LatestEdition", Long.toString(getLatestUSKEdition()));
-					} catch (PluginNotFoundException ex) {
-						// Too bad.
-						// We'll update it next time then.
+					if(arg0 > getLatestUSKEdition()) {
+						setLatestUSKEdition(arg0);
+						try {
+							WoTContexts.addProperty(getAuthorID(), "Flog." + getID() + ".Path", getSSKPath());
+							WoTContexts.addProperty(getAuthorID(), "Flog." + getID() + ".LatestEdition", Long.toString(getLatestUSKEdition()));
+						} catch (PluginNotFoundException ex) {
+							// Too bad.
+							// We'll update it next time then.
+						}
 					}
 				}
 
