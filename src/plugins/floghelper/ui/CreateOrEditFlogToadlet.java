@@ -77,6 +77,10 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 
 						public void removeFrom(ObjectContainer arg0) {
 						}
+
+						public boolean realTimeFlag() {
+							return false;
+						}
 					});
 				} catch (Exception ex) {
 					Logger.error(this, "", ex);

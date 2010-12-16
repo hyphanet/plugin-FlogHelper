@@ -163,6 +163,10 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 
 						public void removeFrom(ObjectContainer arg0) {
 						}
+
+						public boolean realTimeFlag() {
+							return false;
+						}
 					});
 				} catch (Exception ex) {
 					Logger.error(this, "", ex);
