@@ -454,7 +454,7 @@ public class FlogFactory {
 						fcp.startBlocking(cpd, arg0, arg1);
 						WoTContexts.addContext(flog.getAuthorID());
 					} catch (Exception ex) {
-						// Ignore
+						Logger.error(this, "",  ex);
 					}
 				} catch (IdentifierCollisionException ex) {
 					Logger.error(this, "",  ex);
