@@ -33,7 +33,7 @@ public class SyncPluginTalker {
 	/**
 	 * Full classname of the WoT plugin.
 	 */
-	public final static String WOT_NAME = "plugins.WoT.WoT";
+	public final static String WOT_NAME = "plugins.WebOfTrust.WebOfTrust";
 	private final PluginReceptor receptor;
 	private final String to;
 	private final PluginTalker talker;
