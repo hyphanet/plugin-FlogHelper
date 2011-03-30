@@ -154,23 +154,33 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 			}
 		} finally {
 			this.registerToadlets();
-			for(Flog f : PluginStoreFlog.getFlogs()) {
-				try {
-					FlogHelper.uskManager.subscribe(USK.create(f.getRequestURI()), f.getUSKCallback(), true, new RequestClient() {
-						public boolean persistent() {
-							return false;
-						}
+			this.subscribeToFlogUSKs();
+		}
+	}
 
-						public void removeFrom(ObjectContainer arg0) {
-						}
+	/**
+	 * Refresh the USK subscriptions of all flogs in the database.
+	 */
+	public static void subscribeToFlogUSKs() {
+		for (Flog f : PluginStoreFlog.getFlogs()) {
+			try {
+				final USK uri = USK.create(f.getRequestURI());
+				FlogHelper.uskManager.unsubscribe(uri, f.getUSKCallback());
+				FlogHelper.uskManager.subscribe(uri, f.getUSKCallback(), true, new RequestClient() {
 
-						public boolean realTimeFlag() {
-							return false;
-						}
-					});
-				} catch (Exception ex) {
-					Logger.error(this, "", ex);
-				}
+					public boolean persistent() {
+						return false;
+					}
+
+					public void removeFrom(ObjectContainer arg0) {
+					}
+
+					public boolean realTimeFlag() {
+						return false;
+					}
+				});
+			} catch (Exception ex) {
+				Logger.error(FlogHelper.class, "", ex);
 			}
 		}
 	}

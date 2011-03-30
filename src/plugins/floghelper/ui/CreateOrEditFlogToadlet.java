@@ -16,7 +16,6 @@
  */
 package plugins.floghelper.ui;
 
-import com.db4o.ObjectContainer;
 import plugins.floghelper.data.DataFormatter;
 import freenet.client.HighLevelSimpleClient;
 import freenet.clients.http.PageNode;
@@ -24,7 +23,6 @@ import freenet.clients.http.ToadletContext;
 import freenet.clients.http.ToadletContextClosedException;
 import freenet.keys.USK;
 import freenet.l10n.BaseL10n.LANGUAGE;
-import freenet.node.RequestClient;
 import freenet.support.HTMLNode;
 import freenet.support.Logger;
 import freenet.support.api.HTTPRequest;
@@ -69,26 +67,16 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			} else {
 				flog = new PluginStoreFlog();
 				flog.putFlog();
-				try {
-					FlogHelper.getUSKManager().subscribe(USK.create(flog.getRequestURI()), flog.getUSKCallback(), true, new RequestClient() {
-						public boolean persistent() {
-							return false;
-						}
+			}
 
-						public void removeFrom(ObjectContainer arg0) {
-						}
-
-						public boolean realTimeFlag() {
-							return false;
-						}
-					});
-				} catch (Exception ex) {
-					Logger.error(this, "", ex);
-				}
+			// Unsubscribe first if we change the author or the SSK path
+			try {
+				FlogHelper.getUSKManager().unsubscribe(USK.create(flog.getRequestURI()), flog.getUSKCallback());
+			} catch (Exception ex) {
+				Logger.error(this, "", ex);
 			}
 
 			flog.setTitle(request.getPartAsString("Title", 100));
-			flog.setAuthorID(request.getPartAsString("Author", 1000));
 			flog.setTheme(request.getPartAsString("Theme", 250));
 			flog.setLang(LANGUAGE.mapToLanguage(request.getPartAsString("Lang", 5)));
 			flog.setShortDescription(request.getPartAsString("SmallDescription", Integer.MAX_VALUE));
@@ -104,6 +92,15 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			flog.setNumberOfContentsOnArchives(DataFormatter.tryParseLong(request.getPartAsString("NumberOfContentsOnArchives", 10), flog.getNumberOfContentsOnArchives()));
 
 			final String sskPath = request.getPartAsString("SSKPath", 30).trim();
+			final String authorID = request.getPartAsString("Author", 1000);
+
+			if(!sskPath.equals(flog.getSSKPath()) || !authorID.equals(flog.getAuthorID())) {
+				// We changed the flog access URI : the latest USK edition is no longer valid.
+				flog.setLatestUSKEdition(0L);
+			}
+
+			flog.setAuthorID(authorID);
+
 			// A SSK path should not be just a number, should obviously not be empty
 			// and shouldn't contain any "/". It also mustn't be equal to "WoT" as
 			// this will screw the identity...
@@ -140,6 +137,7 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			}
 
 			FlogHelper.putStore();
+			FlogHelper.subscribeToFlogUSKs();
 
 			final HTMLNode infobox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("FlogCreationSuccessful"), pageNode.content);
 			infobox.addChild("p", FlogHelper.getBaseL10n().getString("FlogCreationSuccessfulLong"));
