@@ -328,7 +328,7 @@ public class FlogFactory {
 
 		data = BucketTools.makeImmutableBucket(factory, this.getIndex().getBytes("UTF-8"));
 		name = "index.html";
-		fileMap.put(name, new ManifestElement(name, data, DefaultMIMETypes.guessMIMEType(name, true), data.size()));
+		fileMap.put(name, new ManifestElement(name, data, "text/html", data.size()));
 
 		data = BucketTools.makeImmutableBucket(factory, this.getCSS().getBytes("UTF-8"));
 		name = "GlobalStyle.css";
