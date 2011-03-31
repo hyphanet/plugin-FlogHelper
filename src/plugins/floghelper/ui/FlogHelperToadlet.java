@@ -101,7 +101,7 @@ public abstract class FlogHelperToadlet extends Toadlet {
 		}
 
 		// Make sure we have at least one identity
-		if (this.wotIdentities.size() == 0) {
+		if (this.wotIdentities.isEmpty()) {
 			this.getPM().getInfobox("infobox-error", FlogHelper.getBaseL10n().getString("MissingWoTIdentity"),
 					pageNode.content).addChild("p", FlogHelper.getBaseL10n().getString("MissingWoTIdentityLong"));
 			writeHTMLReply(ctx, 200, "OK", null, pageNode.outer.generate());
