@@ -4,33 +4,45 @@ html {
 }
 
 body {
-	max-width: 1000px;
+	font-family: "Trebuchet MS", sans-serif;
+	max-width: 80em;
 	margin: auto;
-	font-family: Georgia, serif;
 	font-size: 0.8em;
 	background-color: #FFF;
-	border-right: 4px solid #777;
-	border-left: 4px solid #777;
-	padding: 5px;
+	border-right: 0.5em solid #777;
+	border-left: 0.5em solid #777;
+	padding: 0;
+	padding-bottom: 15em;
 }
 
 div#header {
-	text-align: center;
-	border-bottom: 2px solid #222;
+	text-align: left;
+	margin-left: 2em;
 }
 
 div#header h1 {
 	font-size: 4em;
-	margin: 0;
 	padding: 0;
-	font-weight: normal;
+	margin: 0;
+	display: inline-block;
+	letter-spacing: -0.05em;
 }
 
 div#header h2 {
-	font-size: 2.5em;
-	margin: 0;
+	font-size: 2em;
 	padding: 0;
+	margin: 0;
 	font-weight: normal;
+	display: inline-block;
+	letter-spacing: -0.05em;
+	line-height: 4em;
+}
+
+div#header h2:before {
+	content: "—";
+	padding-left: 0.5em;
+	padding-right: 0.5em;
+	font-weight: bold;
 }
 
 div#footer {
@@ -38,16 +50,18 @@ div#footer {
 }
 
 div#maincontent {
-	margin-right: 205px;
+	margin-right: 26em;
+	margin-left: 2em;
 }
 
 div#maincontent div.content_container div.content_content p {
 	text-align: justify;
+	line-height: 1.7em;
 }
 
 div#globmenu {
 	float: right;
-	width: 200px;
+	width: 24em;
 }
 
 p.pagination {
@@ -82,14 +96,21 @@ a:hover, a:focus, a:active {
 }
 
 div#maincontent div.content_container div.content_header  {
-	border-top: 1px dotted #222;
+	border-top: 0.2em dotted #222;
 }
 
 div#globmenu div.submenu h4 {
 	background-color: #222;
 	color: white;
 	margin-left: 0;
-	padding: 5px;
+	padding: 0.5em;
+
+	border-top-left-radius: 0.5em;
+	border-bottom-left-radius: 0.5em;
+	-moz-border-top-left-radius: 0.5em;
+	-moz-border-bottom-left-radius: 0.5em;
+	-webkit-border-top-left-radius: 0.5em;
+	-webkit-border-bottom-left-radius: 0.5em;
 }
 
 div#globmenu div.submenu:first-child h4:first-child {
@@ -119,4 +140,133 @@ div#maincontent div#singlecontent div.content_container div.content_header h1 {
 
 div#maincontent div#singlecontent div.content_container div.content_header p {
 	margin-top: 5px;
+}
+
+div.submenu.tags ul {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+}
+
+div.submenu.tags ul li {
+	display: inline-block;
+	background-color: #333;
+	padding: 0.2em 0.3em 0.2em 0.3em;
+	margin: 0.1em;
+	color: #778899;
+
+	border-radius: 0.4em;
+	-moz-border-radius: 0.4em;
+	-webkit-border-radius: 0.4em;
+}
+
+div.submenu.tags ul li a {
+	color: white;
+	text-decoration: none;
+}
+
+div.submenu.tags ul li:hover {
+	background-color: #111;
+	color: gold;
+}
+
+div.submenu.tags ul li:before {
+	content: "● ";
+}
+
+div.navigation h4 {
+	display: none;
+}
+
+div.navigation ul {
+	padding: 0;
+	margin: 0;
+	text-align: center;
+	font-weight: bold;
+}
+
+div.navigation ul li {
+	display: inline-block;
+	background-color: #222;
+	min-width: 5em;
+	height: 2em;
+	line-height: 2em;
+	text-align: center;
+	padding: 0.1em 1em 0.1em 1em;
+	margin: 0.1em;
+	color: gold;
+	margin-bottom: 0.5em;
+
+	border-radius: 0.4em;
+	-moz-border-radius: 0.4em;
+	-webkit-border-radius: 0.4em;
+}
+
+div.navigation ul li a {
+	display: block;
+	color: white;
+	text-decoration: none;
+}
+
+div.navigation ul li input {
+	color: white;
+	background-color: #222;
+	border: none;
+	font-weight: bold;
+}
+
+div.navigation ul li input[type="text"] {
+	border-bottom: 0.1em solid #CCC;
+}
+
+div.navigation ul li:hover {
+	margin-bottom: 0;
+	border-bottom: 0.5em solid;
+
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+	-moz-border-bottom-left-radius: 0;
+	-moz-border-bottom-right-radius: 0;
+	-webkit-border-bottom-left-radius: 0;
+	-webkit-border-bottom-right-radius: 0;
+}
+
+div.navigation ul li:hover {
+	border-color: gold;
+}
+div.navigation ul li,
+div.navigation ul li:hover a {
+	color: gold;
+}
+
+div.navigation ul li + li:hover {
+	border-color: lightgreen;
+}
+div.navigation ul li + li,
+div.navigation ul li + li:hover a {
+	color: lightgreen;
+}
+
+div.navigation ul li + li + li:hover {
+	border-color: red;
+}
+div.navigation ul li + li + li,
+div.navigation ul li + li + li:hover a {
+	color: red;
+}
+
+div.navigation ul li + li + li + li:hover {
+	border-color: lightblue;
+}
+div.navigation ul li + li + li + li,
+div.navigation ul li + li + li + li:hover a {
+	color: lightblue;
+}
+
+div.navigation ul li + li + li + li + li:hover {
+	border-color: orange;
+}
+div.navigation ul li + li + li + li + li,
+div.navigation ul li + li + li + li + li:hover a {
+	color: orange;
 }

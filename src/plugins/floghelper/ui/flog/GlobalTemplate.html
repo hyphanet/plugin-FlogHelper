@@ -15,19 +15,19 @@
 			<h1>{FlogName}</h1>
 			<h2>{PageTitle}</h2>
 		</div>
+		<div class="navigation">
+			<h4>{l10n:Navigation}</h4>
+			<ul>
+				{PrimaryNavigationLinks}
+			</ul>
+		</div>
 		<div id="globmenu">
 			<div class="submenu">
 				<h4>{l10n:AboutTheAuthor}</h4>
 				<p style="text-align: center; font-family: monospace;">{AuthorNameWithLineBreaks}</p>
 				{ActivelinkIfAny}
 			</div>
-			<div class="submenu">
-				<h4>{l10n:Navigation}</h4>
-				<ul>
-					{PrimaryNavigationLinks}
-				</ul>
-			</div>
-			<div class="submenu">
+			<div class="submenu tags">
 				<h4>{l10n:Tags}</h4>
 				{TagsLinks}
 			</div>
