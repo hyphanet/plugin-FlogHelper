@@ -140,7 +140,7 @@ public class PreviewToadlet extends FlogHelperToadlet {
 				"border-bottom: 1px solid black; left: 0; right: 0; top: 0;" +
 				"height: 25px;\"><p style=\"margin: 0; padding-left: 5px;" +
 				" padding-top: 5px;\">" + FlogHelper.getBaseL10n().getString("PreviewWarning") +
-				" <strong><a href=\"" + FlogHelperToadlet.BASE_URI + FlogListToadlet.MY_URI + "\">" +
+				" <strong><a style=\"color: black;\" href=\"" + FlogHelperToadlet.BASE_URI + FlogListToadlet.MY_URI + "\">" +
 				FlogHelper.getBaseL10n().getString("ReturnToFlogList") + "</a></strong></p></div>");
 	}
 }
