@@ -85,6 +85,12 @@ public class FlogFactory {
 		StringBuffer sb = new StringBuffer();
 		InputStream res = FlogHelper.class.getClassLoader().getResourceAsStream(resource);
 
+		if(res == null) {
+			// Don't die because of a NPE
+			Logger.error(FlogFactory.class, "Got a null resource : " + resource);
+			return "";
+		}
+
 		BufferedReader br = new BufferedReader(new InputStreamReader(res));
 		String buffer = "";
 
