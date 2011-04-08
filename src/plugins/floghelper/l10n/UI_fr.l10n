@@ -137,6 +137,7 @@ Settings=Options
 Size=Taille 
 SmallDescription=Courte description 
 SmallDescriptionFieldDesc=Courte description de votre flog qui sera publiée en haut de la page d'index.
+SortTagsByCountDesc=Trier la liste des tags par ordre d'importance plutôt que par ordre alphabétique
 SSKPathDesc=Chemin à utiliser pour la clé SSK lors de l'insertion ? Le changer n'est utile que si vous insérez plusieurs flogs différents avec une même identité WoT. Il ne doit pas être uniquement un nombre ni contenir de slashes. 
 Strike=Barré
 Subscript=Indice

@@ -84,6 +84,7 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			flog.shouldPublishStoreDump(request.isPartSet("InsertPluginStoreDump"));
 			flog.shouldPublishDates(request.isPartSet("PublishContentModificationDate"));
 			flog.shouldPublishLibraryIndex(request.isPartSet("InsertLibraryIndex"));
+			flog.shouldSortTagsByCount(request.isPartSet("SortTagsByCount"));
 			flog.overrideTemplate(request.isPartSet("OverrideTemplate"));
 			flog.setTemplateOverride(request.getPartAsString("OverrideTemplateValue", Integer.MAX_VALUE));
 			flog.overrideCSS(request.isPartSet("OverrideCSS"));
@@ -225,6 +226,12 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			checkBlock.addChild("input", new String[]{"type", "name", "id", publishContentModificationDate ? "checked" : "class"},
 					new String[]{"checkbox", "PublishContentModificationDate", "PublishContentModificationDate", publishContentModificationDate ? "checked" : ""});
 			checkBlock.addChild("label", "for", "PublishContentModificationDate", FlogHelper.getBaseL10n().getString("PublishContentModificationDateDesc"));
+
+			final boolean sortTagsByCount = flog.shouldSortTagsByCount();
+			checkBlock = settingsBox.addChild("p");
+			checkBlock.addChild("input", new String[]{"type", "name", "id", sortTagsByCount ? "checked" : "class"},
+					new String[]{"checkbox", "SortTagsByCount", "SortTagsByCount", sortTagsByCount ? "checked" : ""});
+			checkBlock.addChild("label", "for", "SortTagsByCount", FlogHelper.getBaseL10n().getString("SortTagsByCountDesc"));
 
 			settingsBox.addChild("p").addChild("label", "for", "NumberOfContentsOnIndex", FlogHelper.getBaseL10n().getString("NumberOfContentsOnIndexFieldDesc")).addChild("br")
 					.addChild("input", new String[]{"type", "size", "name", "value"},

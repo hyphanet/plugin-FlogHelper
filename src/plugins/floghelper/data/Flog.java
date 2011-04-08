@@ -55,6 +55,12 @@ public abstract class Flog {
 	public static final boolean DEFAULT_SHOULD_INSERT_INDEX = true;
 
 	/**
+	 * Should we sort tags alphabetically or by count ? (ie, show more important
+	 * tags first)
+	 */
+	public static final boolean DEFAULT_SHOULD_SORT_TAGS_BY_COUNT = false;
+
+	/**
 	 * Seven seems reasonable.
 	 */
 	public static final long DEFAULT_CONTENTS_ON_INDEX = 7;
@@ -148,6 +154,8 @@ public abstract class Flog {
 	abstract public void    shouldPublishStoreDump(boolean b);
 	abstract public boolean shouldPublishLibraryIndex();
 	abstract public void    shouldPublishLibraryIndex(boolean b);
+	abstract public boolean shouldSortTagsByCount();
+	abstract public void    shouldSortTagsByCount(boolean b);
 	abstract public boolean overrideTemplate();
 	abstract public void    overrideTemplate(boolean b);
 	abstract public boolean overrideCSS();

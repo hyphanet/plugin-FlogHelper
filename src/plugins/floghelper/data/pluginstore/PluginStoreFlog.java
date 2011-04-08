@@ -186,6 +186,17 @@ public class PluginStoreFlog extends Flog {
 		this.flog.booleans.put("InsertLibraryIndex", b);
 	}
 
+	public boolean shouldSortTagsByCount()
+		{if(!this.flog.booleans.containsKey("SortTagsByCount")) {
+			return Flog.DEFAULT_SHOULD_SORT_TAGS_BY_COUNT;
+		}
+		return this.flog.booleans.get("SortTagsByCount");
+	}
+
+	public void shouldSortTagsByCount(boolean b) {
+		this.flog.booleans.put("SortTagsByCount", b);
+	}
+
 	public boolean overrideTemplate() {
 		if(!this.flog.booleans.containsKey("OverrideTemplate")) {
 			return false;

@@ -170,8 +170,12 @@ div.submenu.tags ul li:hover {
 	color: gold;
 }
 
-div.submenu.tags ul li:before {
-	content: "● ";
+div.submenu.tags ul li strong {
+	font-size: 1.1em;
+}
+
+div.submenu.tags ul li small a {
+	letter-spacing: 0.05em;
 }
 
 div.navigation h4 {

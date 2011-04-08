@@ -40,9 +40,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.Vector;
 import plugins.floghelper.FlogHelper;
 import plugins.floghelper.Version;
@@ -191,35 +193,134 @@ public class FlogFactory {
 	}
 
 	/**
+	 * A very simple class to represent tags.
+	 */
+	private class Tag {
+		public static final int S_NORMAL = 0;
+		public static final int S_MINOR = -1;
+		public static final int S_MAJOR = 1;
+		/**
+		 * The name of the tag.
+		 */
+		public String name;
+		/**
+		 * The number of articles having this tag in the flog we are
+		 * currently parsing.
+		 */
+		public long articleCount;
+		/**
+		 * Status of the tag : minor, normal, major
+		 */
+		public int status;
+	}
+
+	/**
 	 * Get a parsed tag list. Works the same as getPrimaryNavigationLinks.
 	 * @param currentUri Actual relative URI
 	 * @return Parsed xHTML code.
 	 */
 	public String getTagList(String currentUri) {
-		TreeMap<String, Long> tags = new TreeMap<String, Long>();
+		HashMap<String, Tag> tags = new HashMap<String, Tag>();
 		for(Content content : this.flog.getContents()) {
 			if(content.isDraft()) continue;
 			for(String tag : content.getTags()) {
-				tags.put(tag, tags.containsKey(tag) ? tags.get(tag) + 1L : 1L);
+				if(tags.containsKey(tag)) {
+					Tag t =  tags.get(tag);
+					t.articleCount += 1L;
+				} else {
+					final Tag newTag = new Tag();
+					newTag.articleCount = 1L;
+					newTag.name = tag;
+					tags.put(tag, newTag);
+				}
 			}
 		}
 
+		Comparator<Tag> compareTags = new Comparator<Tag>() {
+			public int compare(Tag t, Tag t1) {
+				if(t.articleCount < t1.articleCount) return -1;
+				else if(t.articleCount > t1.articleCount) return 1;
+				else return -t.name.compareToIgnoreCase(t1.name);
+			}
+		};
+
+		// Sort tags by count, and compute quintiles
+		TreeSet<Tag> sortedTags = new TreeSet<Tag>(compareTags);
+		sortedTags.addAll(tags.values());
+		long i = 0;
+		Long majorLimit = null, minorLimit = null;
+		boolean majorSet = false, minorSet = false;
+		for(Tag t : sortedTags.descendingSet()) {
+			if(majorSet) {
+				majorLimit += t.articleCount;
+				majorLimit /= 2;
+				majorSet = false;
+			}
+			if(minorSet) {
+				minorLimit += t.articleCount;
+				minorLimit /= 2;
+				minorSet = false;
+			}
+
+			if(majorLimit != null && minorLimit != null) break;
+
+			if(i <= 0.25 * sortedTags.size() && (i+1) >= 0.25 * sortedTags.size()) {
+				// First quintile
+				majorLimit = t.articleCount;
+				majorSet = true;
+			} else if(i <= 0.75 * sortedTags.size() && (i+1) >= 0.75 * sortedTags.size()) {
+				// Last quintile
+				minorLimit = t.articleCount;
+				minorSet = true;
+			}
+			++i;
+		}
+
+		for(Tag t : sortedTags.descendingSet()) {
+			if(t.articleCount <= minorLimit) {
+				t.status = Tag.S_MINOR;
+			} else if(t.articleCount >= majorLimit) {
+				t.status = Tag.S_MAJOR;
+			} else t.status = Tag.S_NORMAL;
+		}
+
+		// Resort tags by alph. order if needed
+		if(!this.flog.shouldSortTagsByCount()) {
+			compareTags = new Comparator<Tag>() {
+				public int compare(Tag t, Tag t1) {
+					return -t.name.compareToIgnoreCase(t1.name);
+				}
+			};
+			sortedTags = new TreeSet<Tag>(compareTags);
+			sortedTags.addAll(tags.values());
+		}
+
 		StringBuilder sb = new StringBuilder();
-		if(tags.size() != 0) {
+		if(!tags.isEmpty()) {
 			sb.append("<ul>\n");
-			for(String tag : tags.keySet()) {
-				if(tag.trim().equals("")) continue;
-				boolean thereIsALink = ! (currentUri != null && currentUri.equals("/Tag-" + tag + "-p1.html"));
+			for(Tag t : sortedTags.descendingSet()) {
+				if(t.name.trim().equals("")) continue;
+				boolean thereIsALink = ! (currentUri != null && currentUri.equals("/Tag-" + t.name + "-p1.html"));
 
 				sb.append("<li>");
-				if(thereIsALink) {
-					sb.append("<a href=\"./Tag-" + tag + "-p1.html\">");
+				if(t.status == Tag.S_MAJOR) {
+					sb.append("<strong>");
+				} else if(t.status == Tag.S_MINOR) {
+					sb.append("<small>");
 				}
-				sb.append(DataFormatter.htmlSpecialChars(tag));
+				if(thereIsALink) {
+					sb.append("<a href=\"./Tag-").append(t.name).append("-p1.html\">");
+				}
+				sb.append(DataFormatter.htmlSpecialChars(t.name));
 				if(thereIsALink) {
 					sb.append("</a>");
 				}
-				sb.append(" (").append(tags.get(tag)).append(")");
+				sb.append(" (").append(Long.toString(t.articleCount)).append(")");
+				if(t.status == Tag.S_MAJOR) {
+					sb.append("</strong>");
+				} else if(t.status == Tag.S_MINOR) {
+					sb.append("</small>");
+				}
 				sb.append("</li>");
 				sb.append("\n\t\t\t\t\t");
 			}
