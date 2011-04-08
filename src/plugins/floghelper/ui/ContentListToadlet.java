@@ -100,7 +100,7 @@ public class ContentListToadlet extends FlogHelperToadlet {
 			}
 
 			row.addChild("td").addChild("pre", DataFormatter.toString(content.getID()));
-			row.addChild("td", DataFormatter.toString(DataFormatter.htmlSpecialChars(content.getTitle())));
+			row.addChild("td").addChild("%", DataFormatter.toString(DataFormatter.htmlSpecialChars(content.getTitle())));
 			row.addChild("td", DataFormatter.toString(DataFormatter.LocalDateFormatter.format(content.getContentCreationDate())));
 			row.addChild("td", DataFormatter.toString(DataFormatter.LocalDateFormatter.format(content.getContentModificationDate())));
 

@@ -107,7 +107,7 @@ public class FlogListToadlet extends FlogHelperToadlet {
 			row.addChild("td").addChild("pre", DataFormatter.toString(flog.getID()));
 			row.addChild(activelinkP);
 			try {
-				row.addChild("td").addChild("a", "href", "/" + flog.getRequestURI(), DataFormatter.htmlSpecialChars(DataFormatter.toString(flog.getTitle())));
+				row.addChild("td").addChild("a", "href", "/" + flog.getRequestURI()).addChild("%", DataFormatter.htmlSpecialChars(DataFormatter.toString(flog.getTitle())));
 			} catch (Exception ex) {
 				Logger.error(this, "", ex);
 			}
