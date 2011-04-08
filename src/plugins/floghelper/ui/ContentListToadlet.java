@@ -50,7 +50,7 @@ public class ContentListToadlet extends FlogHelperToadlet {
 		final Flog flog = new PluginStoreFlog(this.getParameterWhetherItIsPostOrGet(request, "FlogID", 7));
 
 		final HTMLNode table = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("ContentListOf").replace("${FlogName}",
-				DataFormatter.htmlSpecialChars(flog.getTitle())), pageNode.content).addChild("table");
+				flog.getTitle()), pageNode.content).addChild("table");
 
 		final HTMLNode tHead = table.addChild("thead");
 		final HTMLNode tFoot = table.addChild("tfoot");
