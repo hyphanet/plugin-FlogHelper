@@ -378,24 +378,6 @@ public class FlogFactory {
 	}
 
 	/**
-	 * Get the parsed description of the flog.
-	 *
-	 * @param flog Flog to use.
-	 * @return xHTML code of the description, or an empty string if the flog doesn't have a desription.
-	 */
-	private String getDescription() {
-		String syntax = flog.getShortDescriptionSyntax();
-		if (syntax == null) {
-			syntax = "RawXHTML";
-		}
-
-		String rawDescr = flog.getShortDescription();
-		if(rawDescr.trim().equals("")) return "";
-
-		return ContentSyntax.parseSomeString(rawDescr, syntax);
-	}
-
-	/**
 	 * Parse all values that won't change from one page to another.
 	 *
 	 * @param template Template to parse.
@@ -409,6 +391,7 @@ public class FlogFactory {
 		template = template.replace("{AuthorNameWithLineBreaks}", DataFormatter.insertIntoString(authorName, "<br />", 18));
 		template = template.replace("{FlogName}", DataFormatter.htmlSpecialChars(this.flog.getTitle()));
 		template = template.replace("{FlogLang}", flog.getLang().shortCode);
+		template = template.replace("{FlogDescription}", flog.getShortDescription());
 		template = template.replace("{StyleURI}", "./GlobalStyle.css");
 		template = template.replace("{AtomFeedURI}", "./AtomFeed.xml");
 		template = template.replace("{AdditionalMenuContent}", ""); // FIXME that might have a use later
@@ -616,7 +599,7 @@ public class FlogFactory {
 			mainContent.append(this.getParsedContentBlock(content));
 		}
 
-		return genPage.replace("{MainContent}", this.getDescription() + mainContent.toString());
+		return genPage.replace("{MainContent}", mainContent.toString());
 	}
 
 	/**
@@ -724,11 +707,11 @@ public class FlogFactory {
 		feed.append("</name></author>\n");
 
 		feed.append("	<link rel=\"self\" href=\"./AtomFeed.xml\" />\n");
-		feed.append("	<generator version=\"" + Version.getVersion() + "\">FlogHelper</generator>\n");
+		feed.append("	<generator version=\"").append(Version.getVersion()).append("\">FlogHelper</generator>\n");
 
 		feed.append("	<subtitle type=\"xhtml\">\n" +
 				"		<div xmlns=\"http://www.w3.org/1999/xhtml\">\n");
-		feed.append(this.getDescription());
+		feed.append("<p>").append(flog.getShortDescription()).append("</p>");
 		feed.append("\n		</div>\n" +
 				"	</subtitle>\n");
 
@@ -768,7 +751,7 @@ public class FlogFactory {
 					content.getContentSyntax()));
 			feed.append("\n			</div>\n" +
 					"		</content>\n");
-			feed.append("		<link rel=\"alternate\" href=\"./Content-" + content.getID() + ".html\" />\n");
+			feed.append("		<link rel=\"alternate\" href=\"./Content-").append(content.getID()).append(".html\" />\n");
 			feed.append("</entry>\n");
 		}
 

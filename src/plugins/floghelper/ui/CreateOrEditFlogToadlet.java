@@ -48,6 +48,11 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 
 	public static final String MY_URI = "/CreateOrEditFlog/";
 
+	public static final int TITLE_MAXLENGTH = 128;
+	public static final int DESCRIPTION_MAXLENGTH = 128;
+	public static final int SSKPATH_MAXLENGTH = 128;
+	public static final int AUTHOR_MAXLENGTH = 1024;
+
 	public CreateOrEditFlogToadlet(HighLevelSimpleClient hlsc) {
 		super(hlsc, MY_URI);
 	}
@@ -76,11 +81,10 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 				Logger.error(this, "", ex);
 			}
 
-			flog.setTitle(request.getPartAsString("Title", 100));
+			flog.setTitle(request.getPartAsString("Title", TITLE_MAXLENGTH));
 			flog.setTheme(request.getPartAsString("Theme", 250));
 			flog.setLang(LANGUAGE.mapToLanguage(request.getPartAsString("Lang", 5)));
-			flog.setShortDescription(request.getPartAsString("SmallDescription", Integer.MAX_VALUE));
-			flog.setShortDescriptionSyntax(request.getPartAsString("SmallDescription_syntaxes", 1000));
+			flog.setShortDescription(request.getPartAsString("SmallDescription", DESCRIPTION_MAXLENGTH));
 			flog.shouldPublishStoreDump(request.isPartSet("InsertPluginStoreDump"));
 			flog.shouldPublishDates(request.isPartSet("PublishContentModificationDate"));
 			flog.shouldPublishLibraryIndex(request.isPartSet("InsertLibraryIndex"));
@@ -92,8 +96,8 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			flog.setNumberOfContentsOnIndex(DataFormatter.tryParseLong(request.getPartAsString("NumberOfContentsOnIndex", 10), flog.getNumberOfContentsOnIndex()));
 			flog.setNumberOfContentsOnArchives(DataFormatter.tryParseLong(request.getPartAsString("NumberOfContentsOnArchives", 10), flog.getNumberOfContentsOnArchives()));
 
-			final String sskPath = request.getPartAsString("SSKPath", 30).trim();
-			final String authorID = request.getPartAsString("Author", 1000);
+			final String sskPath = request.getPartAsString("SSKPath", SSKPATH_MAXLENGTH).trim();
+			final String authorID = request.getPartAsString("Author", AUTHOR_MAXLENGTH);
 
 			if(!sskPath.equals(flog.getSSKPath()) || !authorID.equals(flog.getAuthorID())) {
 				// We changed the flog access URI : the latest USK edition is no longer valid.
@@ -173,7 +177,7 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 					new String[]{"hidden", "FlogID", flog.getID()});
 
 			generalBox.addChild("p").addChild("label", "for", "Title", FlogHelper.getBaseL10n().getString("TitleFieldDesc")).addChild("br").addChild("input", new String[]{"type", "size", "name", "value", "maxlength"},
-					new String[]{"text", "50", "Title", DataFormatter.toString(flog.getTitle()), "100"});
+					new String[]{"text", "50", "Title", DataFormatter.toString(flog.getTitle()), Integer.toString(TITLE_MAXLENGTH)});
 
 			final HTMLNode authorsBox = new HTMLNode("select", new String[]{"id", "name"}, new String[]{"Author", "Author"});
 			for (final String identityID : this.getWoTIdentities().keySet()) {
@@ -205,9 +209,9 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 					new String[]{"checkbox", "ActivelinkDelete", "ActivelinkDelete"});
 			checkBlock.addChild("label", "for", "ActivelinkDelete", FlogHelper.getBaseL10n().getString("ActivelinkDeleteFieldDesc"));
 
-			ContentSyntax.addJavascriptEditbox(generalBox, "SmallDescription",
-					flog.getShortDescriptionSyntax(), DataFormatter.toString(flog.getShortDescription()),
-					FlogHelper.getBaseL10n().getString("SmallDescriptionFieldDesc"));
+			generalBox.addChild("p").addChild("label", "for", "SmallDescription", FlogHelper.getBaseL10n().getString("SmallDescriptionFieldDesc")).addChild("br")
+					.addChild("input", new String[]{"type", "size", "name", "value", "maxlength"},
+					new String[]{"text", "50", "SmallDescription", flog.getShortDescription(), Integer.toString(DESCRIPTION_MAXLENGTH)});
 
 			final boolean insertPluginStoreDump = flog.shouldPublishStoreDump();
 			checkBlock = settingsBox.addChild("p");
@@ -241,7 +245,7 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 					new String[]{"text", "4", "NumberOfContentsOnArchives", Long.toString(flog.getNumberOfContentsOnArchives())});
 			settingsBox.addChild("p").addChild("label", "for", "SSKPath", FlogHelper.getBaseL10n().getString("SSKPathDesc")).addChild("br")
 					.addChild("input", new String[]{"type", "size", "name", "value", "maxlength"},
-					new String[]{"text", "20", "SSKPath", flog.getSSKPath(), "30"});
+					new String[]{"text", "20", "SSKPath", flog.getSSKPath(), Integer.toString(SSKPATH_MAXLENGTH)});
 
 			if(ctx.getContainer().isAdvancedModeEnabled()) {
 			final HTMLNode templatesBox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("Templates"), form, "TemplatesFlogData", true);

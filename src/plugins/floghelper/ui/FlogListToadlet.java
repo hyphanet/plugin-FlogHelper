@@ -30,7 +30,6 @@ import freenet.support.api.HTTPRequest;
 import java.io.IOException;
 import java.net.URI;
 import plugins.floghelper.FlogHelper;
-import plugins.floghelper.contentsyntax.ContentSyntax;
 import plugins.floghelper.data.Activelink;
 import plugins.floghelper.data.Flog;
 import plugins.floghelper.data.pluginstore.PluginStoreFlog;
@@ -112,7 +111,7 @@ public class FlogListToadlet extends FlogHelperToadlet {
 				Logger.error(this, "", ex);
 			}
 			row.addChild("td", DataFormatter.toString(author));
-			row.addChild("td").addChild("%", ContentSyntax.parseSomeString(flog.getShortDescription(), flog.getShortDescriptionSyntax()));
+			row.addChild("td", flog.getShortDescription());
 			row.addChild("td", DataFormatter.toString(flog.getNumberOfContents()));
 
 			HTMLNode actions = row.addChild("td", "align", "center");

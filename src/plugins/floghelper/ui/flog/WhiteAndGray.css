@@ -45,6 +45,14 @@ div#header h2:before {
 	font-weight: bold;
 }
 
+div#header p {
+	margin-bottom: 0.5em;
+	margin-top: -0.5em;
+	margin-left: 0.5em;
+	text-align: left;
+	font-style: italic;
+}
+
 div#footer {
 	display: none;
 }

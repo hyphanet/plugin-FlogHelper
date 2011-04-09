@@ -146,8 +146,6 @@ public abstract class Flog {
 
 	abstract public String getShortDescription();
 	abstract public void   setShortDescription(String s);
-	abstract public String getShortDescriptionSyntax();
-	abstract public void   setShortDescriptionSyntax(String s);
 
 	abstract public boolean shouldPublishDates();
 	abstract public void    shouldPublishDates(boolean b);

@@ -41,6 +41,9 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 
 	public static final String MY_URI = "/CreateOrEditContent/";
 
+	public static final int TITLE_MAXLENGTH = 128;
+	public static final int TAGS_MAXLENGTH = 256;
+
 	public CreateOrEditContentToadlet(HighLevelSimpleClient hlsc) {
 		super(hlsc, MY_URI);
 	}
@@ -66,13 +69,13 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 				flog.putContent(content);
 			}
 
-			content.setTitle(request.getPartAsString("Title", 100));
+			content.setTitle(request.getPartAsString("Title", TITLE_MAXLENGTH));
 			content.setContent(request.getPartAsString("Content", Integer.MAX_VALUE));
 			content.setContentSyntax(request.getPartAsString("Content_syntaxes", 1000));
 			content.setDraft(request.isPartSet("IsDraft"));
 
 			final Vector<String> tags = new Vector<String>();
-			for(String tag : request.getPartAsString("Tags", 1000).split(",")) {
+			for(String tag : request.getPartAsString("Tags", TAGS_MAXLENGTH).split(",")) {
 				tags.add(tag.trim());
 			}
 			content.setTags(tags);
@@ -115,7 +118,7 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 					new String[]{"hidden", "ContentID", content.getID()});
 
 			generalBox.addChild("p").addChild("label", "for", "Title", FlogHelper.getBaseL10n().getString("TitleFieldDesc")).addChild("br").addChild("input", new String[]{"type", "size", "name", "value", "maxlength"},
-					new String[]{"text", "50", "Title", DataFormatter.toString(content.getTitle()), "100"});
+					new String[]{"text", "50", "Title", DataFormatter.toString(content.getTitle()), Integer.toString(TITLE_MAXLENGTH)});
 
 			final HTMLNode authorsBox = new HTMLNode("select", new String[]{"id", "name"}, new String[]{"Author", "Author"});
 			for (final String identityID : this.getWoTIdentities().keySet()) {
@@ -143,7 +146,7 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 			}
 
 			tagsBox.addChild("p").addChild("label", "for", "Tags", FlogHelper.getBaseL10n().getString("TagsFieldDesc")).addChild("br").addChild("input", new String[]{"type", "size", "name", "value", "maxlength"},
-					new String[]{"text", "50", "Tags", tagz.toString(), "1000"});
+					new String[]{"text", "50", "Tags", tagz.toString(), Integer.toString(TAGS_MAXLENGTH)});
 
 			final boolean isDraft = content.isDraft();
 			HTMLNode checkBlock = settingsBox.addChild("p");

@@ -55,7 +55,6 @@ public class PluginStoreFlog extends Flog {
 		this.flog.strings.put("ID", DataFormatter.createSubStoreUniqueID(FlogHelper.getStore()));
 
 		this.setShortDescription("");
-		this.setShortDescriptionSyntax("YAWKL");
 		this.setTitle("New untitled flog");
 		this.setTheme(FlogFactory.THEMES[0]);
 		this.setAuthorID("");
@@ -154,14 +153,6 @@ public class PluginStoreFlog extends Flog {
 
 	public void setShortDescription(String s) {
 		this.flog.strings.put("SmallDescription", s);
-	}
-
-	public String getShortDescriptionSyntax() {
-		return this.flog.strings.get("SmallDescriptionContentSyntax");
-	}
-
-	public void setShortDescriptionSyntax(String s) {
-		this.flog.strings.put("SmallDescriptionContentSyntax", s);
 	}
 
 	public boolean shouldPublishDates() {
