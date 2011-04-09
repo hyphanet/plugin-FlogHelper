@@ -556,7 +556,7 @@ public class FlogFactory {
 					 * FCPServer server,
 					 * ObjectContainer container
 					 */
-					ClientPutDir cpd = new ClientPutDir(client, uri, "FlogHelper-" + flog.getID() + "-" + DataFormatter.getRandomID(14), Integer.MAX_VALUE, RequestStarter.IMMEDIATE_SPLITFILE_PRIORITY_CLASS, ClientRequest.PERSIST_FOREVER, null, false, false, -1, parsedFlog, "index.html", true, false, false, true, 2, 2, false, fcp, arg0);
+					ClientPutDir cpd = new ClientPutDir(client, uri, "FlogHelper: " + flog.getTitle() + " (" + flog.getID() + DataFormatter.getRandomID(4) + ")", Integer.MAX_VALUE, RequestStarter.IMMEDIATE_SPLITFILE_PRIORITY_CLASS, ClientRequest.PERSIST_FOREVER, null, false, false, -1, parsedFlog, "index.html", true, false, false, true, 2, 2, false, fcp, arg0);
 					try {
 						fcp.startBlocking(cpd, arg0, arg1);
 						WoTContexts.addContext(flog.getAuthorID());
