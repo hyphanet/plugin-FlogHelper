@@ -30,11 +30,11 @@ public class Version {
 	/**
 	 * Don't forget to bump this when a new release is up.
 	 */
-	public static final long REVISION = 23;
+	public static final long REVISION = 24;
 
 	public static final long MAJOR = 0;
 	public static final long MINOR = 1;
-	public static final long RELEASE = 0;
+	public static final long RELEASE = 1;
 
 	public static String getRevision() {
 		return Version.gitRevision;
