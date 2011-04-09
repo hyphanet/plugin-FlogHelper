@@ -39,6 +39,7 @@ public class WoTContexts {
 		SyncPluginTalker spt = new SyncPluginTalker(new ReceptorCore() {
 
 			public void onReply(String pluginname, String indentifier, SimpleFieldSet params, Bucket data) {
+				assert(params.get("Message").equals("ContextAdded"));
 			}
 		}, sfs, null);
 
@@ -55,6 +56,51 @@ public class WoTContexts {
 		SyncPluginTalker spt = new SyncPluginTalker(new ReceptorCore() {
 
 			public void onReply(String pluginname, String indentifier, SimpleFieldSet params, Bucket data) {
+				assert(params.get("Message").equals("PropertyAdded"));
+			}
+		}, sfs, null);
+
+		spt.run();
+	}
+
+	public static String getProperty(String authorID, String propertyName) throws PluginNotFoundException {
+		final SimpleFieldSet sfs = new SimpleFieldSet(true);
+		sfs.putOverwrite("Message", "GetProperty");
+		sfs.putOverwrite("Identity", authorID);
+		sfs.putOverwrite("Property", propertyName);
+
+		final String[] value = new String[1];
+
+		SyncPluginTalker spt = new SyncPluginTalker(new ReceptorCore() {
+
+			public void onReply(String pluginname, String indentifier, SimpleFieldSet params, Bucket data) {
+				if(params.get("Message").equals("Error")) {
+					assert(params.get("Description").startsWith("plugins.WebOfTrust.exceptions.InvalidParameterException"));
+					value[0] = null;
+				} else {
+					assert(params.get("Message").equals("PropertyValue"));
+					value[0] = params.get("Property");
+				}
+			}
+		}, sfs, null);
+
+		spt.run();
+
+		freenet.support.Logger.debug(WoTContexts.class, authorID + " -> " + value[0]);
+
+		return value[0];
+	}
+
+	public static void removeProperty(String authorID, String propertyName) throws PluginNotFoundException {
+		final SimpleFieldSet sfs = new SimpleFieldSet(true);
+		sfs.putOverwrite("Message", "RemoveProperty");
+		sfs.putOverwrite("Identity", authorID);
+		sfs.putOverwrite("Property", propertyName);
+
+		SyncPluginTalker spt = new SyncPluginTalker(new ReceptorCore() {
+
+			public void onReply(String pluginname, String indentifier, SimpleFieldSet params, Bucket data) {
+				assert(params.get("Message").equals("PropertyRemoved"));
 			}
 		}, sfs, null);
 

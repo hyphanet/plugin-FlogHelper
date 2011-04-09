@@ -27,6 +27,7 @@ import freenet.l10n.PluginL10n;
 import freenet.node.RequestStarter;
 import freenet.pluginmanager.FredPluginBaseL10n;
 import freenet.pluginmanager.PluginNotFoundException;
+import freenet.support.Logger;
 import java.util.Vector;
 import plugins.floghelper.FlogHelper;
 import plugins.floghelper.fcp.wot.WoTContexts;
@@ -186,19 +187,30 @@ public abstract class Flog {
 	abstract public long getLatestUSKEdition();
 	abstract public void setLatestUSKEdition(long edition);
 
+	/**
+	 * Get the numeric id of this flog. The flog properties <strong>for
+	 * this author only</strong> will begin with Flog.X., where X is this
+	 * numeric ID. It can change when the author changes.
+	 */
+	public long getNumericPropertyID() throws PluginNotFoundException {
+		long i = 0;
+		String id;
+		while((id = WoTContexts.getProperty(getAuthorID(), "Flog." + Long.toString(i) + ".ID")) != null && !id.equals(getID())) {
+			++i;
+		}
+
+		return i;
+	}
+
 	public USKCallback getUSKCallback() {
 		if(this.uskCallback == null) {
 			uskCallback = new USKCallback() {
 				public void onFoundEdition(long arg0, USK arg1, ObjectContainer arg2, ClientContext arg3, boolean arg4, short arg5, byte[] arg6, boolean arg7, boolean arg8) {
+					Logger.debug(this, "Found edition " + Long.toString(arg0));
 					if(arg0 > getLatestUSKEdition()) {
 						setLatestUSKEdition(arg0);
-						try {
-							WoTContexts.addProperty(getAuthorID(), "Flog." + getID() + ".Path", getSSKPath());
-							WoTContexts.addProperty(getAuthorID(), "Flog." + getID() + ".LatestEdition", Long.toString(getLatestUSKEdition()));
-						} catch (PluginNotFoundException ex) {
-							// Too bad.
-							// We'll update it next time then.
-						}
+						Logger.debug(this, "Updating contexes…");
+						updateContextes();
 					}
 				}
 
@@ -212,6 +224,24 @@ public abstract class Flog {
 			};
 		}
 		return this.uskCallback;
+	}
+
+	private void updateContextes() {
+		try {
+			final long numericID = getNumericPropertyID();
+			WoTContexts.addProperty(getAuthorID(), "Flog." + numericID + ".ID", getID());
+			WoTContexts.addProperty(getAuthorID(), "Flog." + numericID + ".Path", getSSKPath());
+			WoTContexts.addProperty(getAuthorID(), "Flog." + numericID + ".LatestEdition", Long.toString(getLatestUSKEdition()));
+			WoTContexts.addProperty(getAuthorID(), "Flog.MostRecent", Long.toString(numericID));
+
+			// Try to remove old properties, created by older revisions of
+			// FlogHelper to keep the properties list clean.
+			WoTContexts.removeProperty(getAuthorID(), "Flog." + getID() + ".Path");
+			WoTContexts.removeProperty(getAuthorID(), "Flog." + getID() + ".LatestEdition");
+		} catch (PluginNotFoundException ex) {
+			// Too bad.
+			// We'll update it next time then.
+		}
 	}
 
 	abstract public void putFlog();
