@@ -248,7 +248,7 @@ public class FlogFactory {
 		TreeSet<Tag> sortedTags = new TreeSet<Tag>(compareTags);
 		sortedTags.addAll(tags.values());
 		long i = 0;
-		Long majorLimit = null, minorLimit = null;
+		Long majorLimit = 0L, minorLimit = 0L;
 		boolean majorSet = false, minorSet = false;
 		for(Tag t : sortedTags.descendingSet()) {
 			if(majorSet) {
