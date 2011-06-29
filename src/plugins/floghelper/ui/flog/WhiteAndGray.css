@@ -39,7 +39,7 @@ div#header h2 {
 }
 
 div#header h2:before {
-	content: "—";
+	content: "___";
 	padding-left: 0.5em;
 	padding-right: 0.5em;
 	font-weight: bold;
