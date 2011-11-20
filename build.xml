@@ -17,7 +17,7 @@
 
 	<!-- This location MUST point to a freenet jar. Change it if needed. -->
 	<property name="freenetjar" value="../fred/dist/freenet.jar"/>
-	<property name="freenet-extjar" value="../fred/lib/freenet-ext.jar"/>
+	<property name="freenet-extjar" value="../fred/lib/freenet/freenet-ext.jar"/>
 
 	<!-- Originally from Library's build script -->
 	<exec executable="git"
