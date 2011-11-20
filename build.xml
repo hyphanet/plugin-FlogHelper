@@ -4,6 +4,8 @@
 	 Freemail plugin. -->
 
 <project name="FlogHelper" default="dist" basedir=".">
+	<property file="override.properties"/>
+
 	<property name="src" location="src"/>
 	<property name="build" location="build"/>
 	<property name="lib" location="lib"/>
