@@ -4,6 +4,8 @@
 	 Freemail plugin. -->
 
 <project name="FlogHelper" default="dist" basedir=".">
+	<property file="override.properties"/>
+
 	<property name="src" location="src"/>
 	<property name="build" location="build"/>
 	<property name="lib" location="lib"/>
@@ -15,7 +17,7 @@
 
 	<!-- This location MUST point to a freenet jar. Change it if needed. -->
 	<property name="freenetjar" value="../fred/dist/freenet.jar"/>
-	<property name="freenet-extjar" value="../fred/lib/freenet-ext.jar"/>
+	<property name="freenet-extjar" value="../fred/lib/freenet/freenet-ext.jar"/>
 
 	<!-- Originally from Library's build script -->
 	<exec executable="git"
@@ -79,9 +81,7 @@
 	</target>
 
 	<target name="clean">
-		<delete includeEmptyDirs="true">
-			<fileset dir="${build}" />
-		</delete>
+		<delete dir="${build}"/>
 		<delete dir="${dist}"/>
 		<delete dir="${lib}"/>
 	</target>
