@@ -81,9 +81,7 @@
 	</target>
 
 	<target name="clean">
-		<delete includeEmptyDirs="true">
-			<fileset dir="${build}" />
-		</delete>
+		<delete dir="${build}"/>
 		<delete dir="${dist}"/>
 		<delete dir="${lib}"/>
 	</target>
