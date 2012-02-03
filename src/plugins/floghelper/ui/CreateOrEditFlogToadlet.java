@@ -247,16 +247,17 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 					.addChild("input", new String[]{"type", "size", "name", "value", "maxlength"},
 					new String[]{"text", "20", "SSKPath", flog.getSSKPath(), Integer.toString(SSKPATH_MAXLENGTH)});
 
-			settingsBox.addChild("p").addChild("label", "for", "Theme", FlogHelper.getBaseL10n().getString("ThemeFieldDesc")).addChild("br");
+			HTMLNode themesBox = settingsBox.addChild("p");
+			themesBox.addChild("label", "for", "Theme", FlogHelper.getBaseL10n().getString("ThemeFieldDesc"));
 
-			final HTMLNode themesBox = settingsBox.addChild("select", new String[]{"id", "name"}, new String[]{"Theme", "Theme"});
+			final HTMLNode themeSelection = themesBox.addChild("br").addChild("select", new String[]{"id", "name"}, new String[]{"Theme", "Theme"});
 			for (final String theme : FlogFactory.THEMES) {
-				final HTMLNode option = themesBox.addChild("option", "value", theme, theme);
+				final HTMLNode option = themeSelection.addChild("option", "value", theme, theme);
 				if (flog.getTheme().equals(theme)) {
 					option.addAttribute("selected", "selected");
 				}
 			}
-			settingsBox.addChild("br").addChild("a", "href", FlogHelperToadlet.BASE_URI + PreviewToadlet.MY_URI + flog.getID() + "/" + PreviewToadlet.VIEW_DEFAULT_CSS_URI,
+			themesBox.addChild("a", "href", FlogHelperToadlet.BASE_URI + PreviewToadlet.MY_URI + flog.getID() + "/" + PreviewToadlet.VIEW_DEFAULT_CSS_URI,
 				FlogHelper.getBaseL10n().getString("SeeTheDefaultCSS"));
 
 			if(ctx.getContainer().isAdvancedModeEnabled()) {
