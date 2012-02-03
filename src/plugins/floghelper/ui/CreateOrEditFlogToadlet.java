@@ -256,6 +256,8 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 					option.addAttribute("selected", "selected");
 				}
 			}
+			settingsBox.addChild("br").addChild("a", "href", FlogHelperToadlet.BASE_URI + PreviewToadlet.MY_URI + flog.getID() + "/" + PreviewToadlet.VIEW_DEFAULT_CSS_URI,
+				FlogHelper.getBaseL10n().getString("SeeTheDefaultCSS"));
 
 			if(ctx.getContainer().isAdvancedModeEnabled()) {
 			final HTMLNode templatesBox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("Templates"), form, "TemplatesFlogData", true);
@@ -280,9 +282,6 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			checkBlock.addChild("br");
 			checkBlock.addChild("textarea", new String[]{"rows", "cols", "name", "id"},
 					new String[]{"12", "80", "OverrideCSSValue", "OverrideCSSValue"}, flog.getCSSOverride());
-			checkBlock.addChild("br");
-			checkBlock.addChild("a", "href", FlogHelperToadlet.BASE_URI + PreviewToadlet.MY_URI + flog.getID() + "/" + PreviewToadlet.VIEW_DEFAULT_CSS_URI,
-					FlogHelper.getBaseL10n().getString("SeeTheDefaultCSS"));
 			}
 
 
