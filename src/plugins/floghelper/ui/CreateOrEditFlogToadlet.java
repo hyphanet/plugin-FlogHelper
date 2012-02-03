@@ -247,6 +247,19 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 					.addChild("input", new String[]{"type", "size", "name", "value", "maxlength"},
 					new String[]{"text", "20", "SSKPath", flog.getSSKPath(), Integer.toString(SSKPATH_MAXLENGTH)});
 
+			HTMLNode themesBox = settingsBox.addChild("p");
+			themesBox.addChild("label", "for", "Theme", FlogHelper.getBaseL10n().getString("ThemeFieldDesc"));
+
+			final HTMLNode themeSelection = themesBox.addChild("br").addChild("select", new String[]{"id", "name"}, new String[]{"Theme", "Theme"});
+			for (final String theme : FlogFactory.THEMES) {
+				final HTMLNode option = themeSelection.addChild("option", "value", theme, theme);
+				if (flog.getTheme().equals(theme)) {
+					option.addAttribute("selected", "selected");
+				}
+			}
+			themesBox.addChild("a", "href", FlogHelperToadlet.BASE_URI + PreviewToadlet.MY_URI + flog.getID() + "/" + PreviewToadlet.VIEW_DEFAULT_CSS_URI,
+				FlogHelper.getBaseL10n().getString("SeeTheDefaultCSS"));
+
 			if(ctx.getContainer().isAdvancedModeEnabled()) {
 			final HTMLNode templatesBox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("Templates"), form, "TemplatesFlogData", true);
 
@@ -262,16 +275,6 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			checkBlock.addChild("a", "href", FlogHelperToadlet.BASE_URI + PreviewToadlet.MY_URI + flog.getID() + "/" + PreviewToadlet.VIEW_RAW_DEFAULT_TEMPLATE_URI,
 					FlogHelper.getBaseL10n().getString("SeeTheRawDefaultTemplate"));
 
-			final HTMLNode themesBox = new HTMLNode("select", new String[]{"id", "name"}, new String[]{"Theme", "Theme"});
-			for (final String theme : FlogFactory.THEMES) {
-				final HTMLNode option = themesBox.addChild("option", "value", theme, theme);
-				if (flog.getTheme().equals(theme)) {
-					option.addAttribute("selected", "selected");
-				}
-			}
-
-			templatesBox.addChild("p").addChild("label", "for", "Theme", FlogHelper.getBaseL10n().getString("ThemeFieldDesc")).addChild("br").addChild(themesBox);
-
 			final boolean overrideCSS = flog.overrideCSS();
 			checkBlock = templatesBox.addChild("p");
 			checkBlock.addChild("input", new String[]{"type", "name", "id", overrideCSS ? "checked" : "class"},
@@ -280,9 +283,6 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			checkBlock.addChild("br");
 			checkBlock.addChild("textarea", new String[]{"rows", "cols", "name", "id"},
 					new String[]{"12", "80", "OverrideCSSValue", "OverrideCSSValue"}, flog.getCSSOverride());
-			checkBlock.addChild("br");
-			checkBlock.addChild("a", "href", FlogHelperToadlet.BASE_URI + PreviewToadlet.MY_URI + flog.getID() + "/" + PreviewToadlet.VIEW_DEFAULT_CSS_URI,
-					FlogHelper.getBaseL10n().getString("SeeTheDefaultCSS"));
 			}
 
 
