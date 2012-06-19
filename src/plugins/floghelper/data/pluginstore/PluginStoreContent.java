@@ -52,7 +52,7 @@ public class PluginStoreContent extends Content {
 		this.setContent("");
 		this.setContentSyntax("YAWKL");
 		this.setDraft(Content.DEFAULT_DRAFT_STATUS);
-		this.setTitle("Unnamed new content");
+		this.setTitle("Unnamed new entry");
 		this.setTags(new Vector<String>());
 	}
 
