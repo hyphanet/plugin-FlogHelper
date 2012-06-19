@@ -257,10 +257,10 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 					option.addAttribute("selected", "selected");
 				}
 			}
-			themesBox.addChild("a", "href", FlogHelperToadlet.BASE_URI + PreviewToadlet.MY_URI + flog.getID() + "/" + PreviewToadlet.VIEW_DEFAULT_CSS_URI,
-				FlogHelper.getBaseL10n().getString("SeeTheDefaultCSS"));
 
 			if(ctx.getContainer().isAdvancedModeEnabled()) {
+			themesBox.addChild("a", "href", FlogHelperToadlet.BASE_URI + PreviewToadlet.MY_URI + flog.getID() + "/" + PreviewToadlet.VIEW_DEFAULT_CSS_URI,
+			        FlogHelper.getBaseL10n().getString("SeeTheDefaultCSS"));
 			final HTMLNode templatesBox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("Templates"), form, "TemplatesFlogData", true);
 
 			final boolean overrideTemplate = flog.overrideTemplate();
