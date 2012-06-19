@@ -156,7 +156,7 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			final HTMLNode links = infobox.addChild("p");
 			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + FlogListToadlet.MY_URI, FlogHelper.getBaseL10n().getString("ReturnToFlogList"));
 			links.addChild("br");
-			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + CreateOrEditFlogToadlet.MY_URI, FlogHelper.getBaseL10n().getString("CreateNewFlog"));
+			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + CreateOrEditFlogToadlet.MY_URI, FlogHelper.getBaseL10n().getString("CreateFlog"));
 		} else {
 			Flog flog;
 
