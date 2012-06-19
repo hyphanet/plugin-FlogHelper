@@ -94,7 +94,7 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 			final HTMLNode links = infobox.addChild("p");
 			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + ContentListToadlet.MY_URI + "?FlogID=" + flog.getID(), FlogHelper.getBaseL10n().getString("ReturnToContentList"));
 			links.addChild("br");
-			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + CreateOrEditContentToadlet.MY_URI + "?FlogID=" + flog.getID(), FlogHelper.getBaseL10n().getString("CreateNewContent"));
+			links.addChild("a", "href", FlogHelperToadlet.BASE_URI + CreateOrEditContentToadlet.MY_URI + "?FlogID=" + flog.getID(), FlogHelper.getBaseL10n().getString("CreateContent"));
 		} else {
 			Content content;
 
