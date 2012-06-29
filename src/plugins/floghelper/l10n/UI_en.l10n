@@ -115,6 +115,7 @@ PreviewContent=Preview this entry
 PreviewingDraftContent=Draft preview
 Preview=Preview
 PreviewWarning=Preview
+PrevTagsFieldDesc=Add Tags from previous posts:
 Proceed=Proceed
 PublishContentModificationDateDesc=Publish entry modification dates? (This might allow a potential attacker to identify your timezone.)
 Quote=Quote

@@ -26,6 +26,7 @@ import freenet.support.api.HTTPRequest;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Vector;
+import java.util.HashMap;
 import plugins.floghelper.FlogHelper;
 import plugins.floghelper.contentsyntax.ContentSyntax;
 import plugins.floghelper.data.Content;
@@ -78,6 +79,15 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 			for(String tag : request.getPartAsString("Tags", TAGS_MAXLENGTH).split(",")) {
 				tags.add(tag.trim());
 			}
+
+            String prevTagsCountStr = request.getPartAsStringFailsafe("PrevTagsCount", 3);
+            int prevTagsCount = Integer.parseInt(prevTagsCountStr);
+            for(int i = 0; i<prevTagsCount; i++) {
+                if(request.isPartSet("PrevTags-" + i)) {
+                    tags.add(request.getPartAsStringFailsafe("PrevTags-" + i, 255).trim());
+                }
+            }
+
 			content.setTags(tags);
 
 			FlogHelper.putStore();
@@ -145,8 +155,28 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 				}
 			}
 
+            final Vector<String> prevTags = this.getPrevTags(flog);
+
 			tagsBox.addChild("p").addChild("label", "for", "Tags", FlogHelper.getBaseL10n().getString("TagsFieldDesc")).addChild("br").addChild("input", new String[]{"type", "size", "name", "value", "maxlength"},
 					new String[]{"text", "50", "Tags", tagz.toString(), Integer.toString(TAGS_MAXLENGTH)});
+
+            HTMLNode tagsCheckBlock = tagsBox.addChild("p");
+            tagsCheckBlock.addChild("label", "for", "PrevTags", FlogHelper.getBaseL10n().getString("PrevTagsFieldDesc")).addChild("br");
+            int tmpCount = 0;
+            for(String tag : prevTags) {
+                boolean doCheck = false;
+                if(tags.contains(tag)) {
+                    continue;
+                }
+                tagsCheckBlock.addChild("input", new String[]{"type", "name", "id", "value"},
+                        new String[]{"checkbox", "PrevTags-" + tmpCount, tag, tag}).addChild("span", tag);
+
+                tmpCount++;
+            }
+
+            String tmpCountStr = ""+tmpCount;
+            tagsCheckBlock.addChild("input", new String[]{"type", "name", "id", "value"},
+                    new String[]{"hidden", "PrevTagsCount", "PrevTagsCount", tmpCountStr});
 
 			final boolean isDraft = content.isDraft();
 			HTMLNode checkBlock = settingsBox.addChild("p");
@@ -166,5 +196,43 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 
 		}
 		writeHTMLReply(ctx, 200, "OK", null, pageNode.outer.generate());
+	}
+
+    public Vector<String> getPrevTags(Flog flog) {
+        Vector<String> returnTags = new Vector<String>();
+        for(Content c2 : flog.getContents()) {
+            if(c2.isDraft()) continue;
+            for(String tag : c2.getTags()) {
+				if(returnTags.contains(tag)) {
+                    continue;
+				} else {
+                    returnTags.add(tag);
+				}
+            }
+        }
+
+        return returnTags;
+    }
+
+	/**
+	 * A very simple class to represent tags.
+	 */
+	private class Tag {
+		public static final int S_NORMAL = 0;
+		public static final int S_MINOR = -1;
+		public static final int S_MAJOR = 1;
+		/**
+		 * The name of the tag.
+		 */
+		public String name;
+		/**
+		 * The number of articles having this tag in the flog we are
+		 * currently parsing.
+		 */
+		public long articleCount;
+		/**
+		 * Status of the tag : minor, normal, major
+		 */
+		public int status;
 	}
 }
