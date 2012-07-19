@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" output="build" path="src"/>
-	<classpathentry kind="var" path="JRE_LIB" rootpath="JRE_SRCROOT" sourcepath="JRE_SRC"/>
+	<classpathentry kind="var" path="JRE_LIB" sourcepath="JRE_SRC"/>
+	<classpathentry kind="lib" path="/fred/lib/freenet/freenet-ext.jar" sourcepath="/contrib"/>
+	<classpathentry kind="lib" path="/fred/dist/freenet.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/fred"/>
-	<classpathentry kind="lib" path="/fred/dist/freenet.jar/>
-	<classpathentry kind="lib" path="/fred/lib/freenet/freenet-ext.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

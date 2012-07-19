@@ -24,11 +24,4 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>build</name>
-			<type>2</type>
-			<locationURI>PROJECT_LOC/build</locationURI>
-		</link>
-	</linkedResources>
 </projectDescription>
