@@ -113,9 +113,19 @@ public class PluginStoreContent extends Content {
 	public Date getContentCreationDate() {
 		return new Date(this.content.longs.get("CreationDate"));
 	}
+	
+	@Override
+	public void setContentCreationDate(Date date) {
+		this.content.longs.put("CreationDate", date.getTime());
+	}
 
 	public Date getContentModificationDate() {
 		return new Date(this.content.longs.get("LastModification"));
+	}
+	
+	@Override
+	public void setContentModificationDate(Date date) {
+		this.content.longs.put("LastModification", date.getTime());
 	}
 
 	public Vector<String> getTags() {

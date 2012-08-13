@@ -25,6 +25,8 @@ import freenet.support.HTMLNode;
 import freenet.support.api.HTTPRequest;
 import java.io.IOException;
 import java.net.URI;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Vector;
 import plugins.floghelper.FlogHelper;
 import plugins.floghelper.contentsyntax.ContentSyntax;
@@ -56,6 +58,8 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 		final Flog flog = new PluginStoreFlog(this.getParameterWhetherItIsPostOrGet(request, "FlogID", 7));
 
 		String contentID = this.getParameterWhetherItIsPostOrGet(request, "ContentID", 7);
+		final boolean advancedMode = ctx.getContainer().isAdvancedModeEnabled();
+		final SimpleDateFormat dateFormat = advancedMode ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss") : null;
 
 		if (request.isPartSet("Yes")) {
 			Content content;
@@ -79,6 +83,15 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 				tags.add(tag.trim());
 			}
 			content.setTags(tags);
+			
+			if(advancedMode) {
+				try {
+					content.setContentCreationDate(dateFormat.parse(request.getPartAsStringFailsafe("CreationDate", dateFormat.toPattern().length())));
+					content.setContentModificationDate(dateFormat.parse(request.getPartAsStringFailsafe("ModificationDate", dateFormat.toPattern().length())));
+				} catch (ParseException e) {
+					throw new RuntimeException("Invalid date format, use yyyy-MM-dd HH:mm:ss");
+				}
+			}
 
 			FlogHelper.putStore();
 
@@ -109,6 +122,7 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 
 			final HTMLNode generalBox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("GeneralContentData"), form, "GeneralContentData", true);
 			final HTMLNode tagsBox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("Tags"), form, "TagsContentData", true);
+			final HTMLNode datesBox = advancedMode ? this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("Dates"), form, "DatesContentData", true) : null;
 			final HTMLNode settingsBox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("Settings"), form, "SettingsContentData", true);
 			final HTMLNode submitBox = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("SaveChanges"), form, "SubmitContentData", true);
 
@@ -147,6 +161,22 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 
 			tagsBox.addChild("p").addChild("label", "for", "Tags", FlogHelper.getBaseL10n().getString("TagsFieldDesc")).addChild("br").addChild("input", new String[]{"type", "size", "name", "value", "maxlength"},
 					new String[]{"text", "50", "Tags", tagz.toString(), Integer.toString(TAGS_MAXLENGTH)});
+			
+			/* Dates box */
+			if(datesBox != null) {
+				datesBox.addChild("p")
+				.addChild("label", "for", "CreationDate", FlogHelper.getBaseL10n().getString("CreationDateFieldDesc"))
+				.addChild("input", new String[]{"type", "size", "name", "value", "maxlength"},
+					new String[]{"text", Integer.toString(dateFormat.toPattern().length() + 2), "CreationDate", 
+						dateFormat.format(content.getContentCreationDate()), Integer.toString(dateFormat.toPattern().length())});
+				
+				datesBox.addChild("p")
+				.addChild("label", "for", "ModificationDate", FlogHelper.getBaseL10n().getString("ModificationDateFieldDesc"))
+				.addChild("input", new String[]{"type", "size", "name", "value", "maxlength"},
+					new String[]{"text", Integer.toString(dateFormat.toPattern().length() + 2), "ModificationDate", 
+						dateFormat.format(content.getContentCreationDate()), Integer.toString(dateFormat.toPattern().length())});
+			}
+
 
 			final boolean isDraft = content.isDraft();
 			HTMLNode checkBlock = settingsBox.addChild("p");
