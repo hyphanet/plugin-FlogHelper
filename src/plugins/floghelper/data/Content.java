@@ -46,7 +46,10 @@ public abstract class Content {
 	abstract public void setDraft(boolean b);
 
 	abstract public Date getContentCreationDate();
+	abstract public void setContentCreationDate(Date date);
+	
 	abstract public Date getContentModificationDate();
+	abstract public void setContentModificationDate(Date date);
 
 	abstract public Vector<String> getTags();
 	abstract public void setTags(Vector<String> s);
