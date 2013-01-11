@@ -236,5 +236,10 @@ public class IndexBuilder {
 				this.position++;
 			}
 		}
+
+		@Override
+		public void onFinishedPage() {
+			//Not needed
+		}
 	}
 }
