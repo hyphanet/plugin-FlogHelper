@@ -22,6 +22,7 @@ import freenet.client.async.ClientContext;
 import freenet.client.async.DBJob;
 import freenet.client.async.DatabaseDisabledException;
 import freenet.client.async.ManifestElement;
+import freenet.client.async.TooManyFilesInsertException;
 import freenet.keys.FreenetURI;
 import freenet.node.RequestStarter;
 import freenet.node.fcp.ClientPutDir;
@@ -542,15 +543,18 @@ public class FlogFactory {
 					 * ObjectContainer container
 					 */
 					ClientPutDir cpd = new ClientPutDir(client, uri, "FlogHelper: " + flog.getTitle() + " (" + flog.getID() + DataFormatter.getRandomID(4) + ")", Integer.MAX_VALUE, RequestStarter.IMMEDIATE_SPLITFILE_PRIORITY_CLASS, ClientRequest.PERSIST_FOREVER, null, false, false, -1, parsedFlog, "index.html", true, false, false, true, 2, 2, false, null, fcp, arg0);
-					try {
-						fcp.startBlocking(cpd, arg0, arg1);
-						WoTContexts.addContext(flog.getAuthorID());
-					} catch (Exception ex) {
-						Logger.error(this, "",  ex);
-					}
+
+					fcp.startBlocking(cpd, arg0, arg1);
+					WoTContexts.addContext(flog.getAuthorID());
 				} catch (IdentifierCollisionException ex) {
 					Logger.error(this, "",  ex);
 				} catch (MalformedURLException ex) {
+					Logger.error(this, "",  ex);
+				} catch (DatabaseDisabledException ex) {
+					Logger.error(this, "",  ex);
+				} catch (PluginNotFoundException ex) {
+					Logger.error(this, "",  ex);
+				} catch (TooManyFilesInsertException ex) {
 					Logger.error(this, "",  ex);
 				}
 				return true;
