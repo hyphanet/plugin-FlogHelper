@@ -182,7 +182,7 @@ public class FlogListToadlet extends FlogHelperToadlet {
 			final String idToReallyDelete = request.getPartAsString("FlogToReallyDelete", 7);
 
 			if (idToReallyDelete != null && !idToReallyDelete.equals("")) {
-				if (request.getPartAsString("Yes", 3).equals("Yes")) {
+				if (request.isPartSet("Yes")) {
 					FlogHelper.getStore().subStores.remove(idToReallyDelete);
 					FlogHelper.putStore();
 					this.handleMethodGET(uri, request, ctx);
