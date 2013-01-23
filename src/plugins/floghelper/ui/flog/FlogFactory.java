@@ -22,6 +22,7 @@ import freenet.client.async.ClientContext;
 import freenet.client.async.DBJob;
 import freenet.client.async.DatabaseDisabledException;
 import freenet.client.async.ManifestElement;
+import freenet.client.async.TooManyFilesInsertException;
 import freenet.keys.FreenetURI;
 import freenet.node.RequestStarter;
 import freenet.node.fcp.ClientPutDir;
@@ -551,6 +552,8 @@ public class FlogFactory {
 				} catch (IdentifierCollisionException ex) {
 					Logger.error(this, "",  ex);
 				} catch (MalformedURLException ex) {
+					Logger.error(this, "",  ex);
+				} catch (TooManyFilesInsertException ex) {
 					Logger.error(this, "",  ex);
 				}
 				return true;
