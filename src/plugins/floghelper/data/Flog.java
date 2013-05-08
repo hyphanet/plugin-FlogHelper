@@ -149,6 +149,7 @@ public abstract class Flog {
 
 	abstract public boolean shouldPublishDates();
 	abstract public void    shouldPublishDates(boolean b);
+	/** DISABLED, but kept for now to warn the user. THIS IS GROSSLY INSECURE!!! */
 	abstract public boolean shouldPublishStoreDump();
 	abstract public void    shouldPublishStoreDump(boolean b);
 	abstract public boolean shouldPublishLibraryIndex();

@@ -24,6 +24,8 @@ import freenet.keys.USK;
 import freenet.l10n.BaseL10n;
 import freenet.l10n.PluginL10n;
 import freenet.node.RequestClient;
+import freenet.node.fcp.FCPMessage;
+import freenet.node.useralerts.UserAlert;
 import freenet.pluginmanager.FredPlugin;
 import freenet.pluginmanager.FredPluginThreadless;
 import freenet.pluginmanager.PluginRespirator;
@@ -34,9 +36,14 @@ import freenet.pluginmanager.FredPluginTalker;
 import freenet.pluginmanager.FredPluginThemed;
 import freenet.pluginmanager.FredPluginVersioned;
 import freenet.pluginmanager.PluginStore;
+import freenet.support.HTMLNode;
 import freenet.support.Logger;
 import freenet.support.SimpleFieldSet;
 import freenet.support.api.Bucket;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.List;
 import java.util.Vector;
 import plugins.floghelper.contentsyntax.js.JavascriptFactoryToadlet;
 import plugins.floghelper.data.Flog;
@@ -147,7 +154,7 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 			// We wait until we have a database to register toadlets
 			while(!FlogHelper.pr.getNode().hasDatabase()) {
 				try {
-					Thread.sleep(5000);
+					Thread.sleep(100);
 				} catch (InterruptedException ex1) {
 
 				}
@@ -155,7 +162,118 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 		} finally {
 			this.registerToadlets();
 			this.subscribeToFlogUSKs();
+			checkForDangerousFlogs();
 		}
+	}
+	
+	public static void generateWarnings(HTMLNode addTo) {
+		List<PluginStoreFlog> flogs = PluginStoreFlog.getFlogs();
+		for(final PluginStoreFlog flog : flogs) {
+			if(flog.shouldPublishStoreDump()) {
+				final String hostname = flog.taintedHostname();
+				final String title = flog.getTitle();
+				final String author = flog.getAuthorName();
+				addTo.addChild("p").addChild("b", FlogHelper.getBaseL10n().getString("WarningPublishedDangerousFlog", new String[] { "title", "author", "hostname" }, new String[] { title, author, hostname } ));
+			}
+		}
+	}
+
+	private void checkForDangerousFlogs() {
+		List<PluginStoreFlog> flogs = PluginStoreFlog.getFlogs();
+		for(final PluginStoreFlog flog : flogs) {
+			if(flog.shouldPublishStoreDump() && !flog.userWarnedTainted()) {
+				// TODO: No way to tell whether it's been published or not AFAICS.
+				// If it hasn't we could just turn it off.
+				freenet.node.Node n = pr.getNode();
+				final String hostname = flog.taintedHostname();
+				final String title = flog.getTitle();
+				final String author = flog.getAuthorName();
+				n.clientCore.alerts.register(new UserAlert() {
+
+					@Override
+					public boolean userCanDismiss() {
+						return true;
+					}
+
+					@Override
+					public String getTitle() {
+						return FlogHelper.getBaseL10n().getString("WarningPublishedDangerousFlogTitle", new String[] { "title", "author", "hostname" }, new String[] { title, author, hostname } );
+					}
+
+					@Override
+					public String getText() {
+						return FlogHelper.getBaseL10n().getString("WarningPublishedDangerousFlog", new String[] { "title", "author", "hostname" }, new String[] { title, author, hostname } );
+					}
+
+					@Override
+					public HTMLNode getHTMLText() {
+						return new HTMLNode("#", getText());
+					}
+
+					@Override
+					public String getShortText() {
+						return FlogHelper.getBaseL10n().getString("WarningPublishedDangerousFlogTitle", new String[] { "title", "author", "hostname" }, new String[] { title, author, hostname } );
+					}
+
+					@Override
+					public short getPriorityClass() {
+						return UserAlert.CRITICAL_ERROR;
+					}
+
+					@Override
+					public boolean isValid() {
+						return flog.shouldPublishStoreDump() && !flog.userWarnedTainted();
+					}
+
+					@Override
+					public void isValid(boolean validity) {
+						if(!validity) {
+							flog.userWarnedTainted(true);
+							flog.putFlog();
+							putStore();
+						}
+					}
+
+					@Override
+					public String dismissButtonText() {
+						return FlogHelper.getBaseL10n().getString("TurnOffDangerousFlog");
+					}
+
+					@Override
+					public boolean shouldUnregisterOnDismiss() {
+						return true;
+					}
+
+					@Override
+					public void onDismiss() {
+						isValid(false);
+					}
+
+					@Override
+					public String anchor() {
+						return "floghelper-dangerous-flog-"+flog.getAuthorID()+"-"+flog.getID();
+					}
+
+					@Override
+					public boolean isEventNotification() {
+						return false;
+					}
+
+					@Override
+					public FCPMessage getFCPMessage() {
+						return null;
+					}
+
+					@Override
+					public long getUpdatedTime() {
+						return 0;
+					}
+					
+				});
+			}
+		}
+		// TODO Auto-generated method stub
+		
 	}
 
 	/**

@@ -150,4 +150,8 @@ Underline=Souligné
 ViewFlogDetails=Voir les détails du flog. 
 Warning=Avertissement
 Yes=Oui
+WarningPublishedDangerousFlog=BRÈCHE D'ANONYMIE : Votre Flog "${title}" a laissé fuir votre nom d'hôte "${hostname}" pour votre identité WoT (${author}), dans le fichier de sauvegarde "flog.db4o". Celà signifie que tous ces flogs, mais aussi les posts Sone, Freetalk, Freemail et tout autre post utilisant cette identité peut se connecter à "${hostame}".
+WarningPublishedDangerousFlogTitle=BRÈCHE D'ANONYMIE : Votre flog "${title}" a laissé fuir votre nom d'hôte "${hostname}"!
+WarningPublishedDangerousFlogLaterOn=ATTENTION, CES FLOGS SONT PEUT-ÊTRE TRACABLES : Votre Flog "${title}" a laissé fuir votre nom d'hôte "${hostname}" pour votre identité WoT (${author}), dans le fichier de sauvegarde "flog.db4o". Celà signifie que tous ces flogs, mais aussi les posts Sone, Freetalk, Freemail et tout autre post utilisant cette identité peut se connecter à "${hostame}".
+TurnOffDangerousFlog=Cacher cette avertissement
 End

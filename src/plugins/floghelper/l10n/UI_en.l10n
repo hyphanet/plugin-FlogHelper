@@ -153,4 +153,8 @@ Underline=Underline
 ViewFlogDetails=View details
 Warning=Warning
 Yes=Yes
+WarningPublishedDangerousFlog=ANONYMITY BREACH: Your flog "${title}" has leaked your hostname "${hostname}" for your WoT identity ${author}, in the backup file "flog.db4o". That means all your flogs, Sone posts, Freetalk posts, Freemail and anything else using that identity can be connected to "${hostname}". You could keep using this identity but bear in mind that it may be compromised, or you could delete the identity. Files on Freenet cannot be deleted, but if you upload a new version the old one may eventually become inaccessible, although somebody may have downloaded it already. You can delete the identity or create a new one on the Community menu under "Own anonymous identities". In case of any questions please contact us securely on Freenet Messaging System (FMS) board Freenet.
+WarningPublishedDangerousFlogTitle=ANONYMITY BREACH: ${author}'s flog "${title}" leaked your hostname "${hostname}"!
+WarningPublishedDangerousFlogLaterOn=WARNING, THESE FLOGS MAY BE TRACEABLE: Your flog "${title}" leaked your hostname "${hostname}" for this WoT identity (${author}), in the backup file "flog.db4o". That means all these flogs, but also Sone posts, Freetalk posts, Freemail and anything else using that identity can be connected to "${hostname}".
+TurnOffDangerousFlog=Hide this warning
 End
