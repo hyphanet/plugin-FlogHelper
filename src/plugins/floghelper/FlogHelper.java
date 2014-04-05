@@ -417,7 +417,7 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 	 * @return Revision
 	 */
 	public long getRealVersion() {
-		return Version.REVISION;
+		return Version.getRevision();
 	}
 
 	/**
