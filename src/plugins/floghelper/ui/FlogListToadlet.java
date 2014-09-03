@@ -16,10 +16,10 @@
  */
 package plugins.floghelper.ui;
 
-import freenet.client.async.DatabaseDisabledException;
 import freenet.pluginmanager.PluginNotFoundException;
 import plugins.floghelper.data.DataFormatter;
 import freenet.client.HighLevelSimpleClient;
+import freenet.client.async.PersistenceDisabledException;
 import freenet.clients.http.PageNode;
 import freenet.clients.http.ToadletContext;
 import freenet.clients.http.ToadletContextClosedException;
@@ -180,7 +180,8 @@ public class FlogListToadlet extends FlogHelperToadlet {
 		writeHTMLReply(ctx, 200, "OK", null, pageNode.outer.generate());
 	}
 
-	public void getPagePost(final PageNode pageNode, final URI uri, final HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException {
+	@Override
+	public void getPagePost(final PageNode pageNode, final URI uri, final HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException, PersistenceDisabledException {
 		if (request.isPartSet("FlogToDelete") || request.isPartSet("FlogToReallyDelete")) {
 			final String idToDelete = request.getPartAsString("FlogToDelete", 7);
 			final String idToReallyDelete = request.getPartAsString("FlogToReallyDelete", 7);
@@ -223,8 +224,6 @@ public class FlogListToadlet extends FlogHelperToadlet {
 				try {
 					fFactory.insert();
 				} catch (PluginNotFoundException ex) {
-					// Won't happen
-				} catch (DatabaseDisabledException ex) {
 					// Won't happen
 				}
 

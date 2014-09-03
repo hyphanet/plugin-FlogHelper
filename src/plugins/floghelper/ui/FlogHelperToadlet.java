@@ -17,6 +17,7 @@
 package plugins.floghelper.ui;
 
 import freenet.client.HighLevelSimpleClient;
+import freenet.client.async.PersistenceDisabledException;
 import freenet.clients.http.PageMaker;
 import freenet.clients.http.PageNode;
 import freenet.clients.http.Toadlet;
@@ -122,7 +123,7 @@ public abstract class FlogHelperToadlet extends Toadlet {
 		this.getPageGet(pageNode, uri, request, ctx);
 	}
 
-	public void handleMethodPOST(final URI uri, HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException {
+	public void handleMethodPOST(final URI uri, HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException, PersistenceDisabledException {
 		this.getPM().parseMode(request, ctx.getContainer());
 		final PageNode pageNode = FlogHelper.getPR().getPageMaker().getPageNode(FlogHelper.getName(), ctx);
 
@@ -135,5 +136,5 @@ public abstract class FlogHelperToadlet extends Toadlet {
 
 	public abstract void getPageGet(final PageNode pageNode, final URI uri, final HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException;
 
-	public abstract void getPagePost(final PageNode pageNode, final URI uri, HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException;
+	public abstract void getPagePost(final PageNode pageNode, final URI uri, HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException, PersistenceDisabledException;
 }

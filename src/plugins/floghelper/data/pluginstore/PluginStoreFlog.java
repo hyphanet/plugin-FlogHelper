@@ -395,7 +395,8 @@ public class PluginStoreFlog extends Flog {
 	}
 
 	public byte[] exportFlog() {
-		return this.getStore().exportStore();
+		//FIXME: no longer supported, maybe not needed with new pluginstore code?
+		return null;  
 	}
 
 	public static boolean hasFlog(String flogID) {

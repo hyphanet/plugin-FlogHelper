@@ -19,23 +19,23 @@ package plugins.floghelper.ui.flog;
 import com.db4o.ObjectContainer;
 import freenet.client.DefaultMIMETypes;
 import freenet.client.async.ClientContext;
-import freenet.client.async.DBJob;
-import freenet.client.async.DatabaseDisabledException;
-import freenet.client.async.ManifestElement;
+import freenet.support.api.ManifestElement;
+import freenet.client.async.PersistenceDisabledException;
+import freenet.client.async.PersistentJob;
 import freenet.client.async.TooManyFilesInsertException;
+import freenet.clients.fcp.ClientPutDir;
+import freenet.clients.fcp.ClientRequest;
+import freenet.clients.fcp.PersistentRequestClient;
+import freenet.clients.fcp.FCPServer;
+import freenet.clients.fcp.IdentifierCollisionException;
 import freenet.keys.FreenetURI;
 import freenet.node.RequestStarter;
-import freenet.node.fcp.ClientPutDir;
-import freenet.node.fcp.ClientRequest;
-import freenet.node.fcp.FCPClient;
-import freenet.node.fcp.FCPServer;
-import freenet.node.fcp.IdentifierCollisionException;
 import freenet.pluginmanager.PluginNotFoundException;
 import freenet.support.Logger;
-import freenet.support.api.Bucket;
 import freenet.support.io.BucketTools;
 import freenet.support.io.NativeThread;
 import freenet.support.io.PersistentTempBucketFactory;
+import freenet.support.api.RandomAccessBucket;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -414,7 +414,8 @@ public class FlogFactory {
 	 */
 	public HashMap<String, Object> parseAllFlog() throws IOException {
 		final HashMap<String, Object> fileMap = new HashMap<String, Object>();
-		Bucket data; String name;
+		RandomAccessBucket data; 
+		String name;
 		final PersistentTempBucketFactory factory = FlogHelper.getPR().getNode().clientCore.persistentTempBucketFactory;
 
 		data = BucketTools.makeImmutableBucket(factory, this.getIndex().getBytes("UTF-8"));
@@ -494,10 +495,10 @@ public class FlogFactory {
 	 * @throws PluginNotFoundException
 	 * @throws DatabaseDisabledException
 	 */
-	public void insert() throws IOException, PluginNotFoundException, DatabaseDisabledException {
+	public void insert() throws IOException, PluginNotFoundException, PersistenceDisabledException {
 		final FCPServer fcp = FlogHelper.getPR().getNode().clientCore.getFCPServer();
 		final HashMap<String, Object> parsedFlog = this.parseAllFlog();
-		final FCPClient client = fcp.getGlobalForeverClient();
+		final PersistentRequestClient client = fcp.getGlobalForeverClient();
 		final FreenetURI uri;
 		FreenetURI temp;
 		try {
@@ -510,9 +511,15 @@ public class FlogFactory {
 		// This is tricky but it works, we need uri to be final.
 		uri = temp;
 
-		FlogHelper.getPR().getNode().clientCore.queue(new DBJob() {
+		FlogHelper.getPR().getNode().clientCore.clientLayerPersister.queue(new PersistentJob() {
 
-			public boolean run(ObjectContainer arg0, ClientContext arg1) {
+			@Override
+			public String toString() {
+				return "FlogHelper StartFloglDirInsert";
+			}
+			
+			@Override
+			public boolean run(ClientContext arg1) {
 				try {
 					/**
 					 * FCPClient client,
@@ -535,14 +542,17 @@ public class FlogFactory {
 					 * int extraInsertsSplitfileHeaderBlock
 					 * boolean realTimeFlag
 					 * byte[] overrideSplitfileCryptoKey
-					 * FCPServer server,
-					 * ObjectContainer container
+					 * FCPServer server
 					 */
-					ClientPutDir cpd = new ClientPutDir(client, uri, "FlogHelper: " + flog.getTitle() + " (" + flog.getID() + DataFormatter.getRandomID(4) + ")", Integer.MAX_VALUE, RequestStarter.IMMEDIATE_SPLITFILE_PRIORITY_CLASS, ClientRequest.PERSIST_FOREVER, null, false, false, -1, parsedFlog, "index.html", true, false, false, true, 2, 2, false, null, fcp, arg0);
+					ClientPutDir cpd = new ClientPutDir(client, uri, "FlogHelper: " + flog.getTitle() + " (" + flog.getID() + DataFormatter.getRandomID(4) + ")", Integer.MAX_VALUE, RequestStarter.IMMEDIATE_SPLITFILE_PRIORITY_CLASS, ClientRequest.Persistence.FOREVER, null, false, false, -1, parsedFlog, "index.html", true, false, false, true, 2, 2, true, null, fcp.core);
 					try {
-						fcp.startBlocking(cpd, arg0, arg1);
+						fcp.startBlocking(cpd, arg1);
 						WoTContexts.addContext(flog.getAuthorID());
-					} catch (Exception ex) {
+					} catch (PersistenceDisabledException ex) {
+						Logger.error(this, "",  ex);
+					} catch (IdentifierCollisionException ex) {
+						Logger.error(this, "",  ex);
+					} catch (PluginNotFoundException ex) {
 						Logger.error(this, "",  ex);
 					}
 				} catch (IdentifierCollisionException ex) {
@@ -554,7 +564,7 @@ public class FlogFactory {
 				}
 				return true;
 			}
-		}, NativeThread.MAX_PRIORITY, true);
+		}, NativeThread.MAX_PRIORITY);
 	}
 
 	/**

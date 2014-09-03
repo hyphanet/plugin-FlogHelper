@@ -47,8 +47,9 @@ public class ImportFlogToadlet extends FlogHelperToadlet {
 		this.getPagePost(pageNode, uri, request, ctx);
 	}
 
+	//FIXME: What to do about import/export?  just remove it from the UI?
 	public void getPagePost(final PageNode pageNode, final URI uri, HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		if (request.isPartSet("Import") && request.getUploadedFile("ImportDb").getData().size() > 0) {
+/*		if (request.isPartSet("Import") && request.getUploadedFile("ImportDb").getData().size() > 0) {
 			HTTPUploadedFile i = request.getUploadedFile("ImportDb");
 			byte[] buf = BucketTools.toByteArray(i.getData());
 			PluginStore importedFlog = PluginStore.importStore(buf);
@@ -72,7 +73,7 @@ public class ImportFlogToadlet extends FlogHelperToadlet {
 					new String[]{"file", "ImportDb"});
 			ulForm.addChild("input", new String[]{"type", "name", "value"},
 					new String[]{"submit", "Import", FlogHelper.getBaseL10n().getString("Proceed")});
-		}
+		}*/
 
 		writeHTMLReply(ctx, 200, "OK", null, pageNode.outer.generate());
 	}

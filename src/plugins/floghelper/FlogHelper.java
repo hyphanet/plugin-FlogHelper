@@ -17,14 +17,14 @@
 package plugins.floghelper;
 
 import com.db4o.ObjectContainer;
-import freenet.client.async.DatabaseDisabledException;
+import freenet.client.async.PersistenceDisabledException;
 import freenet.client.async.USKManager;
 import freenet.clients.http.PageMaker.THEME;
 import freenet.keys.USK;
 import freenet.l10n.BaseL10n;
 import freenet.l10n.PluginL10n;
 import freenet.node.RequestClient;
-import freenet.node.fcp.FCPMessage;
+import freenet.clients.fcp.FCPMessage;
 import freenet.node.useralerts.UserAlert;
 import freenet.pluginmanager.FredPlugin;
 import freenet.pluginmanager.FredPluginThreadless;
@@ -116,7 +116,7 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 	public static void putStore() {
 		try {
 			FlogHelper.pr.putStore(FlogHelper.store);
-		} catch (DatabaseDisabledException ex) {
+		} catch (PersistenceDisabledException ex) {
 			Logger.error(FlogHelper.class, "Could not put PluginStore : " + ex.getMessage());
 		}
 	}
@@ -149,7 +149,7 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 		FlogHelper.uskManager = FlogHelper.getPR().getNode().clientCore.uskManager;
 		try {
 			FlogHelper.store = FlogHelper.pr.getStore();
-		} catch (DatabaseDisabledException ex) {
+		} catch (PersistenceDisabledException ex) {
 			Logger.error(this, "Could not load flogs from db4o - " + ex.getMessage());
 			// We wait until we have a database to register toadlets
 			while(!FlogHelper.pr.getNode().hasDatabase()) {

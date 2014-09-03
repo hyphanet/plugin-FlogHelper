@@ -204,7 +204,7 @@ public abstract class Flog {
 	public USKCallback getUSKCallback() {
 		if(this.uskCallback == null) {
 			uskCallback = new USKCallback() {
-				public void onFoundEdition(long arg0, USK arg1, ObjectContainer arg2, ClientContext arg3, boolean arg4, short arg5, byte[] arg6, boolean arg7, boolean arg8) {
+				public void onFoundEdition(long arg0, USK arg1, ClientContext arg2, boolean arg3, short arg4, byte[] arg5, boolean arg6, boolean arg7) {
 					Logger.debug(this, "Found edition " + Long.toString(arg0));
 					if(arg0 > getLatestUSKEdition()) {
 						setLatestUSKEdition(arg0);
