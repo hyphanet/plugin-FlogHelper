@@ -20,13 +20,20 @@ import freenet.client.HighLevelSimpleClient;
 import freenet.clients.http.PageNode;
 import freenet.clients.http.ToadletContext;
 import freenet.clients.http.ToadletContextClosedException;
+import freenet.node.FSParseException;
 import freenet.pluginmanager.PluginStore;
 import freenet.support.HTMLNode;
+import freenet.support.IllegalBase64Exception;
+import freenet.support.SimpleFieldSet;
 import freenet.support.api.HTTPRequest;
 import freenet.support.api.HTTPUploadedFile;
 import freenet.support.io.BucketTools;
+
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
+
 import plugins.floghelper.FlogHelper;
 import plugins.floghelper.data.DataFormatter;
 
@@ -47,12 +54,19 @@ public class ImportFlogToadlet extends FlogHelperToadlet {
 		this.getPagePost(pageNode, uri, request, ctx);
 	}
 
-	//FIXME: What to do about import/export?  just remove it from the UI?
 	public void getPagePost(final PageNode pageNode, final URI uri, HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException {
-/*		if (request.isPartSet("Import") && request.getUploadedFile("ImportDb").getData().size() > 0) {
+		if (request.isPartSet("Import") && request.getUploadedFile("ImportDb").getData().size() > 0) {
 			HTTPUploadedFile i = request.getUploadedFile("ImportDb");
-			byte[] buf = BucketTools.toByteArray(i.getData());
-			PluginStore importedFlog = PluginStore.importStore(buf);
+			InputStream in = new ByteArrayInputStream(BucketTools.toByteArray(i.getData()));
+      PluginStore importedFlog;
+      try {
+        importedFlog = new PluginStore(SimpleFieldSet.readFrom(in, false, true));
+      } catch (IllegalBase64Exception e) {
+        throw new IOException(e);
+      } catch (FSParseException e) {
+        throw new IOException(e);
+      }
+      in.close();
 			String newID = DataFormatter.createUniqueFlogID();
 			importedFlog.strings.put("ID", newID);
 			FlogHelper.getStore().subStores.put(newID, importedFlog);
@@ -73,7 +87,7 @@ public class ImportFlogToadlet extends FlogHelperToadlet {
 					new String[]{"file", "ImportDb"});
 			ulForm.addChild("input", new String[]{"type", "name", "value"},
 					new String[]{"submit", "Import", FlogHelper.getBaseL10n().getString("Proceed")});
-		}*/
+		}
 
 		writeHTMLReply(ctx, 200, "OK", null, pageNode.outer.generate());
 	}

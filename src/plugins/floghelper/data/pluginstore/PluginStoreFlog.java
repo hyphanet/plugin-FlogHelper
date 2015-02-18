@@ -22,6 +22,8 @@ import freenet.pluginmanager.PluginNotFoundException;
 import freenet.pluginmanager.PluginStore;
 import freenet.support.Logger;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
@@ -395,8 +397,15 @@ public class PluginStoreFlog extends Flog {
 	}
 
 	public byte[] exportFlog() {
-		//FIXME: no longer supported, maybe not needed with new pluginstore code?
-		return null;  
+    ByteArrayOutputStream os = new ByteArrayOutputStream();
+    try {
+      this.getStore().exportStoreAsSFS().writeTo(os);
+      os.close();
+    } catch (IOException e) {
+      Logger.error(getClass(), "Failed to export store.", e);
+      os.reset();
+    }
+    return os.toByteArray();
 	}
 
 	public static boolean hasFlog(String flogID) {
