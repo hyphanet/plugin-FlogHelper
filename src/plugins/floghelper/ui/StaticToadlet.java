@@ -1,6 +1,8 @@
 package plugins.floghelper.ui;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -19,8 +21,10 @@ import freenet.support.api.HTTPRequest;
  * Serves static files.
  */
 public class StaticToadlet extends FlogHelperToadlet {
-    public static final String STATIC_PATH = "/static";
+    public static final String STATIC_PATH = "/static/";
     private static final String prefix = FlogHelperToadlet.BASE_URI + STATIC_PATH;
+
+    private static final String static_dir = "floghelper-static";
 
     public StaticToadlet(HighLevelSimpleClient highLevelSimpleClient) {
         super(highLevelSimpleClient, STATIC_PATH);
@@ -32,10 +36,15 @@ public class StaticToadlet extends FlogHelperToadlet {
         assert path.startsWith(prefix);
         final String filename = path.substring(prefix.length());
 
-        InputStream in = StaticToadlet.class.getResourceAsStream("static/" + filename);
-        if (in == null) {
-            writeTextReply(ctx, 404, "Not found", String.format("No such file %s", path));
-            return;
+        InputStream in;
+        try {
+            in = new FileInputStream(static_dir + "/" + filename);
+        } catch (FileNotFoundException e) {
+            in = StaticToadlet.class.getResourceAsStream("static/" + filename);
+            if (in == null) {
+                writeTextReply(ctx, 404, "Not found", String.format("No such file %s", path));
+                return;
+            }
         }
 
         ByteArrayOutputStream out = new ByteArrayOutputStream(in.available());
