@@ -40,6 +40,7 @@ public abstract class ContentSyntax {
 		Syntaxes = new TreeMap<String, String>();
 		Syntaxes.put("YAWKL", "Simplified markup");
 		Syntaxes.put("RawXHTML", "xHTML");
+		Syntaxes.put("Markdown", "Markdown");
 	}
 
 	/**

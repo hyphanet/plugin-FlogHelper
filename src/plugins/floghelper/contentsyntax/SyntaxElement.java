@@ -61,6 +61,14 @@ public class SyntaxElement {
 	public final boolean isMajor;
 
 	/**
+	 * @param name Name of this element.
+	 * @param delimiter Begin and end delimiter of the element.
+	 */
+	public SyntaxElement(final String name, final String delimiter) {
+		this(name, delimiter, delimiter, "", 0, "", true);
+	}
+
+	/**
 	 * Create a new, simple syntaxElement.
 	 *
 	 * @param name Name of this element.
