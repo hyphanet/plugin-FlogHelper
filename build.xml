@@ -44,7 +44,7 @@
 		<replace file="${build}/${version.src}">
 			<replacefilter token="@custom@" value="${git.revision}"/>
 		</replace>
-		<javac srcdir="${build}" includes="${version.src}" destdir="${build}" debug="on" optimize="on" source="1.5" />
+		<javac srcdir="${build}" includes="${version.src}" destdir="${build}" debug="on" optimize="on" source="1.7" />
 		<echo message="Updated build version to ${git.revision} in ${build}/${version.src}"/>
 	</target>
 
@@ -53,7 +53,7 @@
 
 		<tstamp/>
 
-		<javac srcdir="${src}" destdir="${build}" excludes="${version.src}" debug="on" optimize="on" source="1.5">
+		<javac srcdir="${src}" destdir="${build}" excludes="${version.src}" debug="on" optimize="on" source="1.7">
 			<sourcepath>
 				<pathelement path="${build}"/>
 			</sourcepath>
