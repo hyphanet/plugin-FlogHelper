@@ -18,6 +18,7 @@
 	<!-- This location MUST point to a freenet jar. Change it if needed. -->
 	<property name="freenetjar" value="../fred/dist/freenet.jar"/>
 	<property name="freenet-extjar" value="../fred/lib/freenet/freenet-ext.jar"/>
+	<property name="commonmarkjar" value="lib/commonmark-0.1.0.jar"/>
 
 	<!-- Originally from Library's build script -->
 	<exec executable="git"
@@ -59,6 +60,7 @@
 			<classpath>
 				<pathelement location="${freenetjar}"/>
 				<pathelement location="${freenet-extjar}"/>
+				<pathelement location="${commonmarkjar}"/>
 			</classpath>
 		</javac>
 		<copy todir="${build}">
@@ -71,6 +73,7 @@
 	<target name="dist" depends="compile">
 		<mkdir dir="${dist}"/>
 		<jar jarfile="${dist}/FlogHelper.jar" basedir="${build}" excludes="${version.src}">
+			<zipgroupfileset dir="lib" includes="*.jar"/>
 			<manifest>
 				<attribute name="Plugin-Main-Class" value="plugins.floghelper.FlogHelper"/>
 				<section name="common">
@@ -83,6 +86,5 @@
 	<target name="clean">
 		<delete dir="${build}"/>
 		<delete dir="${dist}"/>
-		<delete dir="${lib}"/>
 	</target>
 </project>
