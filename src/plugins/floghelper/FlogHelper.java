@@ -57,6 +57,7 @@ import plugins.floghelper.ui.FlogHelperToadlet;
 import plugins.floghelper.ui.FlogListToadlet;
 import plugins.floghelper.ui.ImportFlogToadlet;
 import plugins.floghelper.ui.PreviewToadlet;
+import plugins.floghelper.ui.StaticToadlet;
 
 /**
  * FlogHelper goals : lightweight, integrated in the node, SECURE BY DEFAULT,
@@ -316,6 +317,7 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 		this.myToadlets.add(new PreviewToadlet(FlogHelper.pr.getHLSimpleClient()));
 		this.myToadlets.add(new JavascriptFactoryToadlet(FlogHelper.pr.getHLSimpleClient()));
 		this.myToadlets.add(new AttachmentsToadlet(FlogHelper.pr.getHLSimpleClient()));
+		this.myToadlets.add(new StaticToadlet(FlogHelper.pr.getHLSimpleClient()));
 
 		FlogHelper.pr.getPageMaker().addNavigationCategory(FlogHelperToadlet.BASE_URI + "/",
 				FlogHelper.PLUGIN_NAME, FlogHelper.PLUGIN_NAME, this);

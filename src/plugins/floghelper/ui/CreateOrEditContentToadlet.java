@@ -159,6 +159,17 @@ public class CreateOrEditContentToadlet extends FlogHelperToadlet {
 					content.getContentSyntax(), DataFormatter.toString(content.getContent()),
 					FlogHelper.getBaseL10n().getString("ContentFieldDesc"));
 
+            if ("Markdown".equals(content.getContentSyntax())) {
+                generalBox.addChild("div", "id", "markdown-preview");
+                /* TODO: maybe use jQuery and iodash like https://markdown-it.github.io/ */
+                generalBox.addChild("script", new String[] {"type", "src"},
+                        new String[] {"text/javascript", FlogHelperToadlet.BASE_URI +
+                                StaticToadlet.STATIC_PATH + "markdown-it.min.js"}, "");
+                generalBox.addChild("script", new String[] {"type", "src"},
+                        new String[] {"text/javascript", FlogHelperToadlet.BASE_URI +
+                                StaticToadlet.STATIC_PATH + "markdown-preview.js"}, "");
+            }
+
 			final StringBuilder tagz = new StringBuilder();
 			final Vector<String> tags = content.getTags();
 			for (String tag : tags) {
