@@ -22,6 +22,7 @@ import java.util.TreeMap;
 import java.util.Vector;
 import plugins.floghelper.contentsyntax.js.JavascriptFactoryToadlet;
 import plugins.floghelper.ui.FlogHelperToadlet;
+import plugins.floghelper.ui.StaticToadlet;
 
 /**
  * This abstract class represent a content syntax, such as xHTML, BBCode, ...
@@ -119,12 +120,12 @@ public abstract class ContentSyntax {
 	 *
 	 * @param parentForm Parent form to use.
 	 * @param textAreaName Name/id of the textarea.
-	 * @param defaultSelectedValue Default ContentSyntax to select.
+	 * @param contentSyntax Default ContentSyntax to select.
 	 * @param defaultContent Initial value of the textarea.
 	 * @param textAreaLabel Label above the textarea.
 	 * @return HTMLNode of the parentForm.
 	 */
-	public static HTMLNode addJavascriptEditbox(HTMLNode parentForm, String textAreaName, String defaultSelectedValue, String defaultContent, String textAreaLabel) {
+	public static HTMLNode addJavascriptEditbox(HTMLNode parentForm, String textAreaName, String contentSyntax, String defaultContent, String textAreaLabel) {
 		parentForm.addChild("script", new String[]{"type", "src"}, new String[]{"text/javascript",
 					FlogHelperToadlet.BASE_URI + JavascriptFactoryToadlet.MY_URI + "EditBox.js"}, " ");
 
@@ -140,15 +141,33 @@ public abstract class ContentSyntax {
 					"refreshSyntaxButtons_" + textAreaName + "();"});
 		for (String e : ContentSyntax.Syntaxes.keySet()) {
 			HTMLNode syntaxListElement = syntaxesList.addChild("option", "value", e.toString(), Syntaxes.get(e));
-			if (defaultSelectedValue != null && defaultSelectedValue.equals(e.toString())) {
+			if (contentSyntax != null && contentSyntax.equals(e.toString())) {
 				syntaxListElement.addAttribute("selected", "selected");
 			}
 		}
 
 		parentForm.addChild("br").addChild("span", new String[]{"id", "style"}, new String[]{textAreaName + "_buttons", "display: inline-block; width: 650px;"}, " ");
 		parentForm.addChild("br");
-		parentForm.addChild("textarea", new String[]{"rows", "cols", "name", "id"},
+
+		HTMLNode editBox = parentForm.addChild("div", "style", "clear: both;");
+		editBox.addChild("textarea", new String[]{"rows", "cols", "name", "id"},
 				new String[]{"12", "80", textAreaName, textAreaName}, defaultContent);
+
+		if ("Markdown".equals(contentSyntax)) {
+			HTMLNode previewBox = editBox.addChild("div", "id", "markdown-preview");
+			previewBox.addAttribute("style", "float:right;");
+			editBox.addChild("script", new String[]{"type", "src"},
+					new String[]{"text/javascript", FlogHelperToadlet.BASE_URI +
+							StaticToadlet.STATIC_PATH + "jquery-2.1.4.js"}, "");
+                /* TODO: maybe use iodash for debouncing like https://markdown-it.github.io/ */
+			editBox.addChild("script", new String[] {"type", "src"},
+					new String[] {"text/javascript", FlogHelperToadlet.BASE_URI +
+							StaticToadlet.STATIC_PATH + "markdown-it.min.js"}, "");
+			editBox.addChild("script", new String[] {"type", "src"},
+					new String[] {"text/javascript", FlogHelperToadlet.BASE_URI +
+							StaticToadlet.STATIC_PATH + "markdown-preview.js"}, "");
+		}
+
 
 		parentForm.addChild("script", "type", "text/javascript", "refreshSyntaxButtons_" + textAreaName + "();");
 

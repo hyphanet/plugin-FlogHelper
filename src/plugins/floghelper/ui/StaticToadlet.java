@@ -16,6 +16,7 @@ import freenet.clients.http.ToadletContext;
 import freenet.clients.http.ToadletContextClosedException;
 import freenet.support.MultiValueTable;
 import freenet.support.api.HTTPRequest;
+import plugins.floghelper.FlogHelper;
 
 /**
  * Serves static files.
@@ -35,14 +36,16 @@ public class StaticToadlet extends FlogHelperToadlet {
         final String path = uri.getPath();
         assert path.startsWith(prefix);
         final String filename = path.substring(prefix.length());
+        final String overridePath = FlogHelper.getPR().getNode().getCfgDir().getAbsolutePath() +
+                "/" + static_dir + "/" + filename;
 
         InputStream in;
         try {
-            in = new FileInputStream(static_dir + "/" + filename);
+            in = new FileInputStream(overridePath);
         } catch (FileNotFoundException e) {
             in = StaticToadlet.class.getResourceAsStream("static/" + filename);
             if (in == null) {
-                writeTextReply(ctx, 404, "Not found", String.format("No such file %s", path));
+                writeTextReply(ctx, 404, "Not found", String.format("No such file %s", filename));
                 return;
             }
         }
