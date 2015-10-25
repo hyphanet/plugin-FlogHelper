@@ -313,8 +313,6 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 		this.myToadlets.add(new CreateOrEditFlogToadlet(FlogHelper.pr.getHLSimpleClient()));
 		this.myToadlets.add(new ContentListToadlet(FlogHelper.pr.getHLSimpleClient()));
 		this.myToadlets.add(new CreateOrEditContentToadlet(FlogHelper.pr.getHLSimpleClient()));
-		this.myToadlets.add(new ExportFlogToadlet(FlogHelper.pr.getHLSimpleClient()));
-		this.myToadlets.add(new ImportFlogToadlet(FlogHelper.pr.getHLSimpleClient()));
 		this.myToadlets.add(new PreviewToadlet(FlogHelper.pr.getHLSimpleClient()));
 		this.myToadlets.add(new JavascriptFactoryToadlet(FlogHelper.pr.getHLSimpleClient()));
 		this.myToadlets.add(new AttachmentsToadlet(FlogHelper.pr.getHLSimpleClient()));
