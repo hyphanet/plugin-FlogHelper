@@ -30,7 +30,7 @@ public class Version {
 	/**
 	 * Don't forget to bump this when a new release is up.
 	 */
-	private static final long REVISION = 34;
+	private static final long REVISION = 35;
 
 	private static final long MAJOR = 0;
 	private static final long MINOR = 1;
