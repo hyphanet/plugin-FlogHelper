@@ -50,11 +50,7 @@ public class FlogListToadlet extends FlogHelperToadlet {
 	}
 
 	public void getPageGet(final PageNode pageNode, final URI uri, final HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		
-		HTMLNode content = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("FlogList"), pageNode.content);
-		
-		FlogHelper.generateWarnings(content);
-		final HTMLNode table = content.addChild("table");
+		final HTMLNode table = this.getPM().getInfobox(null, FlogHelper.getBaseL10n().getString("FlogList"), pageNode.content).addChild("table");
 
 		final HTMLNode tHead = table.addChild("thead");
 		final HTMLNode tFoot = table.addChild("tfoot");

@@ -139,8 +139,4 @@ Underline=Souligner
 ViewFlogDetails=Voir les détails
 Warning=Avertissement
 Yes=Oui
-WarningPublishedDangerousFlog=ATTEINTE À VOTRE ANONYMAT : votre flogue « ${title} » a divulgué votre nom d'hôte « ${hostname} » pour votre identité TdC (${author}), dans le fichier de sauvegarde « flog.db4o ». Cela signifie que tous vos flogues, publications Sone et Freetalk, Freemail et tout ce qui utilise cette identité peuvent être connectés à « ${hostame} ». Vous pourriez continuer à utiliser cette identité, mais gardez à l'esprit qu'elle pourrait être compromise. Vous pourriez aussi supprimer cette identité. Les fichiers de Freenet ne peuvent pas être supprimés, mais si vous téléversez une nouvelle version, l'ancienne pourrait à la longue devenir inaccessible, bien que quelqu'un pourrait déjà l'avoir téléchargée. Vous pouvez supprimer l'identité ou en créer une nouvelle dans le menu Communauté sous « Mes identités anonymes» . Pour toutes questions, veuillez nous contacter de façon sécurisée par le système de messagerie Freenet (FMS) du forum Freenet.
-WarningPublishedDangerousFlogTitle=ATTEINTE À VOTRE ANONYMAT : le flogue « ${title} » de ${author} a divulgué votre nom d'hôte « ${hostname} » !
-WarningPublishedDangerousFlogLaterOn=AVERTISSEMENT, CES FLOGUES POURRAIENT ÊTRE TRAÇABLES : votre flogue « ${title} » a divulgué votre nom d'hôte « ${hostname} » pour cette identité TdC (${author}), dans le fichier de sauvegarde « flog.db4o ». Cela signifie que tous vos flogues, publications Sone et Freetalk Freemail et tout ce qui utilise cette identité peuvent être connectés à « ${hostame} ».
-TurnOffDangerousFlog=Cacher cet avertissement
 End

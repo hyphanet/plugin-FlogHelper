@@ -482,8 +482,12 @@ public class FlogFactory {
 			}
 		}
 
-		// shouldPublishStoreDump is disabled.
-		
+		if(flog.shouldPublishStoreDump()) {
+			data = BucketTools.makeImmutableBucket(factory, flog.exportFlog());
+			name = Flog.STORE_DUMP_NAME;
+			fileMap.put(name, new ManifestElement(name, data, "application/octet-stream", data.size()));
+		}
+
 		return fileMap;
 	}
 
