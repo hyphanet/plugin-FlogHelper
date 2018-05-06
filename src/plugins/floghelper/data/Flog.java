@@ -70,11 +70,6 @@ public abstract class Flog {
 	 */
 	public static final String DEFAULT_SSK_PATH = "flog";
 
-	/**
-	 * Filename of the inserted Flog backup.
-	 */
-	public static final String STORE_DUMP_NAME = "flog.db4o";
-
 	private USKCallback uskCallback = null;
 	private BaseL10n myBaseL10n = null;
 
@@ -234,6 +229,4 @@ public abstract class Flog {
 	}
 
 	abstract public void putFlog();
-
-	abstract public byte[] exportFlog();
 }

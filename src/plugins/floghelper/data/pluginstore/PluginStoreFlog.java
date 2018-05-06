@@ -344,11 +344,6 @@ public class PluginStoreFlog extends Flog {
 		return this.flog.longs.get("USKLatestEdition");
 	}
 
-	public byte[] exportFlog() {
-		//FIXME: no longer supported, maybe not needed with new pluginstore code?
-		return null;  
-	}
-
 	public static boolean hasFlog(String flogID) {
 		return FlogHelper.getStore().subStores.containsKey(flogID);
 	}
