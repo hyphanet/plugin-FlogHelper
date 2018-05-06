@@ -324,17 +324,6 @@ public class PluginStoreFlog extends Flog {
 		this.flog.bytesArrays.remove("Activelink");
 	}
 
-	public boolean shouldPublishStoreDump() {
-		if(!this.flog.booleans.containsKey("InsertPluginStoreDump")) {
-			return Flog.DEFAULT_SHOULD_INSERT_STOREDUMP;
-		}
-		return this.flog.booleans.get("InsertPluginStoreDump");
-	}
-
-	public void shouldPublishStoreDump(boolean b) {
-		this.flog.booleans.put("InsertPluginStoreDump", b);
-	}
-
 	public void putFlog() {
 		FlogHelper.getStore().subStores.put(this.getID(), this.getStore());
 	}

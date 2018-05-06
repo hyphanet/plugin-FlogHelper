@@ -44,12 +44,6 @@ public abstract class Flog {
 	public static boolean DEFAULT_SHOULD_PUBLISH_DATES = false;
 
 	/**
-	 * If we don't publish dates, we don't publish a dump of the store, because it
-	 * contains the dates.
-	 */
-	public static final boolean DEFAULT_SHOULD_INSERT_STOREDUMP = false;
-
-	/**
 	 * Should we insert a Library index by default ?
 	 */
 	public static final boolean DEFAULT_SHOULD_INSERT_INDEX = true;
@@ -148,8 +142,6 @@ public abstract class Flog {
 
 	abstract public boolean shouldPublishDates();
 	abstract public void    shouldPublishDates(boolean b);
-	abstract public boolean shouldPublishStoreDump();
-	abstract public void    shouldPublishStoreDump(boolean b);
 	abstract public boolean shouldPublishLibraryIndex();
 	abstract public void    shouldPublishLibraryIndex(boolean b);
 	abstract public boolean shouldSortTagsByCount();

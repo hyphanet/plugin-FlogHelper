@@ -85,7 +85,6 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			flog.setTheme(request.getPartAsString("Theme", 250));
 			flog.setLang(LANGUAGE.mapToLanguage(request.getPartAsString("Lang", 5)));
 			flog.setShortDescription(request.getPartAsString("SmallDescription", DESCRIPTION_MAXLENGTH));
-			flog.shouldPublishStoreDump(request.isPartSet("InsertPluginStoreDump"));
 			flog.shouldPublishDates(request.isPartSet("PublishContentModificationDate"));
 			flog.shouldPublishLibraryIndex(request.isPartSet("InsertLibraryIndex"));
 			flog.shouldSortTagsByCount(request.isPartSet("SortTagsByCount"));
@@ -212,12 +211,6 @@ public class CreateOrEditFlogToadlet extends FlogHelperToadlet {
 			generalBox.addChild("p").addChild("label", "for", "SmallDescription", FlogHelper.getBaseL10n().getString("SmallDescriptionFieldDesc")).addChild("br")
 					.addChild("input", new String[]{"type", "size", "name", "value", "maxlength"},
 					new String[]{"text", "50", "SmallDescription", flog.getShortDescription(), Integer.toString(DESCRIPTION_MAXLENGTH)});
-
-			final boolean insertPluginStoreDump = flog.shouldPublishStoreDump();
-			checkBlock = settingsBox.addChild("p");
-			checkBlock.addChild("input", new String[]{"type", "name", "id", insertPluginStoreDump ? "checked" : "class"},
-					new String[]{"checkbox", "InsertPluginStoreDump", "InsertPluginStoreDump", insertPluginStoreDump ? "checked" : ""});
-			checkBlock.addChild("label", "for", "InsertPluginStoreDump", FlogHelper.getBaseL10n().getString("InsertPluginStoreDumpDesc").replace("${Filename}", Flog.STORE_DUMP_NAME));
 
 			final boolean insertLibraryIndex = flog.shouldPublishLibraryIndex();
 			checkBlock = settingsBox.addChild("p");
