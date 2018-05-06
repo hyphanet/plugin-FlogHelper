@@ -16,7 +16,6 @@
  */
 package plugins.floghelper;
 
-import com.db4o.ObjectContainer;
 import freenet.client.async.PersistenceDisabledException;
 import freenet.client.async.USKManager;
 import freenet.clients.http.PageMaker.THEME;
@@ -288,9 +287,6 @@ public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginB
 
 					public boolean persistent() {
 						return false;
-					}
-
-					public void removeFrom(ObjectContainer arg0) {
 					}
 
 					public boolean realTimeFlag() {

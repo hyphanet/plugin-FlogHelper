@@ -16,7 +16,6 @@
  */
 package plugins.floghelper.ui.flog;
 
-import com.db4o.ObjectContainer;
 import freenet.client.DefaultMIMETypes;
 import freenet.client.async.ClientContext;
 import freenet.support.api.ManifestElement;

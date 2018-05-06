@@ -77,14 +77,6 @@ public abstract class FlogHelperToadlet extends Toadlet {
 	}
 
 	public boolean makeGlobalChecks(final PageNode pageNode, final URI uri, final HTTPRequest request, final ToadletContext ctx) throws ToadletContextClosedException, IOException {
-		// Make sure Db4o database is enabled
-		if(FlogHelper.getStore() == null) {
-			this.getPM().getInfobox("infobox-error", FlogHelper.getBaseL10n().getString("MissingDb4o"),
-					pageNode.content).addChild("p", FlogHelper.getBaseL10n().getString("MissingDb4oLong"));
-			writeHTMLReply(ctx, 200, "OK", null, pageNode.outer.generate());
-			return false;
-		}
-
 		// Make sure WoT is there
 		try {
 			WoTOwnIdentities.sendPing();

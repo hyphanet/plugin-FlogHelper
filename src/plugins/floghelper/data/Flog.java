@@ -16,7 +16,6 @@
  */
 package plugins.floghelper.data;
 
-import com.db4o.ObjectContainer;
 import freenet.client.async.ClientContext;
 import freenet.client.async.USKCallback;
 import freenet.keys.FreenetURI;
