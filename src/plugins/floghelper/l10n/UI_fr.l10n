@@ -104,6 +104,7 @@ PreviewContent=Prévisualiser cette entrée
 PreviewingDraftContent=Prévisualisation du brouillon
 Preview=Prévisualiser
 PreviewWarning=Prévisualiser
+PrevTagsFieldDesc=Ajouter des balises des posts précédents:
 Proceed=Continuer
 PublishContentModificationDateDesc=Publier les dates de modification des entrées ? (Cela pourrait permettre à un attaquant potentiel d'identifier votre fuseau horaire).
 Quote=Citation
