@@ -91,6 +91,12 @@ public class YAWKL extends ContentSyntax {
 				Pattern.MULTILINE | Pattern.CASE_INSENSITIVE,
 				"<img alt=\"Image\" src=\"$1\" />", false));
 
+		// Audio
+		this.syntaxElements.add(new SyntaxElement(FlogHelper.getBaseL10n().getString("Audio"), "[[audio|", "]]",
+				SyntaxElement.begin + "(.+?)" + SyntaxElement.end,
+				Pattern.MULTILINE | Pattern.CASE_INSENSITIVE,
+				"<audio controls=\"controls\" preload=\"auto\" type=\"audio/mpeg\" style=\"height: 20px;\" src=\"$1\" />", true));
+
 		// Size and color
 		this.syntaxElements.add(new SyntaxElement(FlogHelper.getBaseL10n().getString("Size"), "[[1em|", "]]",
 				"\\[\\[((([0-9]|\\.)+)(px|em|pt))\\|(.+?)\\]\\]",
