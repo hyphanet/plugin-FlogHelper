@@ -21,10 +21,7 @@ import freenet.l10n.BaseL10n.LANGUAGE;
 import freenet.pluginmanager.PluginNotFoundException;
 import freenet.pluginmanager.PluginStore;
 import freenet.support.Logger;
-
-import java.net.InetAddress;
 import java.net.MalformedURLException;
-import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.Vector;
 import plugins.floghelper.FlogHelper;
@@ -327,53 +324,6 @@ public class PluginStoreFlog extends Flog {
 		this.flog.bytesArrays.remove("Activelink");
 	}
 
-	/** All this crap is to do with an unfortunate problem with flog.db4o, and can safely be ignored for 
-	 * flogs created since then. */
-	
-	public boolean shouldPublishStoreDump() {
-		if(!this.flog.booleans.containsKey("InsertPluginStoreDump")) {
-			return Flog.DEFAULT_SHOULD_INSERT_STOREDUMP;
-		}
-		return this.flog.booleans.get("InsertPluginStoreDump");
-	}
-
-	public void shouldPublishStoreDump(boolean b) {
-		this.flog.booleans.put("InsertPluginStoreDump", b);
-	}
-
-	public boolean userWarnedTainted() {
-		if(!this.flog.booleans.containsKey("UserWarnedTainted")) {
-			return false;
-		}
-		return this.flog.booleans.get("UserWarnedTainted");
-	}
-
-	public void userWarnedTainted(boolean b) {
-		this.flog.booleans.put("UserWarnedTainted", b);
-	}
-	
-	public String taintedHostname() {
-		if(!this.flog.strings.containsKey("TaintedHostname")) {
-			String host;
-			InetAddress addr;
-			try {
-				addr = java.net.InetAddress.getLocalHost();
-				host = addr.getHostName();
-			} catch (UnknownHostException e) {
-				try {
-					addr = InetAddress.getByAddress(new byte[] { 127, 0, 0, 1 });
-					host = addr.getHostName();
-				} catch (UnknownHostException e1) {
-					host = "(unknown)";
-					System.err.println("Unable to get localhost hostname?!");
-				}
-			}
-			flog.strings.put("TaintedHostname", host);
-			return host;
-		} else
-			return this.flog.strings.get("TaintedHostname");
-	}
-
 	public void putFlog() {
 		FlogHelper.getStore().subStores.put(this.getID(), this.getStore());
 	}
@@ -392,11 +342,6 @@ public class PluginStoreFlog extends Flog {
 		}
 
 		return this.flog.longs.get("USKLatestEdition");
-	}
-
-	public byte[] exportFlog() {
-		//FIXME: no longer supported, maybe not needed with new pluginstore code?
-		return null;  
 	}
 
 	public static boolean hasFlog(String flogID) {

@@ -16,7 +16,6 @@
  */
 package plugins.floghelper.data;
 
-import com.db4o.ObjectContainer;
 import freenet.client.async.ClientContext;
 import freenet.client.async.USKCallback;
 import freenet.keys.FreenetURI;
@@ -45,12 +44,6 @@ public abstract class Flog {
 	public static boolean DEFAULT_SHOULD_PUBLISH_DATES = false;
 
 	/**
-	 * If we don't publish dates, we don't publish a dump of the store, because it
-	 * contains the dates.
-	 */
-	public static final boolean DEFAULT_SHOULD_INSERT_STOREDUMP = false;
-
-	/**
 	 * Should we insert a Library index by default ?
 	 */
 	public static final boolean DEFAULT_SHOULD_INSERT_INDEX = true;
@@ -76,11 +69,6 @@ public abstract class Flog {
 	 * USK@crypto/__?__/revnumber
 	 */
 	public static final String DEFAULT_SSK_PATH = "flog";
-
-	/**
-	 * Filename of the inserted Flog backup.
-	 */
-	public static final String STORE_DUMP_NAME = "flog.db4o";
 
 	private USKCallback uskCallback = null;
 	private BaseL10n myBaseL10n = null;
@@ -149,9 +137,6 @@ public abstract class Flog {
 
 	abstract public boolean shouldPublishDates();
 	abstract public void    shouldPublishDates(boolean b);
-	/** DISABLED, but kept for now to warn the user. THIS IS GROSSLY INSECURE!!! */
-	abstract public boolean shouldPublishStoreDump();
-	abstract public void    shouldPublishStoreDump(boolean b);
 	abstract public boolean shouldPublishLibraryIndex();
 	abstract public void    shouldPublishLibraryIndex(boolean b);
 	abstract public boolean shouldSortTagsByCount();
@@ -244,6 +229,4 @@ public abstract class Flog {
 	}
 
 	abstract public void putFlog();
-
-	abstract public byte[] exportFlog();
 }
