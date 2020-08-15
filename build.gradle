@@ -1,0 +1,115 @@
+buildscript {
+    dependencies {
+        classpath files('gradle/gradle-witness.jar')
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'witness'
+apply plugin: 'maven-publish'
+
+compileJava {
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
+}
+
+version = "37"
+
+repositories {
+    mavenLocal()
+    maven { url "http://4thline.org/m2" }
+    maven { url 'https://mvn.freenetproject.org' }
+    jcenter()
+}
+
+configurations {
+    extraLibs
+}
+
+dependencies {
+    compile group: 'org.freenetproject', name: 'fred', version: 'build+'
+}
+
+def gitrev
+task buildInfo {
+    try {
+        def cmd = "git describe --always --abbrev=4 --dirty"
+        def proc = cmd.execute()
+        gitrev = proc.text.trim()
+    } catch (java.io.IOException e) {
+        gitrev = "@unknown@"
+    }
+}
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+
+Date getMTime(String file) {
+    return new Date(Files.readAttributes(Paths.get(file), BasicFileAttributes.class).lastModifiedTime().toMillis());
+}
+
+jar {
+    manifest {
+        attributes 'Plugin-Main-Class': 'plugins.flophelper.FlogHelper',
+                   'Required-Node-Version': '1239',
+                   'Implementation-Version': version,
+                   'Built-By': System.getProperty('user.name'),
+                   'Built-Date': getMTime("src/main/java/plugins/floghelper/Version.java"),
+                   'Built-JDK': System.getProperty('java.version')
+    }
+    from (configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }) {
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+    }
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
+    duplicatesStrategy = "exclude"
+    archiveName = 'freenet-FlogHelper.jar'
+}
+
+def jars = []
+gradle.addListener(new TaskExecutionListener() {
+    void afterExecute(Task task, TaskState state) {
+        if(task in AbstractArchiveTask) {
+            jars << task.outputs.files.singleFile
+        }
+    }
+
+    void beforeExecute(Task task) { }
+})
+gradle.addBuildListener(new BuildAdapter() {
+    void buildFinished(BuildResult result) {
+        if(jars) {
+            def hash = {
+                File file -> def sha256 = java.security.MessageDigest.getInstance('SHA-256')
+                    file.eachByte(1024 * 4) { buffer, len -> sha256.update(buffer, 0, len) }
+                    println "SHA-256 of ${file.name}: ${sha256.digest().encodeHex().toString()}"
+            }
+
+            jars.each { hash(it) }
+        }
+    }
+})
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId 'org.freenetproject.plugins'
+            artifactId "FlogHelper"
+            version version
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url "s3://mvn.freenetproject.org/"
+            credentials(AwsCredentials) {
+                accessKey System.getenv('AWS_ACCESS_KEY_ID')
+                secretKey System.getenv('AWS_SECRET_ACCESS_KEY')
+            }
+        }
+    }
+}
