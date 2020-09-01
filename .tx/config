@@ -2,14 +2,14 @@
 host = https://www.transifex.com
 
 [freenet.floghelper]
-file_filter = src/plugins/floghelper/l10n/UI_<lang>.l10n
-source_file = src/plugins/floghelper/l10n/UI_en.l10n
+file_filter = src/main/resources/l10n/UI_<lang>.l10n
+source_file = src/main/resources/l10n/UI_en.l10n
 source_lang = en
-trans.zh_CN = src/plugins/floghelper/l10n/UI_zh-cn.l10n
-trans.zh_TW = src/plugins/floghelper/l10n/UI_zh-tw.l10n
-trans.nb_NO = src/plugins/floghelper/l10n/UI_nb-no.l10n
-trans.pt_BR = src/plugins/floghelper/l10n/UI_pt-br.l10n
-trans.pt_PT = src/plugins/floghelper/l10n/UI_pt-pt.l10n
-trans.fa_IR = src/plugins/floghelper/l10n/UI_fa-ir.l10n
+trans.zh_CN = src/main/resources/l10n/UI_zh-cn.l10n
+trans.zh_TW = src/main/resources/l10n/UI_zh-tw.l10n
+trans.nb_NO = src/main/resources/l10n/UI_nb-no.l10n
+trans.pt_BR = src/main/resources/l10n/UI_pt-br.l10n
+trans.pt_PT = src/main/resources/l10n/UI_pt-pt.l10n
+trans.fa_IR = src/main/resources/l10n/UI_fa-ir.l10n
 type = MOZILLAPROPERTIES
 
