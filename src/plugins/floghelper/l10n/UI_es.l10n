@@ -91,6 +91,7 @@ PreviewContent=Previsualizar esta entrada
 PreviewingDraftContent=Previsualización del borrador
 Preview=Previsualizar
 PreviewWarning=Previsualización
+PrevTagsFieldDesc=Agregar etiquetas de mensajes anteriores:
 Proceed=Proceder
 PublishContentModificationDateDesc=¿Publicar las fechas de modificación de entradas? (esto podría permitir a un potencial atacante identificar su zona horaria).
 Quote=Citar

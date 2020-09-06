@@ -96,6 +96,7 @@ PreviewContent=预览此文章
 PreviewingDraftContent=草稿预览
 Preview=预览
 PreviewWarning=预览
+PrevTagsFieldDesc=添加以前帖子中的标签：
 Proceed=继续
 PublishContentModificationDateDesc=公开文章修改时间? (这可能被攻击者用来确定你的时区)
 Quote=引文

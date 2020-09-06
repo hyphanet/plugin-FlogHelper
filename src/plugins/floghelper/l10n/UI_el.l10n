@@ -1,4 +1,6 @@
 Actions=Ενέργειες
+ActivelinkDeleteFieldDesc=Να διαγραφεί το activelink; Μην κάνετ αυτή την επιλογή αν ενημερώνετε ένα υπάρχον activelink.
+ActivelinkError=Σφάλμα activelink
 Attachments=Επισυνάψεις
 AttachmentToUpload=Αρχείο προς επισύναψη:
 Author=Συγγραφέας
