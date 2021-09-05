@@ -58,7 +58,7 @@ import plugins.floghelper.ui.PreviewToadlet;
  */
 public class FlogHelper implements FredPlugin, FredPluginThreadless, FredPluginBaseL10n, FredPluginL10n, FredPluginThemed, FredPluginVersioned, FredPluginRealVersioned, FredPluginTalker {
 
-	public static final String l10nFilesBasePath = "plugins/floghelper/l10n/";
+	public static final String l10nFilesBasePath = "l10n/";
 	public static final String l10nFilesMask = "UI_${lang}.l10n";
 	public static final String l10nOverrideFilesMask = "FlogHelper_UI_${lang}.override.l10n";
 	private static String PLUGIN_NAME;

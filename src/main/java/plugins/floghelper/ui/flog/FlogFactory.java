@@ -115,7 +115,7 @@ public class FlogFactory {
 	public String getTemplate() {
 		if(flog.overrideTemplate()) {
 			return flog.getTemplateOverride();
-		} else return getResourceAsString("plugins/floghelper/ui/flog/GlobalTemplate.html");
+		} else return getResourceAsString("/ui/flog/GlobalTemplate.html");
 	}
 
 	/**
@@ -127,7 +127,7 @@ public class FlogFactory {
 		if(flog.overrideCSS()) {
 			return flog.getCSSOverride();
 		} else {
-			return getResourceAsString("plugins/floghelper/ui/flog/" + flog.getTheme() + ".css");
+			return getResourceAsString("/ui/flog/" + flog.getTheme() + ".css");
 		}
 
 	}
