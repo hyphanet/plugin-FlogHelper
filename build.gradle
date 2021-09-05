@@ -17,9 +17,8 @@ version = "37"
 
 repositories {
     mavenLocal()
-    maven { url "http://4thline.org/m2" }
+    mavenCentral()
     maven { url 'https://mvn.freenetproject.org' }
-    jcenter()
 }
 
 configurations {
@@ -55,18 +54,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 
-Date getMTime(String file) {
-    return new Date(Files.readAttributes(Paths.get(file), BasicFileAttributes.class).lastModifiedTime().toMillis());
-}
-
 jar {
     manifest {
         attributes 'Plugin-Main-Class': 'plugins.flophelper.FlogHelper',
                    'Required-Node-Version': '1239',
-                   'Implementation-Version': version,
-                   'Built-By': System.getProperty('user.name'),
-                   'Built-Date': getMTime("src/main/java/plugins/floghelper/Version.java"),
-                   'Built-JDK': System.getProperty('java.version')
+                   'Implementation-Version': version
     }
     from (configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }) {
         exclude "META-INF/*.SF"
