@@ -46,6 +46,12 @@ public class RawXHTML extends ContentSyntax {
 		// Pictures
 		this.syntaxElements.add(new SyntaxElement(FlogHelper.getBaseL10n().getString("Picture"), "<img alt=\"Image\" src=\"", "\" />"));
 
+		// Audio
+		this.syntaxElements.add(new SyntaxElement(FlogHelper.getBaseL10n().getString("Audio"), "<audio controls=\"controls\" preload=\"auto\" type=\"audio/mpeg\" style=\"height: 20px;\" src=\"", "\" />"));
+
+		// Video
+		this.syntaxElements.add(new SyntaxElement(FlogHelper.getBaseL10n().getString("Video"), "<video controls=\"controls\" style=\"height: 300px;\" src=\"", "?type=video/ogg\"></video>"));
+
 		// Size and color
 		this.syntaxElements.add(new SyntaxElement(FlogHelper.getBaseL10n().getString("Size"), "<span style=\"font-size: 1em;\">", "</span>"));
 		this.syntaxElements.add(new SyntaxElement(FlogHelper.getBaseL10n().getString("Color"), "<span style=\"color: #000000;\">", "</span>"));
