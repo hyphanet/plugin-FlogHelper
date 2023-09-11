@@ -93,6 +93,7 @@ PreviewContent=Forhåndsvis dette innlegget
 PreviewingDraftContent=Forhåndsvisning av utkast
 Preview=Forhåndsvisning
 PreviewWarning=Forhåndsvisning
+PrevTagsFieldDesc=Legg til merkelapper fra tidligere innlegg:
 Proceed=Fortsett
 PublishContentModificationDateDesc=Publisere innlegget sin modifikasjons datoer? (Dette kan føre til at en potensiell angriper kan identifisere din tidssone.)
 Quote=Sitat
